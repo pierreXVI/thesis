@@ -1,0 +1,59 @@
+\input{header.tex}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\addcontentsline{toc}{chapter}{Table of contents}
+\pagebreak
+
+\chapter{Analyse des méthodes existantes}
+  \section{Brève introduction aux méthodes d'intégration spatiale de CEDRE}
+    \subsection{Finite Volumes method}
+    \subsection{Gradient reconstruction methods}
+      \subsubsection{The k-exact method}
+      \subsubsection{The Multislope method}
+  \section{Time integration methods}
+    \subsection{Analyse des méthodes}
+      \subsubsection{Consistance et ordre}
+      \subsubsection{Stabilité}
+    \subsection{Méthodes implicites}
+      \subsubsection{Méthode d'Euler implicite}
+      \subsubsection{Méthodologie des méthodes implicites}
+
+
+
+
+\chapter{Implémentation d'une méthode JFNK dans CEDRE}
+
+\chapter{Analyse de la méthode JFNK dans CEDRE}
+  \section{Comparaison entre la matrice jacobienne explicite et la formulation sans matrice}
+    \subsection{Sphère hypersonique}
+    \subsection{Profil RAE dans un écoulement transsonique turbulent}
+  \section{Utilisation de la formulation sans matrice sur un nouveau modèle de fluide}
+    \subsection{Modèle Multi-températures}
+    \subsection{Sphère hypersonique}
+      \subsubsection{Modèle réactif complet}
+      \subsubsection{Modèle réactif simplifié}
+
+
+\chapter{Etude des méthode exponentielles}
+  \section{Présentation de \emph{Jaguar}}
+    \subsection{Méthode des Différences Spectrales}
+    \subsection{Méthodes Exponentielles}
+  \section{Analyse des méthodes exponentielles}
+    \subsection{Analyse de l'ordre : convection d'un tourbillon isentropique}
+    \subsection{Analyse de la précision : tourbillon de Taylor--Green}
+
+
+
+
+
+
+
+
+\pagebreak
+\bibliography{bibliography.bib}
+\bibliographystyle{ieeetr}
+\addcontentsline{toc}{chapter}{Bibliographie}
+
+\end{document}
