@@ -1,56 +1,69 @@
 \addcontentsline{toc}{chapter}{Introduction}
 \chapter*{Introduction}
 
+
   \section*{Contexte}
 
     \paragraph{}
     Ce travail s'ancre dans le domaine de la simulation numérique de la dynamique des fluides, appliquée à l'énergétique.
     Ce domaine regroupe de nombreux acteurs industriels (Ariane group, DGA, Safran, Airbus, ...) ainsi qu'académiques (ONERA, CERFACS, DLR, universités, ...).
     Il s'intéresse à la manière de simuler avec un calculateur un écoulement fluide en essayant de représenter fidèlement la réalité physique.
-    Pour cela, le système physique est intégré temporellement à l'aide d'algorithmes mathématiques afin d'obtenir son évolution dans le temps.
+    Les différents acteurs de ce domaine ont besoin de pouvoir accéder à certaines grandeurs physiques associées à des phénomènes et à des régimes de fonctionnement bien particuliers.
+    Il arrive souvent que ces régimes ne soient pas réalisables à notre échelle, en raison de limitations matérielles ou financières.
+    On peut prendre comme exemple l’étude du givrage qui a lieu sur la voilure d’un avion, qui est réalisable expérimentalement mais représente un budget imposant pour l’avionneur, ou bien l’étude des transferts thermiques d’une capsule de rentrée atmosphérique, bien plus difficile à réaliser expérimentalement.
+    Pour contourner ces limitations, la simulation numérique est la meilleure option, car elle permet de modéliser un tel cas d’étude par l’exécution d’un programme informatique, et d’obtenir un ensemble important de données qui seront analysées par la suite pour répondre aux questions souhaitées.
+    L'analyse de la physique produit en général un ensemble d'équations, souvent des équations aux dérivées partielles, représentant le système réel que l'on souhaite étudier.
+    Des algorithmes sont alors nécessaires pour déterminer l'écoulement fluide à partir de ces équations, dans le domaine de travail, en fonction du temps.
+    Ainsi, pour obtenir les grandeurs souhaitées, le système physique est intégré temporellement à l'aide d'algorithmes mathématiques afin d'obtenir son évolution dans le temps.
     Souvent, le résultat attendu n'est pas l'évolution temporelle complète du système, mais seulement l'obtention de son état d'équilibre.
     On parle alors de simulation stationnaire, en opposition aux simulations instationnaires, qui cherchent à décrire correctement l'évolution temporelle du système.
 
     \paragraph{}
     Pour l'ensemble de ces acteurs, l'enjeu le plus crucial est de parvenir à obtenir un bon compromis entre temps de calcul et fidélité du résultat.
     En effet, un calcul rapide à tendance à être peu fidèle à la physique, alors qu'un calcul fidèle tend à utiliser plus de ressources informatiques que celles à disposition.
-    Pour un calcul stationnaire, la rapidité correspond au fait d'obtenir la solution convergée à un faible coût de calcul.
-    La nécessité de ce compromis vient du fait des algorithmes utilisés dans ces simulations.
+    Pour un calcul stationnaire, la rapidité correspond au fait d'obtenir la solution \emph{convergée} à un faible coût de calcul et humain.
+    Cela ce traduit alors par un compromis entre une simulation très coûteuse en ressources informatiques, prenant un temps long, et qui donne des résultats précis et proches de la physique, et une simulation rapide, économe en ressources, mais pour laquelle les résultats ne sont pas significatifs.
+    La nécessité de ce compromis vient du fait des algorithmes utilisés dans ces simulations, ainsi que des paramètres donnés à ces algorithmes.
     Une personne développant un outil de simulation numérique doit donc choisir les algorithmes à utiliser pour obtenir un compromis qu'il estime satisfaisant.
+    L'intérêt final pour un acteur dans la simulation numérique de la dynamique des fluides est donc d'avoir un résultat suffisamment précis et suffisamment peu cher à obtenir.
+    Un résultat précis est nécessaire pour répondre aux questions qui ont nécessité la simulation.
+    La recherche d'un résultat peu cher à obtenir est motivée par des questions d'économies en coût de calcul.
+    Ce coût englobe le coût en temps de la simulation, payé par l'utilisateur (et indirectement par l'employeur au travers du salaire) et le coût en ressources informatiques payé par l'employeur, c'est à dire en électricité et en investissement dans des machines plus performantes.
 
     \paragraph{}
     En fonction du problème que l'on souhaite résoudre, il existe des algorithmes et des méthodes plus ou moins adaptées.
-    Dans le cas des problèmes d'énergétique, les méthodes issues de l'aérodynamique sont limitées par le couplage entre les différentes physiques qui possèdent leurs temps caractéristiques distincts.
-    Ainsi, les algorithmes utilisés pour la CFD "classique", c'est à dire concentrée sur la résulution des équations de Navier-Stokes, ne sont pas forcément les plus adaptés à une simulation dans le domaine de l'énergétique.
+    Dans le cas des problèmes d'énergétique et de multi-physique, les méthodes issues de l'aérodynamique plus traditionnelle sont limitées par le couplage entre les différentes physiques qui possèdent leurs temps caractéristiques distincts.
+    Ainsi, les algorithmes utilisés pour la simulation numérique de la dynamique des fluides classique, c'est à dire concentrée sur la résolution des équations de Navier--Stokes, ne sont pas forcément les plus adaptés à une simulation dans le domaine de l'énergétique.
     La mise en jeu plusieurs phénomènes physiques distincts impose en effet des contraintes sur le choix et l'utilisation des algorithmes.
-    En conséquence, il serait bon d'adapter ou de remplacer les algorithmes intervenant dans l'intégration temporelle pour les problèmes multiphysiques.
+    En conséquence, il serait bon d'adapter ou de remplacer les algorithmes intervenant dans l'intégration temporelle pour les problèmes multi-physiques.
 
 
   \section*{Études}
 
     \paragraph{}
-    Si la CFD en aéronautique s'est grandement développée, elle ne s'est pas tant adaptée au domaine de la multiphysique, et de nombreux codes industriels se contentent de réutiliser les mêmes algorithmes.
+    Si la simulation numérique s'est grandement développée dans le domaine l'aéronautique, elle ne s'est pas tant adaptée au domaine de la multi-physique, et de nombreux codes industriels se contentent de réutiliser les mêmes algorithmes.
     C'est l'exemple du code CEDRE, développé à l'ONERA par le Département Multi-Physique pour l'Énergétique.
-    Ce code constitue une plateforme regroupant plusieurs solveurs pour intégrer plusieurs physiques.
-    Des travaux on ete fais pour mettre en place une intégration temporelle adaptée aux problèmes résolus par CEDRE.
+    Ce code constitue une plateforme regroupant plusieurs solveurs pour intégrer plusieurs physiques : chaque solveur est dédié à son modèle physique.
+    On compte alors un solveur pour la résolution des écoulements compressibles, multi-fluides, réactifs et turbulents, deux solveurs pour le calcul de phase dispersée (gouttes, cristaux, particules) en approche eulérienne et lagrangienne respectivement, un solveur dédié au calcul des films liquides, un solveur dédié au rayonnement, ...
+    Des travaux on été fais pour mettre en place une intégration temporelle adaptée aux problèmes résolus par CEDRE.
     C'est par exemple le cas de \cite{Selva1998}.
     Un travail sur l'intégration temporelle a mené au développement de méthodes d'intégrations implicites pour l'intégration des problèmes stationnaires, et au développement d'une méthode GMRES pour la résolution des systèmes linéaires.
-    Ainsi, CEDRE constitue en fait un solveur global adapté aux problèmes multiphysiques.
+    Ainsi, CEDRE constitue en fait un solveur global adapté aux problèmes multi-physiques.
     L'utilisateur peut choisir parmi un panel de méthodes d'intégrations pour obtenir une méthode adaptée à son problème.
     Cependant, la couplage faible entre solveurs entache la convergence vers l'état stationnaire et le choix dans les méthodes d'intégration est limité, en comparaison à ce qu'on peut trouver dans la littérature.
-    C'est du moins l'avis des acteurs du code CEDRE, c'est à dire ses développeurs et ses clients, qui aimeraient des méthodes plus robustes pour pouvoir utiliser CEDRE sur des problèmes plus raides, et convergeant plus vite pour économiser en coût de calcul.
+    C'est du moins l'avis des acteurs du code CEDRE, c'est à dire ses développeurs et ses utilisateurs, qui aimeraient des méthodes plus robustes pour pouvoir utiliser CEDRE sur des problèmes plus raides, et convergeant plus vite pour économiser en coût de calcul.
 
-    \paragraph{}
-    Du coté de la recherche, cependant, de nombreux efforts ont été réalisés dans le sens de la multiphysique, mais ne sont pas encore sorti du cadre académique.
+    \paragraph{}\PS{TODO}
+    Du coté de la recherche, cependant, de nombreux efforts ont été réalisés dans le sens de la multi-physique, mais ne sont pas encore sorti du cadre académique.
     C'est par exemple le cas de \cite{WongKwokHorneEtAl2019}, qui se sont intéressés à l'intégration temporelle d'équations couplées.
     Ils ont conçu une méthode d'intégration adaptée aux équations couplées, qui est une évolution d'une méthode du point fixe avec en plus une étape d'une méthode de Newton.
     Ils ont ensuite comparés cette méthode à la méthode du point fixe standard, plus généralement utilisée pour une résolution couplée.
-    En mettant en place leur méthode sur deux problèmes de couplage simple, ils ont enfin montré l'intéret de leur méthode par rapport à la méthode de base.
-    Si cette méthode se prète bien à leur calculs, elle n'est cependant mise en place que pour des problèmes simples, moins complexes que les problèmes multiphysiques que CEDRE souhaite résoudre.
+    En mettant en place leur méthode sur deux problèmes de couplage simple, ils ont enfin montré l’intérêt de leur méthode par rapport à la méthode de base.
+    Si cette méthode se prête bien à leur calculs, elle n'est cependant mise en place que pour des problèmes simples, moins complexes que les problèmes multi-physiques que CEDRE souhaite résoudre.
     De plus, les tests réalisés sont sur des problèmes à l'échelle académique, et non industrielle.
 
     \paragraph{}
-    Parallèlement, des outils utilisés dans le cadre de la simulation aérodynamique pourraient s'avérer intéressants pour des problèmes multiphysiques.
+    Parallèlement, des outils utilisés dans le cadre de la simulation aérodynamique pourraient s'avérer intéressants pour des problèmes multi-physiques.
     La méthode JFNK est déjà bien utilisée dans la simulation numérique des équations de Navier-Stokes.
     Dans \cite{ParkNourgalievMartineauEtAl2009}, un mécanisme d'intégration temporelle est mis en place autour d'une formulation JFNK.
     Un préconditionnement basé sur la physique est développé pour résoudre plus précisément le problème linéaire.
@@ -62,17 +75,17 @@
 
     \paragraph{}
     On voit donc que des méthodes numériques sont déjà disponibles pour résoudre des problèmes de simulation numérique.
-    En particulier, il existe déjà des solveurs capables de résoudre les problèmes stationnaire multiphysiques d'échelle industrielle.
-    D'un autre coté, d'autres méthodes développées dans un cadre académique ont montré leur intérêt sur des problèmes multiphysiques simples.
+    En particulier, il existe déjà des solveurs capables de résoudre les problèmes stationnaire multi-physiques d'échelle industrielle.
+    D'un autre coté, d'autres méthodes développées dans un cadre académique ont montré leur intérêt sur des problèmes multi-physiques simples.
 
-    Enfin, des méthodes améliorant la résolution des problèmes d'aérodynamique pourraient s'avérer intéressantes pour des problèmes multiphysiques.
+    Enfin, des méthodes améliorant la résolution des problèmes d'aérodynamique pourraient s'avérer intéressantes pour des problèmes multi-physiques.
 
     Enfin, certaines méthodes récentes ont permis ...
 
-    Les solveurs déjà existants utilisent des méthodes anciennes, ou peu adaptées aux problèmes multiphysiques.
+    Les solveurs déjà existants utilisent des méthodes anciennes, ou peu adaptées aux problèmes multi-physiques.
     Les méthodes plus performantes ne sont utilisées que sur des problèmes simplifiés, ou dans des calculs d'échelle académique.
 
-    Il semblerait maintenant intéressant d'adapter ces nouvelles méthodes pour la résolution des problèmes multiphysiques dans un code industriel.
+    Il semblerait maintenant intéressant d'adapter ces nouvelles méthodes pour la résolution des problèmes multi-physiques dans un code industriel.
 
     \vspace{1cm}\hrule\vspace{1cm}
 
@@ -80,7 +93,7 @@
 
     \paragraph{}
     ..., elle consiste à ajouter à la chaîne d'intégration temporelle de la plateforme CEDRE des méthodes numériques non utilisées dans la simulation numérique industrielle,
-    afin d'améliorer la robustesse et la performance de cette intégration sur les problèmes stationnaires multiphysique à grandes échelles.
+    afin d'améliorer la robustesse et la performance de cette intégration sur les problèmes stationnaires multi-physique à grandes échelles.
 
 
   \section*{Démarche}
@@ -92,15 +105,15 @@
     L'idée suivante a été de développer une méthode de Newton afin de résoudre le problème non linéaire sachant que celui ci est produit par les méthodes d'intégration implicites utilisées lors de la résolution des problèmes stationnaires.
     L'idée suivante a été de développer une formulation sans matrice du système afin de mieux former les systèmes linéaires et permettre un couplage fort des solveurs de CEDRE.
     L'idée suivante a été d'adapter la résolution du système linéaire en utilisant des méthodes plus modernes que la méthode actuelle, en s'inspirant de la bibliographie, afin de résoudre plus précisément le système linéaire.
-    On a alors obtenu une méthodologie d'intégration temporelle utilisable pour résoudre des problèmes multiphysique stationaires.
+    On a alors obtenu une méthodologie d'intégration temporelle utilisable pour résoudre des problèmes multi-physique stationaires.
     A ce stade, cette méthode fonctionne au sens où elle permet d'obtenir un résultat à un problème de simulation numérique, mais elle n'est pas encore caractérisée.
 
     \paragraph{}
-    L'idée du chapitre 2 a été d'évaluer la robustesse et la convergence de la formulation JFNK sur des problèmes stationnaire en multiphysiques au sein du code CEDRE.
-    Pour cela, l'idée a été de sélectionner des cas tests de complexité croissante afin de représenter un ensemble de problèmes multiphysiques.
+    L'idée du chapitre 2 a été d'évaluer la robustesse et la convergence de la formulation JFNK sur des problèmes stationnaire en multi-physiques au sein du code CEDRE.
+    Pour cela, l'idée a été de sélectionner des cas tests de complexité croissante afin de représenter un ensemble de problèmes multi-physiques.
     L'idée suivante a été de mettre en place une méthode d'évaluation des performances de l'intégration temporelle afin de caractériser sa robustesse et sa vitesse de convergence.
     L'idée suivante a été de montrer que sur ces cas la formulation améliore la robustesse et la convergence afin de valider la pertinance du choix de la méthode.
-    On estime qu'on a alors développé une méthode d'intégration temporelle "efficace", c'est à dire rendant l'intégration temporelle de CEDRE plus robuste et convergeant plus rapidement sur un ensemble de problèmes multiphysiques.
+    On estime qu'on a alors développé une méthode d'intégration temporelle "efficace", c'est à dire rendant l'intégration temporelle de CEDRE plus robuste et convergeant plus rapidement sur un ensemble de problèmes multi-physiques.
     On pourrait aller plus loin mais on va plutôt regarder l'intérêt de la formulation JFNK sur des problèmes autres pouvant en tirer profit : les problèmes instationnaires à grand pas de temps.
 
     \paragraph{}
