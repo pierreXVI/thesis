@@ -1,0 +1,46 @@
+\chapter{Analyse des méthodes existantes}
+
+
+  \section{Brève introduction aux méthodes d'intégration spatiale de CEDRE}
+
+    \paragraph{}
+    Bien que cette thèse porte sur l'intégration temporelle, il est bon de s'intéresser également à l'intégration spatiale.
+    L'\emph{intégration spatiale} désigne l'ensemble de méthodes utilisées pour calculer une dérivée spatiale d'une grandeur physique.
+    Puisque la résolution des équations est numérique, il faut pouvoir représenter les données dans la mémoire d'un ordinateur.
+    Par une étape de discrétisation spatiale, on divise le domaine d'étude en un ensemble de cellules qui forment un maillage.
+    Ces cellules sont des petits volumes \footnote{ou des faces en 2D, ou des segments en 1D} disjoints, telles que leur réunion forme le domaine d'étude.
+    Les grandeurs physiques étudiées comme la vitesse du fluide, sa température, sa densité, \dots, sont alors représentées dans chaque cellule par leur valeur moyenne, leur valeur en chaque noeud de la cellule, ou de manière plus complexe en fonction du choix de discrétisation pris par l'utilisateur.
+    L'état physique dans l'ensemble du domaine est représenté non plus par une fonction continue de l'espace mais par un vecteur discret d'états
+    On utilise une telle discrétisation spatiale pour pouvoir représenter l'état sur un espace discret plus petit que l'espace continu, mais également car elle fourni des moyens de calculer des dérivées spatiales, nécessaires à la résolution des équations aux dérivées partielles.
+
+
+    \subsection{Finite Volumes method}
+
+      \paragraph{}
+      La méthode d'intégration spatiale utilisée dans CHARME est la méthode des Volumes Finis \cite{EymardGallouetHerbin2000}.
+      Cette méthode a été développée principalement pour les équations conservatives, c'est à dire qui conservent les intégrales des différentes quantités sur l'ensemble du maillage.
+      En effet, de telles équations font généralement apparaitre la divergence d'un flux, et la méthode des Volumes Finis a pour propriété de calculer des flux conservatifs.
+      Ainsi, la propriété de conservativité de l'équation est bien respectée par la méthode d'intégration spatiale.
+
+      \paragraph{}
+      La méthode des Volumes Finis consiste à intégrer l'équation à résoudre dans chaque cellule du maillage.
+      Ainsi, l'état dans chaque cellule est représenté par sa valeur moyenne dans cette cellule, et le théorème de Green--Ostrogradski transforme la divergence du flux en un bilan surfacique.
+
+
+
+
+
+
+
+    \subsection{Gradient reconstruction methods}
+      \subsubsection{The k-exact method}
+      \subsubsection{The Multislope method}
+
+
+  \section{Time integration methods}
+    \subsection{Analyse des méthodes}
+      \subsubsection{Consistance et ordre}
+      \subsubsection{Stabilité}
+    \subsection{Méthodes implicites}
+      \subsubsection{Méthode d'Euler implicite}
+      \subsubsection{Méthodologie des méthodes implicites}
