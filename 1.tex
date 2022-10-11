@@ -96,6 +96,23 @@
       As can be seen, every contribution of the flux added in a cell is removed from another, and therefore this spatial discretisation method preserves the conservativity of the underlying equation.
 
 
+    \subsection{The Riemann problem}
+
+      \PS{Déplacer après la reconstruction ? C'est plus fondamental mais ça intervient après}
+
+      \paragraph{}
+      The last remaining problem with this presentation of the Finite Volumes method is how to compute the flux going through cell interfaces.
+      On the interfaces between two cells we know the left and right quantities $\xi_L$ and $\xi_R$, and we need to compute the corresponging flux.
+      It is possible here to use a reconstruction method to get a better approximation of the quantities left and right of the interface, and therefore we end up using the left and right quantities $\xi_L^*$ and $\xi_R^*$.
+      The idea is now to compute the flux going through the surface as a function of $\xi_L^*$, $\xi_R^*$ and the surface vector $\vec{s}$.
+      From the interface point of view, there are two possibly different states, one from each side : this is what is called a Rienamm problem.
+      A Riemann problem is an initial value problem applied to a conservation equation, where the initial solution is piecewise constant with a single possible discontinuity.
+      By working with the equation and deriving the jump condition, it is possible to compute the quantity at the interface from a possibly discontinuous state at the interface.
+      Then it is possible to evaluate the flux associated with this state going through the surface.
+      This approach can be called the exact Riemann solver as it uses the exact solution of the Riemann problem.
+      But the drawback from this approach usually is the computational coast required to find this exact solution.
+      What is usually done is to use approximate Riemann solvers, compromising between speed and accuracy \cite{Toro2009}.
+
 
 
 
