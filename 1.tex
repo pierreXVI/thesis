@@ -1,7 +1,52 @@
-\chapter{Analyse des méthodes existantes}
+\chapter{Analysis of existing methods}
+
+  \section{Problem setup}
+
+    \paragraph{}
+    In this part we are going to set the mathematical framework for this study.
+    We will start from a partial differential equation arising from the physical model, in the form of
+    \begin{equation}\label{eq:pde}
+      \frac{\partial \xi}{\partial t} + \operatorname{F}\left(\xi\right) = 0
+    \end{equation}
+    where the function $\operatorname{F}$ uses some space derivatives of the state variable $\xi$.
+    This equation then describe the temporal evolution of the state variables $\xi$.
+
+    \paragraph{}
+    A particular class of such partial differential equations are conservative equations.
+    They correspond to the case where the function $\operatorname{F}$ can be written as a divergence term.
+    Finally, with a source term $\operatorname{S}$, those equations look like:
+    \begin{equation}\label{eq:pde_conservative}
+      \frac{\partial \xi}{\partial t} + \nabla \cdot \operatorname{f}\left(\xi\right) = \operatorname{S}\ .
+    \end{equation}
+    One might notice that equation (\ref{eq:pde_conservative}) is indeed a particularisation of equation (\ref{eq:pde}), with $\operatorname{F}\left(\xi\right) = \nabla\cdot \operatorname{f}\left(\xi\right) - \operatorname{S}$.
+    Those conservative equations are the one we will focus on is this study, as they describe the physical systems we are interested in.
+
+    \paragraph{}
+    When solving numerically equations like (\ref{eq:pde}), one must first take a spatial domain on interest.
+    Let us call this domain $\mathcal{D}$.
+    We need to be able to represent different quantities, such as the state variable $\xi$ numerically over the domain $\mathcal{D}$.
+    Therefore we need to discretise the continuous spatial domain into a finite number of cells, or elements.
+    This is usually done with a mesh of the domain $\mathcal{D}$.
+    Quantities are then stored at the nodes, the center of the cells, or sometime in a more complex fashion depending on the method used.
+    Quantities are no longer mathematically represented by a function of the continuous physical domain $\xi : \operatorname{D} \rightarrow \mathbb{R}$ but by a finite sized vector $\Xi$ gathering all the information across the discretised domain.
+    For some simple discretisation methods, this vector consists of the quantity evaluated at the mesh nodes or averaged at the center of the cells.
+    For more complex methods, this vector consists on information used to construct the solution over the domain : polynomial coefficients, spectral decomposition coefficients, etc.
+    Anyway, we no longer work in a continuous domain $\operatorname{D}$ but on a discretised one.
+
+    \paragraph{}
+    As we work now on a discretised domain, we have to look at how we compute spatial derivatives arising from equation (\ref{eq:pde}).
+    Overall, the choice of how to represent the quantities on a discretised domain, and how to compute spatial derivatives from this representation is what is called a spatial discretisation method.
+    With this method, the partial differential equation (\ref{eq:pde}) transforms into an ordinary differential equation:
+    \begin{equation}\label{eq:ode}
+      \frac{\partial \Xi}{\partial t} + \operatorname{G}\left(\Xi\right) = 0 \ .
+    \end{equation}
+    The difference here is that the function $\operatorname{G}$ is a function of a discrete vector whereas $\operatorname{F}$ was a function of a continuous function, and therefore $\operatorname{G}$ does not uses any spatial derivatives.
+    Thanks to the spatial discretisation method, the only derivative remaining is with regard to time.
+    The rest is then up to the temporal integration method, which is the main topic of this thesis.
+    We will work from equation (\ref{eq:ode}), no matter where the function $\operatorname{G}$ comes from.
+    But sometimes, understanding the origin of this function can help so we will now introduce the spatial discretisation method used in our solver.
 
 
-  \section{Brève introduction aux méthodes d'intégration spatiale de CEDRE}
 
     \paragraph{}
     Bien que cette thèse porte sur l'intégration temporelle, il est bon de s'intéresser également à l'intégration spatiale.
