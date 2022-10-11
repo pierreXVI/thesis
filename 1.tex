@@ -25,26 +25,27 @@
     When solving numerically equations like (\ref{eq:pde}), one must first take a spatial domain on interest.
     Let us call this domain $\mathcal{D}$.
     We need to be able to represent different quantities, such as the state variable $\xi$ numerically over the domain $\mathcal{D}$.
+    As we are interested in solving equations numerically, we need to be able to represent different quantities, such as the state variable $\xi$, numerically over the domain $\mathcal{D}$ and store it in the memory of a computer.
     Therefore we need to discretise the continuous spatial domain into a finite number of cells, or elements.
     This is usually done with a mesh of the domain $\mathcal{D}$.
+    First we divide the domain $\mathcal{D}$ in a set of cells, called a mesh.
+    Those cells are small volumes in 3D, faces in 2D or segments in 1D, disjoints, such as their union recovers the original domain.
+    Interest quantities, such as the fluid velocity, density, \dots, are then stored at each nodes, averaged in the center of each cells or sometimes in a more complex fashion depending on the method.
     Quantities are then stored at the nodes, the center of the cells, or sometime in a more complex fashion depending on the method used.
-    Quantities are no longer mathematically represented by a function of the continuous physical domain $\xi : \operatorname{D} \rightarrow \mathbb{R}$ but by a finite sized vector $\Xi$ gathering all the information across the discretised domain.
+    They are no longer mathematically represented by a function of the continuous physical domain $\xi : \operatorname{D} \rightarrow \mathbb{R}$ but by a finite sized vector $\Xi$ gathering all the information across the discretised domain.
     For some simple discretisation methods, this vector consists of the quantity evaluated at the mesh nodes or averaged at the center of the cells.
     For more complex methods, this vector consists on information used to construct the solution over the domain : polynomial coefficients, spectral decomposition coefficients, etc.
     Anyway, we no longer work in a continuous domain $\operatorname{D}$ but on a discretised one.
 
     \paragraph{}
-    As we work now on a discretised domain, we have to look at how we compute spatial derivatives arising from equation (\ref{eq:pde}).
-    Overall, the choice of how to represent the quantities on a discretised domain, and how to compute spatial derivatives from this representation is what is called a spatial discretisation method.
-    With this method, the partial differential equation (\ref{eq:pde}) transforms into an ordinary differential equation:
+    The partial differential equation (\ref{eq:pde}) transforms then into an ordinary differential equation:
     \begin{equation}\label{eq:ode}
       \frac{\partial \Xi}{\partial t} + \operatorname{G}\left(\Xi\right) = 0 \ .
     \end{equation}
     The difference here is that the function $\operatorname{G}$ is a function of a discrete vector whereas $\operatorname{F}$ was a function of a continuous function, and therefore $\operatorname{G}$ does not uses any spatial derivatives.
     Thanks to the spatial discretisation method, the only derivative remaining is with regard to time.
     The rest is then up to the temporal integration method, which is the main topic of this thesis.
-    We will work from equation (\ref{eq:ode}), no matter where the function $\operatorname{G}$ comes from.
-    But sometimes, understanding the origin of this function can help so we will now introduce the spatial discretisation method used in our solver.
+    We will work from equation (\ref{eq:ode}) no matter where the function $\operatorname{G}$ comes from, but sometimes understanding the origin of this function can help so we will now introduce the spatial discretisation method used in our solver.
 
 
 
