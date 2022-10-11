@@ -16,9 +16,9 @@
     They correspond to the case where the function $\operatorname{F}$ can be written as a divergence term.
     Finally, with a source term $\operatorname{S}$, those equations look like:
     \begin{equation}\label{eq:pde_conservative}
-      \frac{\partial \xi}{\partial t} + \nabla \cdot \operatorname{f}\left(\xi\right) = \operatorname{S}\ .
+      \frac{\partial \xi}{\partial t} + \nabla \cdot \vec{\operatorname{f}}\left(\xi\right) = \operatorname{S}\ .
     \end{equation}
-    One might notice that equation (\ref{eq:pde_conservative}) is indeed a particularisation of equation (\ref{eq:pde}), with $\operatorname{F}\left(\xi\right) = \nabla\cdot \operatorname{f}\left(\xi\right) - \operatorname{S}$.
+    One might notice that equation (\ref{eq:pde_conservative}) is indeed a particularisation of equation (\ref{eq:pde}), with $\operatorname{F}\left(\xi\right) = \nabla\cdot \vec{\operatorname{f}}\left(\xi\right) - \operatorname{S}$.
     Those conservative equations are the one we will focus on is this study, as they describe the physical systems we are interested in.
 
     \paragraph{}
@@ -34,7 +34,7 @@
     Quantities are then stored at the nodes, the center of the cells, or sometime in a more complex fashion depending on the method used.
     They are no longer mathematically represented by a function of the continuous physical domain $\xi : \operatorname{D} \rightarrow \mathbb{R}$ but by a finite sized vector $\Xi$ gathering all the information across the discretised domain.
     For some simple discretisation methods, this vector consists of the quantity evaluated at the mesh nodes or averaged at the center of the cells.
-    For more complex methods, this vector consists on information used to construct the solution over the domain : polynomial coefficients, spectral decomposition coefficients, etc.
+    For more complex methods, this vector consists of information used to construct the solution over the domain : polynomial coefficients, spectral decomposition coefficients, etc.
     Anyway, we no longer work in a continuous domain $\operatorname{D}$ but on a discretised one.
 
     \paragraph{}
@@ -48,30 +48,52 @@
     We will work from equation (\ref{eq:ode}) no matter where the function $\operatorname{G}$ comes from, but sometimes understanding the origin of this function can help so we will now introduce the spatial discretisation method used in our solver.
 
 
+  \section{Brief introduction to the spatial integration schemes}
 
     \paragraph{}
-    Bien que cette thèse porte sur l'intégration temporelle, il est bon de s'intéresser également à l'intégration spatiale.
-    L'\emph{intégration spatiale} désigne l'ensemble de méthodes utilisées pour calculer une dérivée spatiale d'une grandeur physique.
-    Puisque la résolution des équations est numérique, il faut pouvoir représenter les données dans la mémoire d'un ordinateur.
-    Par une étape de discrétisation spatiale, on divise le domaine d'étude en un ensemble de cellules qui forment un maillage.
-    Ces cellules sont des petits volumes \footnote{ou des faces en 2D, ou des segments en 1D} disjoints, telles que leur réunion forme le domaine d'étude.
-    Les grandeurs physiques étudiées comme la vitesse du fluide, sa température, sa densité, \dots, sont alors représentées dans chaque cellule par leur valeur moyenne, leur valeur en chaque noeud de la cellule, ou de manière plus complexe en fonction du choix de discrétisation pris par l'utilisateur.
-    L'état physique dans l'ensemble du domaine est représenté non plus par une fonction continue de l'espace mais par un vecteur discret d'états
-    On utilise une telle discrétisation spatiale pour pouvoir représenter l'état sur un espace discret plus petit que l'espace continu, mais également car elle fourni des moyens de calculer des dérivées spatiales, nécessaires à la résolution des équations aux dérivées partielles.
+    A \emph{spatial discretisation method} is the choice of how to represent a quantity over a discretised domain, and how to compute spatial derivative of this quantity from this representation.
+    Indeed, before solving equation (\ref{eq:pde}) we need to decide how to transform the continuous model into a discretised one.
+    We also have to look at how the spatial derivatives arising from equation (\ref{eq:pde}) translate in the discretised model.
 
-
-    \subsection{Finite Volumes method}
+    \subsection{The Finite Volumes method}
 
       \paragraph{}
-      La méthode d'intégration spatiale utilisée dans CHARME est la méthode des Volumes Finis \cite{EymardGallouetHerbin2000}.
-      Cette méthode a été développée principalement pour les équations conservatives, c'est à dire qui conservent les intégrales des différentes quantités sur l'ensemble du maillage.
-      En effet, de telles équations font généralement apparaitre la divergence d'un flux, et la méthode des Volumes Finis a pour propriété de calculer des flux conservatifs.
-      Ainsi, la propriété de conservativité de l'équation est bien respectée par la méthode d'intégration spatiale.
+      The spatial discretisation method used in the solver CHARME is called the Finite Volumes method \cite{EymardGallouetHerbin2000}.
+      This method is particularly well fitted for conservatives equations such as equation (\ref{eq:pde_conservative}).
+      Such equation has the property that the quantity $\xi$ is conserved : without source terms, the variation of the total quantity on $\xi$ over the domain $\mathcal{D}$ is equal to the flux $f\left(\xi\right)$ coming through the boundary $\partial\mathcal{D}$.
+      The main interest of the Finite Volumes method is that this property stays true through the spatial discretisation.
 
       \paragraph{}
-      La méthode des Volumes Finis consiste à intégrer l'équation à résoudre dans chaque cellule du maillage.
-      Ainsi, l'état dans chaque cellule est représenté par sa valeur moyenne dans cette cellule, et le théorème de Green--Ostrogradski transforme la divergence du flux en un bilan surfacique.
+      The Finite Volumes method consists in integrating the partial differential equation over each cell of the mesh.
+      Writing $\mathcal{V}_i$ the volume of the $i$th cell:
+      \begin{equation}
+        \int_{\mathcal{V}_i} \frac{\partial \xi}{\partial t} \mathrm{d}v + \int_{\mathcal{V}_i} \nabla\cdot \vec{\operatorname{f}}\left(\xi\right) \mathrm{d}v = \int_{\mathcal{V}_i} \operatorname{S} \mathrm{d}v\ .
+      \end{equation}
+      Then, the quantities are represented by their averaged value in each cells, and the Green--Ostrogradski theorem transforms the flux divergence into a \PS{bilan surfacique} :
+      \begin{equation}
+        \frac{\mathrm{d}}{\mathrm{d} t} \int_{\mathcal{V}_i} \xi\mathrm{d}v + \oint_{\partial\mathcal{V}_i} \vec{\operatorname{f}}\left(\xi\right) \cdot \vec{\mathrm{d}s} = \int_{\mathcal{V}_i} \operatorname{S} \mathrm{d}v\ .
+      \end{equation}
+      By writing $\square_i = \frac{1}{\left\|\mathcal{V}_i\right\|} \int_{\mathcal{V}_i} \square \mathrm{d}v$ the average in the $i$th cell, we then have :
+      \begin{equation}
+        \frac{\mathrm{d}\xi_i}{\mathrm{d} t}  + \frac{1}{\left\|\mathcal{V}_i\right\|} \oint_{\partial\mathcal{V}_i} \vec{\operatorname{f}}\left(\xi\right) \cdot \vec{\mathrm{d}s} = \operatorname{S}_i \ .
+      \end{equation}
 
+      \paragraph{}
+      As stated before, the spatial discretisation method do transform the partial differential equation into an ordinary differential equation.
+      It tells us to store our quantities as the averaged values represented at the center of gravity of each cells as our vector $\Xi$.
+      It also tells us to compute the divergence from equation (\ref{eq:pde_conservative}) as a \PS{bilan surfacique de flux}.
+      The last thing to do is to decide how to compute this \PS{bilan surfacique de flux}.
+      The cells from our meshes are polygons.
+      Therefore they have a finite number of (planar) faces.
+      The integral over the boundary of the cell can be decomposed by the faces, to get the approximation :
+      \begin{equation}
+        \oint_{\partial\mathcal{V}_i} \vec{\operatorname{f}}\left(\xi\right) \cdot \vec{\mathrm{d}s} \approx \sum_{j\textrm{ neighbor of } i} \vec{\operatorname{f}}_{ij} \cdot \vec{s_{ij}}
+      \end{equation}
+      where $\vec{\operatorname{f}}_{ij} \cdot \vec{s_{ij}}$ is an approximation of the flux going through the face between cells $i$ and $j$.
+      This approximation is a key element of the Finite Volumes method, therefore we will discuss it later.
+      We can now compute the function $\operatorname{G}$ from equation (\ref{eq:ode}) : for each face of the mesh we compute $\vec{\operatorname{f}}_{ij} \cdot \vec{s_{ij}}$, we add this value to the $i$th component and remove it from the $j$th component of our new vector.
+      Then, after adding the source terms we get a vector containing the result of $\operatorname{G}\left(\Xi\right)$.
+      As can be seen, every contribution of the flux added in a cell is removed from another, and therefore this spatial discretisation method preserves the conservativity of the underlying equation.
 
 
 
