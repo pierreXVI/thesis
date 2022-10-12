@@ -179,11 +179,45 @@
       Slope limiters are used to prevent the formation of local extrema, which can be harmful to the computation.
 
 
-
   \section{Time integration methods}
+
+    \paragraph{}
+    With the help of a spatial discretisation method, the equation we want to solve is now an ordinary differential equation.
+    The main objective of this thesis is focused on the resolution of steady problems.
+    The steady solution of equation (\ref{eq:ode}) is given by $\operatorname{G}\left(\Xi\right) = 0$.
+    To get the solution, one might then try to find a root of the function $\operatorname{G}$.
+    Unfortunately, with our typical applications, this function $\operatorname{G}$ has got bad mathematical properties, such as its stiffness, arising from the nonlinearities of the underlying equations.
+    Therefore, algorithms that try to find a root of $\operatorname{G}$ struggle and usually fail.
+    Another approach is to take an initial value $\Xi_0$, and to solve the equation (\ref{eq:ode}) for this initial value.
+    After a long enough time, we hope that $\Xi$ will reach the desired steady solution.
+
+    \paragraph{}
+    The idea is now to solve the temporal evolution of $\Xi$ to get the solution after a long time, when it approaches the steady solution.
+    We will solve the equation numerically, which mean we will iteratively compute the next solution after a given time step, knowing the current one.
+    Is is also possible to modify the equation, as we are interested in the final state, not in the transient one.
+    It is possible for example to use local time stepping, which consists in having each cell of the mesh moving forward in time with its own time step.
+    The resulting transient states do not make sense from a physical point of vue, as the equation solved is not the initial one, but it converges to the same steady solution.
+    Therefore, it is alright to change the equation as long as it gives the same steady solution.
+    Finally, this way of finding a converged steady solution is what is called a \emph{Pseudo-Transient Continuation} method \cite{KelleyKeyes1996}.
+
+    \paragraph{}
+    We want to find the steady solution, and we are not interested in the evolution of the solution.
+    It seems then reasonable to want to "go fast" to the steady state, meaning to use as large a time step as possible.
+    Unfortunately, not every time integration method allows large time steps, as is well known \cite{CourantFriedrichsLewy1967}.
+    We need to define some tool to help us decide on the method we will use.
+
+
     \subsection{Analyse des méthodes}
+
       \subsubsection{Consistance et ordre}
+
+
       \subsubsection{Stabilité}
+
+
     \subsection{Méthodes implicites}
+
       \subsubsection{Méthode d'Euler implicite}
-      \subsubsection{Méthodologie des méthodes implicites}
+
+
+      \subsubsection{Principe des méthodes implicites}
