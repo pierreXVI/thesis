@@ -135,12 +135,49 @@
       Several Riemann solvers\footnote{\PS{Est-ce qu'on parle toujours de solveur de Riemann (qui trouve la solution du problème idoine) ou on parle de "schéma de flux numérique" ?}} are available to the user in our solver, such as the well known Roe, HLLC or AUSM+ schemes \cite{Roe1981, Toro2009}.
 
 
-
-
-
     \subsection{Gradient reconstruction methods}
-      \subsubsection{The k-exact method}
+
+      \paragraph{}
+      The standard Finite Volumes method represent quantities with the averaged value in each cell.
+      This correspond to a first order discretisation method.
+      Simply put, it means that it can represent quantities exactly as 0-th order polynomials locally to each cell.
+      There are ways to achieve a higher order representation such as with the MUSCL approach \PS{(ref nécessaire ?)}.
+      It consists in handling the surface flux evaluation on one hand, which is what we did in the Riemann problem part, and deciding what left and right quantities to feed to this flux computation on the other hand.
+      In our solver, there are two ways to construct high order states to give to the flux computation method.
+      They are described in the following parts.
+      For both of them, the idea is to use neighboring data to enhance the order of the local representation.
+
+
+      \subsubsection{The $k$-exact method}
+
+        \paragraph{}
+        The first method used to reconstruct high order quantities is called the \emph{$k$-exact} method.
+        The idea is to construct iteratively an order $k$ representation of the quantity using the neighboring order $k-1$ representation \cite{HaiderCroisilleCourbet2009}.
+        Usually, as do most of the solver users, this method is used to achieve a second order reconstruction.
+        But it can also achieve higher order reconstructions \cite{HaiderCroisilleCourbet2011, HaiderCourbetCroisille2018, PontBrennerCinellaEtAl2017}.
+        At each step, while increasing the order of the representation, it is important not to create a local maximum or minimum.
+        This might happen close to discontinuities in the solution, or near rapidly varying spots \PS{reformuler}.
+        It is indeed common, when interpolating, to create local overshoot or undershoot.
+        One might think here about the Gibbs or Runge's phenomenons, and despite here being a different problem the idea is the same.
+        Creating local extrema in the solution can be troublesome, and so the $k$-exact method limits the reconstructed polynomial to ensure it does not.
+
+
       \subsubsection{The Multislope method}
+
+        \paragraph{}
+        The second method used to reconstruct high order quantities is called the \emph{Multislope} method.
+        At each face, this method computes a local gradient to interpolate the quantity from the center of the cell to the face.
+        This gradient is obtained using neighboring data, with a complex mechanism that we will not discuss here \cite{LeTouzeMurroneGuillard2015}.
+        Finally, the Multislope method gives a second order reconstruction.
+        Once again, this reconstruction might create local maxima or minima, and therefore it uses slope limiters \cite{Venkatakrishnan1993, BergerAftosmis2005} to prevent it.
+
+
+      \paragraph{}
+      We briefly explained above the spatial discretisation method used in our solver, as it might help our analysis on the time integration part.
+      The Finite Volumes method averages the partial differential equation over each cell of the mesh, which transforms the flux divergence into a \PS{bilan surfacique de flux}.
+      A reconstruction method, the $k$-exact method or the Multislope method, is then used to get a higher order representation of the solution so that the surface flux can be computed at each face.
+      Slope limiters are used to prevent the formation of local extrema, which can be harmful to the computation.
+
 
 
   \section{Time integration methods}
