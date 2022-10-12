@@ -22,20 +22,38 @@
     Those conservative equations are the one we will focus on is this study, as they describe the physical systems we are interested in.
 
     \paragraph{}
+    In this work, we will talk about computational fluid dynamics.
+    We are in fact mostly interested in the Navier--Stokes equation, and its variants: the reactive Navier--Stokes equation, the Reynold-averaged Navier--Stokes equation, etc.
+    A simple form of this equation can be:
+    \begin{equation}\label{eq:ns}
+      \left\{\begin{aligned}
+        &\partial_t\left(\rho         \right) &&+ \nabla\cdot\left( \rho \vec{u} \right) &&= 0 \\
+        &\partial_t\left(\rho \vec{u} \right) &&+ \nabla\cdot\left( \rho \vec{u} \otimes \vec{u} + p \id \right) &&= \nabla\cdot \mat{\tau}\\
+        &\partial_t\left( \rho E      \right) &&+ \nabla\cdot\left( \left(\rho E + p\right) \vec{u} \right) &&=
+          \nabla\cdot\left( \mat{\tau} \cdot \vec{u} \right)
+      \end{aligned}\right.
+    \end{equation}
+    with the \PS{relation de fermeture} $\rho E = \frac{p}{\gamma - 1} + \rho\frac{\vec{u} \cdot \vec{u}}{2}$.
+    The deviatoric stress tensor $\tau$ accounts for the viscosity of the fluid, and its computation depends on the model used.
+    Without it, one recovers the Euler equations.
+    To this simple form can be added source terms from the reactive model, source terms from the turbulence model, divergence terms from a diffusive model, etc.
+    Yet it is clear that with a bit of rewriting, we can go back to the starting form (\ref{eq:pde}) and even the conservative form with source terms (\ref{eq:pde_conservative}).
+    The quantity $\xi$ is no longer a scalar but a vector with the density $\rho$, each component of the momentum $\rho\vec{u}$ and the energy $\rho E$ as its components.
+    Apart from this small change, the idea is the same.
+
+    \paragraph{}
     When solving numerically equations like (\ref{eq:pde}), one must first take a spatial domain on interest.
     Let us call this domain $\mathcal{D}$.
-    We need to be able to represent different quantities, such as the state variable $\xi$ numerically over the domain $\mathcal{D}$.
     As we are interested in solving equations numerically, we need to be able to represent different quantities, such as the state variable $\xi$, numerically over the domain $\mathcal{D}$ and store it in the memory of a computer.
     Therefore we need to discretise the continuous spatial domain into a finite number of cells, or elements.
     This is usually done with a mesh of the domain $\mathcal{D}$.
     First we divide the domain $\mathcal{D}$ in a set of cells, called a mesh.
     Those cells are small volumes in 3D, faces in 2D or segments in 1D, disjoints, such as their union recovers the original domain.
     Interest quantities, such as the fluid velocity, density, \dots, are then stored at each nodes, averaged in the center of each cells or sometimes in a more complex fashion depending on the method.
-    Quantities are then stored at the nodes, the center of the cells, or sometime in a more complex fashion depending on the method used.
-    They are no longer mathematically represented by a function of the continuous physical domain $\xi : \operatorname{D} \rightarrow \mathbb{R}$ but by a finite sized vector $\Xi$ gathering all the information across the discretised domain.
+    They are no longer mathematically represented by a function of the continuous physical domain $\xi : \mathcal{D} \rightarrow \mathbb{R}$ but by a finite sized vector $\Xi$ gathering all the information across the discretised domain.
     For some simple discretisation methods, this vector consists of the quantity evaluated at the mesh nodes or averaged at the center of the cells.
-    For more complex methods, this vector consists of information used to construct the solution over the domain : polynomial coefficients, spectral decomposition coefficients, etc.
-    Anyway, we no longer work in a continuous domain $\operatorname{D}$ but on a discretised one.
+    For more complex methods, this vector consists of information used to construct the solution over the domain: polynomial coefficients, spectral decomposition coefficients, etc.
+    Anyway, we no longer work in a continuous domain $\mathcal{D}$ but on a discretised one.
 
     \paragraph{}
     The partial differential equation (\ref{eq:pde}) transforms then into an ordinary differential equation:
@@ -60,8 +78,10 @@
       \paragraph{}
       The spatial discretisation method used in the solver CHARME is called the Finite Volumes method \cite{EymardGallouetHerbin2000}.
       This method is particularly well fitted for conservatives equations such as equation (\ref{eq:pde_conservative}).
-      Such equation has the property that the quantity $\xi$ is conserved : without source terms, the variation of the total quantity on $\xi$ over the domain $\mathcal{D}$ is equal to the flux $f\left(\xi\right)$ coming through the boundary $\partial\mathcal{D}$.
-      The main interest of the Finite Volumes method is that this property stays true through the spatial discretisation.
+      Such equation has the property that the quantity $\xi$ is conserved: without source terms, the variation of the total quantity on $\xi$ over the domain $\mathcal{D}$ is equal to the flux $f\left(\xi\right)$ coming through the boundary $\partial\mathcal{D}$.
+      In the case of the Navier--Stokes equations (\ref{eq:ns}), the density, the momentum and the energy are conserved throughout time, apart from what comes in and out of the domain.
+      In a close domain where nothing comes in or out, they are indeed conserved.
+      The main interest of the Finite Volumes method is that this property stays true through the spatial discretisation step.
 
       \paragraph{}
       The Finite Volumes method consists in integrating the partial differential equation over each cell of the mesh.
@@ -69,11 +89,11 @@
       \begin{equation}
         \int_{\mathcal{V}_i} \frac{\partial \xi}{\partial t} \mathrm{d}v + \int_{\mathcal{V}_i} \nabla\cdot \vec{\operatorname{f}}\left(\xi\right) \mathrm{d}v = \int_{\mathcal{V}_i} \operatorname{S} \mathrm{d}v\ .
       \end{equation}
-      Then, the quantities are represented by their averaged value in each cells, and the Green--Ostrogradski theorem transforms the flux divergence into a \PS{bilan surfacique} :
+      Then the Green--Ostrogradski theorem transforms the flux divergence into a \PS{bilan surfacique}:
       \begin{equation}
         \frac{\mathrm{d}}{\mathrm{d} t} \int_{\mathcal{V}_i} \xi\mathrm{d}v + \oint_{\partial\mathcal{V}_i} \vec{\operatorname{f}}\left(\xi\right) \cdot \vec{\mathrm{d}s} = \int_{\mathcal{V}_i} \operatorname{S} \mathrm{d}v\ .
       \end{equation}
-      By writing $\square_i = \frac{1}{\left\|\mathcal{V}_i\right\|} \int_{\mathcal{V}_i} \square \mathrm{d}v$ the average in the $i$th cell, we then have :
+      By writing $\square_i = \frac{1}{\left\|\mathcal{V}_i\right\|} \int_{\mathcal{V}_i} \square \mathrm{d}v$ the average in the $i$th cell, we then have:
       \begin{equation}
         \frac{\mathrm{d}\xi_i}{\mathrm{d} t}  + \frac{1}{\left\|\mathcal{V}_i\right\|} \oint_{\partial\mathcal{V}_i} \vec{\operatorname{f}}\left(\xi\right) \cdot \vec{\mathrm{d}s} = \operatorname{S}_i \ .
       \end{equation}
@@ -85,13 +105,13 @@
       The last thing to do is to decide how to compute this \PS{bilan surfacique de flux}.
       The cells from our meshes are polygons.
       Therefore they have a finite number of (planar) faces.
-      The integral over the boundary of the cell can be decomposed by the faces, to get the approximation :
+      The integral over the boundary of the cell can be decomposed by the faces, to get the approximation:
       \begin{equation}
         \oint_{\partial\mathcal{V}_i} \vec{\operatorname{f}}\left(\xi\right) \cdot \vec{\mathrm{d}s} \approx \sum_{j\textrm{ neighbor of } i} \vec{\operatorname{f}}_{ij} \cdot \vec{s_{ij}}
       \end{equation}
       where $\vec{\operatorname{f}}_{ij} \cdot \vec{s_{ij}}$ is an approximation of the flux going through the face between cells $i$ and $j$.
       This approximation is a key element of the Finite Volumes method, therefore we will discuss it later.
-      We can now compute the function $\operatorname{G}$ from equation (\ref{eq:ode}) : for each face of the mesh we compute $\vec{\operatorname{f}}_{ij} \cdot \vec{s_{ij}}$, we add this value to the $i$th component and remove it from the $j$th component of our new vector.
+      We can now compute the function $\operatorname{G}$ from equation (\ref{eq:ode}): for each face of the mesh we compute $\vec{\operatorname{f}}_{ij} \cdot \vec{s_{ij}}$, we add this value to the $i$th component and remove it from the $j$th component of our new vector.
       Then, after adding the source terms we get a vector containing the result of $\operatorname{G}\left(\Xi\right)$.
       As can be seen, every contribution of the flux added in a cell is removed from another, and therefore this spatial discretisation method preserves the conservativity of the underlying equation.
 
@@ -104,14 +124,15 @@
       The last remaining problem with this presentation of the Finite Volumes method is how to compute the flux going through cell interfaces.
       On the interfaces between two cells we know the left and right quantities $\xi_L$ and $\xi_R$, and we need to compute the corresponging flux.
       It is possible here to use a reconstruction method to get a better approximation of the quantities left and right of the interface, and therefore we end up using the left and right quantities $\xi_L^*$ and $\xi_R^*$.
-      The idea is now to compute the flux going through the surface as a function of $\xi_L^*$, $\xi_R^*$ and the surface vector $\vec{s}$.
-      From the interface point of view, there are two possibly different states, one from each side : this is what is called a Rienamm problem.
+      The idea is now to compute the flux going through the face as a function of $\xi_L^*$, $\xi_R^*$ and the surface vector $\vec{s}$.
+      From the interface point of view, there are two possibly different states, one from each side: this is what is called a Rienamm problem.
       A Riemann problem is an initial value problem applied to a conservation equation, where the initial solution is piecewise constant with a single possible discontinuity.
       By working with the equation and deriving the jump condition, it is possible to compute the quantity at the interface from a possibly discontinuous state at the interface.
       Then it is possible to evaluate the flux associated with this state going through the surface.
       This approach can be called the exact Riemann solver as it uses the exact solution of the Riemann problem.
       But the drawback from this approach usually is the computational coast required to find this exact solution.
-      What is usually done is to use approximate Riemann solvers, compromising between speed and accuracy \cite{Toro2009}.
+      What is usually done is to use approximate Riemann solvers, compromising between speed and accuracy.
+      Several Riemann solvers\footnote{\PS{Est-ce qu'on parle toujours de solveur de Riemann (qui trouve la solution du problème idoine) ou on parle de "schéma de flux numérique" ?}} are available to the user in our solver, such as the well known Roe, HLLC or AUSM+ schemes \cite{Roe1981, Toro2009}.
 
 
 
