@@ -93,9 +93,9 @@
       \begin{equation}
         \frac{\mathrm{d}}{\mathrm{d} t} \int_{\mathcal{V}_i} \xi\mathrm{d}v + \oint_{\partial\mathcal{V}_i} \vec{\operatorname{f}}\left(\xi\right) \cdot \vec{\mathrm{d}s} = \int_{\mathcal{V}_i} \operatorname{S} \mathrm{d}v\ .
       \end{equation}
-      By writing $\square_i = \frac{1}{\left\|\mathcal{V}_i\right\|} \int_{\mathcal{V}_i} \square \mathrm{d}v$ the average in the $i$th cell, we then have:
+      By writing $\square_i = \frac{1}{\norm{\mathcal{V}_i}} \int_{\mathcal{V}_i} \square \mathrm{d}v$ the average in the $i$th cell, we then have:
       \begin{equation}
-        \frac{\mathrm{d}\xi_i}{\mathrm{d} t}  + \frac{1}{\left\|\mathcal{V}_i\right\|} \oint_{\partial\mathcal{V}_i} \vec{\operatorname{f}}\left(\xi\right) \cdot \vec{\mathrm{d}s} = \operatorname{S}_i \ .
+        \frac{\mathrm{d}\xi_i}{\mathrm{d} t}  + \frac{1}{\norm{\mathcal{V}_i}} \oint_{\partial\mathcal{V}_i} \vec{\operatorname{f}}\left(\xi\right) \cdot \vec{\mathrm{d}s} = \operatorname{S}_i \ .
       \end{equation}
 
       \paragraph{}
@@ -201,15 +201,56 @@
     Finally, this way of finding a converged steady solution is what is called a \emph{Pseudo-Transient Continuation} method \cite{KelleyKeyes1996}.
 
     \paragraph{}
+    After deciding on an initial value, the equation we now want to solve is:
+    \begin{equation}\label{eq:init_value_ode}
+      \left\{\begin{aligned}
+        & \frac{\mathrm{d} \Xi}{\mathrm{d}t} + \operatorname{G}\left(\Xi\left(t\right)\right) = 0 \\
+        & \Xi\left(t_0\right) = \Xi_0
+      \end{aligned}\right. \ .
+    \end{equation}
+    A time integration method is going to produce a succession of solutions: starting from $\Xi_0$, it produces $\Xi_1$ at $t_1$, then $\Xi_2$ at $t_2$, and $\Xi_n$ at $t_n$, etc.
+    We will note $\Delta t_n$ the time step $t_{n+1} - t_n$.
+    As we will mostly look at single steps of the time integration methods in the following, we will drop the subscript on the time step when it is meaningless.
     We want to find the steady solution, and we are not interested in the evolution of the solution.
     It seems then reasonable to want to "go fast" to the steady state, meaning to use as large a time step as possible.
     Unfortunately, not every time integration method allows large time steps, as is well known \cite{CourantFriedrichsLewy1967}.
     We need to define some tool to help us decide on the method we will use.
 
 
-    \subsection{Analyse des méthodes}
+    \subsection{Analysis of time integration methods}
 
-      \subsubsection{Consistance et ordre}
+      \subsubsection{Consistency and order}
+
+        \paragraph{}
+        A time integration method must respect some properties to be "well behaved".
+        For instance, it have to be consistent.
+        To define the consistency, we look at equation (\ref{eq:init_value_ode}).
+        After one step, a numerical method gives a value $\Xi_1$, believed to be near the exact value $\Xi\left(t_0 + \Delta t\right)$.
+        A numerical time integration method is said to be consistent if:
+        \begin{equation}
+          \lim_{\Delta t \rightarrow 0} \frac{\Xi_1 - \Xi\left(t_0 + \Delta t\right)}{\Delta t} = 0 \ .
+        \end{equation}
+        Also, the method is of order $p$ if the local error is in $\Delta t^{p+1}$ \cite{Iserles2008}:
+        \begin{equation}
+          \Xi_1 - \Xi\left(t_0 + \Delta t\right) = O\left(\Delta t^{p+1}\right) \ .
+        \end{equation}
+        This means a $p$ order method can recover exactly a solution that is a polynomial function of time of order less or equal to $p$.
+
+        \paragraph{Note:}
+        % The order of a spatial discretisation method reflect its "local" behavior,
+        The order of a time integration method reflect its "local" behavior, meaning on a single given time step, provided it is small enough.
+        In the field of spatial discretisation of partial differential equations, the order $p$ of a method is such as:
+        \begin{equation}
+          \norm{\Xi - \Xi_{exact}} = O\left(h^p\right)
+        \end{equation}
+        where $h$ is the spatial discretisation parameter.
+        We notice a difference between the two definitions: the error order of magnitude is $p+1$ for the temporal method and $p$ for the spatial one.
+        This is due to the fact that the error we look at in the spatial case is global: it sums the error over the whole domain.
+        It would correspond to counting the error on each step for the temporal integration.
+        To convince oneself, we could say that when solving the differential equation \PS{on/in} an interval $\left[0, T\right]$ with a fixed $T$, the global error of a $p$ order method would \PS{be of, behave like ?} $O\left(\Delta t^p\right)$ as it amount to summing $T/\Delta t$ local errors of $O\left(\Delta t^{p+1}\right)$.
+        We then get the coherency with the definition of the order for spatial discretisation methods.
+        If this trick can help understand the difference between the two definitions, this is indeed just a mental trick and not a sound mathematical proof.
+        To get this proof, more hypothesis on the method are required \cite{Iserles2008}.
 
 
       \subsubsection{Stabilité}
