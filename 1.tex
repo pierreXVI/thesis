@@ -158,7 +158,7 @@
         At each step, while increasing the order of the representation, it is important not to create a local maximum or minimum.
         This might happen close to discontinuities in the solution, or near rapidly varying spots \PS{reformuler}.
         It is indeed common, when interpolating, to create local overshoot or undershoot.
-        One might think here about the Gibbs or Runge's phenomenons, and despite here being a different problem the idea is the same.
+        One might think here about the Gibbs or Runge's phenomena, and despite here being a different problem the idea is the same.
         Creating local extrema in the solution can be troublesome, and so the $k$-exact method limits the reconstructed polynomial to ensure it does not.
 
 
@@ -247,13 +247,114 @@
         We notice a difference between the two definitions: the error order of magnitude is $p+1$ for the temporal method and $p$ for the spatial one.
         This is due to the fact that the error we look at in the spatial case is global: it sums the error over the whole domain.
         It would correspond to counting the error on each step for the temporal integration.
-        To convince oneself, we could say that when solving the differential equation \PS{on/in} an interval $\left[0, T\right]$ with a fixed $T$, the global error of a $p$ order method would \PS{be of, behave like ?} $O\left(\Delta t^p\right)$ as it amount to summing $T/\Delta t$ local errors of $O\left(\Delta t^{p+1}\right)$.
+        To convince oneself, we could say that when solving the differential equation \PS{on/in} an interval $\left[0, T\right]$ with a fixed $T$, the global error of a $p$ order method would \PS{be of, in, behave like ?} $O\left(\Delta t^p\right)$ as it amount to summing $T/\Delta t$ local errors of $O\left(\Delta t^{p+1}\right)$.
         We then get the coherency with the definition of the order for spatial discretisation methods.
         If this trick can help understand the difference between the two definitions, this is indeed just a mental trick and not a sound mathematical proof.
         To get this proof, more hypothesis on the method are required \cite{Iserles2008}.
 
 
-      \subsubsection{Stabilité}
+      \subsubsection{Stability}
+
+        \paragraph{}
+        A meaningful criteria in the choice of a time integration method is the stability.
+        Depending on the application, we will expect different level of stability in order to avoid a numerically induced divergence of the computation.
+
+        \paragraph{}
+        To analyse the stability of a time integration method, we usually apply it on the ordinary differential equation with a lineal right hand side: the Dahlquist test equation \cite{HairerWanner1996}.
+        The reason is that if we have a solution $\tilde{\Xi}$ of equation (\ref{eq:init_value_ode}), we can linearise $\operatorname{G}$ in $\tilde{\Xi}$.
+        With $y = \Xi - \tilde{\Xi}$ and $J = \frac{\partial \operatorname{G}}{\partial \Xi}\left(\tilde{\Xi}\right)$, assumed constant, we then have:
+        \begin{equation}\label{eq:dahlquist}
+          \frac{\mathrm{d} y}{\mathrm{d} t} = J y \ .
+        \end{equation}
+        This new equation used to analyse the stability of time integration methods is the one called the Dahlquist test equation.
+        We look at this equation in $\mathbb{C}$, so that we can compute the eigenvalues and eigenvectors of the matrix $J$.
+
+        \paragraph{Note:}
+        When looking at a method applied to the Dahlquist test equation (\ref{eq:dahlquist}), we assume that the real part of the eigenvalues of $J$ are all negative.
+        This choice may seem arbitrary but can be understood with the following example.
+        Let us work in $\mathbb{C}^2$, with:
+        \begin{equation}
+          J = \begin{pmatrix} -1 & 0 \\ 0 & 10^3 \end{pmatrix}, \quad \Xi_0 = \begin{pmatrix} 1 \\ 0 \end{pmatrix} \ .
+        \end{equation}
+        The solution of the equation is then :
+        \begin{equation}
+          \Xi\left(t\right) = \begin{pmatrix} e^{-t} \\ 0 \end{pmatrix} \ .
+        \end{equation}
+        As we solve the equation numerically, the floating point representation introduce some roundoff error.
+        The initial condition may then be
+        \begin{equation}
+          \Xi_0' = \begin{pmatrix} 1 \\ \epsilon \end{pmatrix}
+        \end{equation}
+        instead of the exact one $\Xi_0$, with a typical $\epsilon = 10^{-15}$ for double precision.
+        Let us suppose that we have an exact time integration method that gives the exact solution at each time step $t_n = n\Delta t$.
+        The solution computed by this method will be:
+        \begin{equation}
+          \Xi_n = \begin{pmatrix} e^{-n\Delta t} \\ \epsilon e^{10^3 n \Delta t} \end{pmatrix}
+        \end{equation}
+        that gives an error of $\epsilon e^{10^3 n\Delta t}$.
+        For the numerical values suggested here, this amount to an error as large as $10^6$ for $n = 5$ and $10^{28}$ for $n = 10$.
+        The explosion of the error comes from the fact that the positive eigenvalue of $J$ amplifies the roundoff error.
+        This phenomenon has nothing to do with the time integration scheme, but with the equation.
+        Finally, this is why we study equation (\ref{eq:dahlquist}) assuming the eigenvalues of $J$ are negative.
+
+
+        \paragraph{Single step methods}
+        To compute the solution at the next time step, some method need only to know the current solution.
+        Such methods are called single steps methods.
+        When applied to the Dahlquist test equation (\ref{eq:dahlquist}), we write for a single step method:
+        \begin{equation}\label{eq:single_step}
+          y_{n+1} = g\left(\Delta tJ\right)y_n
+        \end{equation}
+        the relationship between the current solution and the next one.
+        For most time integration methods, $g$ is an analytic function.
+        By decomposing the initial value on a basis of eignevectors of $J$, $v_1, \dots, v_N$, associated to the eigenvalues $\alpha_1, \dots, \alpha_N$, we write: $y_0 = \sum_{i=1}^N \lambda_i v_i$.
+        Because $g$ is an analytic function, we then have:
+        \begin{equation}
+          y_n = \sum_{i=1}^N \lambda_i g\left(\Delta t \alpha_i\right)^n v_i \ .
+        \end{equation}
+
+        It is now straightforward to deduce a stability condition for the single step method: if for any $i$ we have $\left|g\left(\Delta t\alpha_i\right)\right| < 1$, then $y_n$ converges to 0.
+        This is how we can define the stability region of a time integration method:
+        \begin{equation}
+          \left\{ \, z \in \mathbb{C} \; \mid \; \left| g\left(z\right) \right| < 1 \, \right\} \ .
+        \end{equation}
+        When each eigenvalue of $J$ falls in the stability region, then the method is stable.
+
+        \paragraph{}
+        If an eigenvalue is not in the stability region, the associated \PS{direction propre} will be amplified and a numerical instability will lead to the divergence of the computation.
+        We can see that the argument of the function $g$ is not $J$ but $\Delta t J$.
+        This means that the stability can be achieved by choosing wisely the time step: with a small enough $\Delta t$ we can make sure that each eigenvalue falls into the stability region.
+        Unfortunately, this often force the user to set a relatively small time step, which is an issue for our steady computations.
+
+
+        \paragraph{Multi step methods}
+        Some methods do not fall in the previous framework.
+        The multi step methods, in particular, cannot be written under the form of equation (\ref{eq:single_step}).
+        These methods use not only $y_n$ to find $y_{n+1}$, but the $k$ previous steps.
+        Applied to equation (\ref{eq:dahlquist}), they can be written in the form:
+        \begin{equation}
+          y_{n+1} = \sum_{i=1}^k g_{k-i}\left(\Delta t J\right) y_{n+1-i} \ .
+        \end{equation}
+        When we look for $y_i$ under the form $y_i \propto \mu^{i}$, we then have:
+        \begin{equation}
+          \mu^k = \sum_{i=1}^k g_{k-i}\left(\Delta t J\right) \mu^{k-i}
+        \end{equation}
+        which leads us to identifying the polynomial $g_{\Delta t J}\left(\mu\right) = \mu^k - \sum_{i=0}^{k-1}g_i\left(\Delta t J\right)\mu^i$.
+        If each root of this polynomial is of modulus less than 1, the solution converge to 0.
+        This is how we can define the stability region for multi step methods \cite{HairerWanner1996}:
+        \begin{equation}
+          \left\{ \, z \in \mathbb{C} \; \mid \; \parbox{25em}{all roots of $X^k - \sum_{i=0}^{k-1}g_i\left(z\right)X^i$ are of modulus less or equal to 1, strictly less to 1 for roots with multiplicity}
+           \, \right \} \ .
+        \end{equation}
+
+        \paragraph{}
+        The key property resulting in the stability analysis of time integration methods is the \emph{A-stability} \cite{Dahlquist1963}.
+        A time integration method is A-stable if its stability region contains the left half complex plane.
+        Simply put, a method is A-stable if it converges to 0 when it should, and does not diverge due to numerical errors.
+        The A-stability is interesting to us, as an A-stable method is also said to be unconditionally stable, whereas a method that is not is conditionally stable.
+        This other characterisation comes from the fact that a non A-stable method needs to respect some additional criteria to be stable, on the time step it uses for example, whereas an A-stable method is stable no matter the time step.
+        As we said before, we would like to use large time steps to quickly get the steady state on our applications, and that is why  we look for A-stability in out methods.
+
 
 
     \subsection{Méthodes implicites}
