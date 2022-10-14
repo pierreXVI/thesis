@@ -5,19 +5,23 @@
 \usepackage[T1]{fontenc}
 
 \usepackage{geometry}
-% \usepackage{graphicx}
-
 \usepackage{amssymb}
 \usepackage{amsmath}
 \usepackage{ifthen}
+\usepackage{caption}
+\usepackage{graphicx}
 
 % \usepackage{mathtools}
 %\usepackage{url}
-% \usepackage{caption}
 % \usepackage{subcaption}
 
 
+\renewcommand*{\vec}[1]{\underline{#1}}
+\newcommand*{\mat}[1]{\vec{\vec{#1}}}
+\newcommand*{\id}[0]{\mat{\operatorname{Id}}}
 \newcommand{\norm}[2][]{\left\|{#2}\right\|\ifthenelse{\equal{#1}{}}{}{_{{#1}}}}
+\newcommand{\RKBar}{\rule[-1.1ex]{0pt}{0pt} \\ \hline \rule{0pt}{2.6ex} &}
+
 
 % \newcommand{\transpose}[2][-3mu]{\ensuremath{\mskip1mu\prescript{\smash{\mathrm t\mkern#1}}{}{\mathstrut#2}}}
 % \newcommand{\matrixsymb}[2]{\mathcal{M}_{#1}\left(\mathbb{#2}\right)}
@@ -26,10 +30,9 @@
 % \newcommand{\krylov}[2][]{\ifthenelse{\equal{#1}{}}{\mathcal{K}_{#2}}{\mathcal{K}_{#2}\left({#1}\right)}}
 % \renewcommand{\parallel}{{\mathbin{/\mkern-5mu/}}}
 
-% \newcommand{\RKBar}{\rule[-1.1ex]{0pt}{0pt} \\ \hline \rule{0pt}{2.6ex} &}
 
-% \usepackage{array}
-% \newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
+\usepackage{array}
+\newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
 
 \usepackage[pdfpagelabels]{hyperref}
 % \hypersetup{
@@ -45,9 +48,6 @@
 \newcommand{\LM}[1]{\textbf{\color{ForestGreen}{#1}}}
 \newcommand{\PS}[1]{\textbf{\color{Red}{#1}}}
 
-\renewcommand*{\vec}[1]{\underline{#1}}
-\newcommand*{\mat}[1]{\vec{\vec{#1}}}
-\newcommand*{\id}[0]{\mat{\operatorname{Id}}}
 
 \title{Mémoire de thèse :\\[\baselineskip]\large Méthodologies permettant l’obtention efficace de solutions multi-physiques stationnaires pour des applications en énergétique}
 \author{Pierre Seize}

@@ -140,7 +140,7 @@
       \paragraph{}
       The standard Finite Volumes method represent quantities with the averaged value in each cell.
       This correspond to a first order discretisation method.
-      Simply put, it means that it can represent quantities exactly as 0-th order polynomials locally to each cell.
+      Simply put, it means that it can represent quantities exactly as 0 order polynomials locally to each cell.
       There are ways to achieve a higher order representation such as with the MUSCL approach \PS{(ref nécessaire ?)}.
       It consists in handling the surface flux evaluation on one hand, which is what we did in the Riemann problem part, and deciding what left and right quantities to feed to this flux computation on the other hand.
       In our solver, there are two ways to construct high order states to give to the flux computation method.
@@ -210,7 +210,7 @@
     \end{equation}
     A time integration method is going to produce a succession of solutions: starting from $\Xi_0$, it produces $\Xi_1$ at $t_1$, then $\Xi_2$ at $t_2$, and $\Xi_n$ at $t_n$, etc.
     We will note $\Delta t_n$ the time step $t_{n+1} - t_n$.
-    As we will mostly look at single steps of the time integration methods in the following, we will drop the subscript on the time step when it is meaningless.
+    As we will mostly look at single steps of the time integration methods in the following, we will drop the subscript on the time step when it is not meaningful.
     We want to find the steady solution, and we are not interested in the evolution of the solution.
     It seems then reasonable to want to "go fast" to the steady state, meaning to use as large a time step as possible.
     Unfortunately, not every time integration method allows large time steps, as is well known \cite{CourantFriedrichsLewy1967}.
@@ -262,7 +262,7 @@
         \paragraph{}
         To analyse the stability of a time integration method, we usually apply it on the ordinary differential equation with a lineal right hand side: the Dahlquist test equation \cite{HairerWanner1996}.
         The reason is that if we have a solution $\tilde{\Xi}$ of equation (\ref{eq:init_value_ode}), we can linearise $\operatorname{G}$ in $\tilde{\Xi}$.
-        With $y = \Xi - \tilde{\Xi}$ and $J = \frac{\partial \operatorname{G}}{\partial \Xi}\left(\tilde{\Xi}\right)$, assumed constant, we then have:
+        With $y = \Xi - \tilde{\Xi}$ and $J = -\frac{\partial \operatorname{G}}{\partial \Xi}\left(\tilde{\Xi}\right)$, assumed constant, we then have:
         \begin{equation}\label{eq:dahlquist}
           \frac{\mathrm{d} y}{\mathrm{d} t} = J y \ .
         \end{equation}
@@ -274,22 +274,22 @@
         This choice may seem arbitrary but can be understood with the following example.
         Let us work in $\mathbb{C}^2$, with:
         \begin{equation}
-          J = \begin{pmatrix} -1 & 0 \\ 0 & 10^3 \end{pmatrix}, \quad \Xi_0 = \begin{pmatrix} 1 \\ 0 \end{pmatrix} \ .
+          J = \begin{pmatrix} -1 & 0 \\ 0 & 10^3 \end{pmatrix}, \quad y_0 = \begin{pmatrix} 1 \\ 0 \end{pmatrix} \ .
         \end{equation}
         The solution of the equation is then :
         \begin{equation}
-          \Xi\left(t\right) = \begin{pmatrix} e^{-t} \\ 0 \end{pmatrix} \ .
+          y\left(t\right) = \begin{pmatrix} e^{-t} \\ 0 \end{pmatrix} \ .
         \end{equation}
         As we solve the equation numerically, the floating point representation introduce some roundoff error.
         The initial condition may then be
         \begin{equation}
-          \Xi_0' = \begin{pmatrix} 1 \\ \epsilon \end{pmatrix}
+          y_0' = \begin{pmatrix} 1 \\ \epsilon \end{pmatrix}
         \end{equation}
-        instead of the exact one $\Xi_0$, with a typical $\epsilon = 10^{-15}$ for double precision.
+        instead of the exact one $y_0$, with a typical $\epsilon = 10^{-15}$ for double precision.
         Let us suppose that we have an exact time integration method that gives the exact solution at each time step $t_n = n\Delta t$.
         The solution computed by this method will be:
         \begin{equation}
-          \Xi_n = \begin{pmatrix} e^{-n\Delta t} \\ \epsilon e^{10^3 n \Delta t} \end{pmatrix}
+          y_n = \begin{pmatrix} e^{-n\Delta t} \\ \epsilon e^{10^3 n \Delta t} \end{pmatrix}
         \end{equation}
         that gives an error of $\epsilon e^{10^3 n\Delta t}$.
         For the numerical values suggested here, this amount to an error as large as $10^6$ for $n = 5$ and $10^{28}$ for $n = 10$.
@@ -355,6 +355,147 @@
         This other characterisation comes from the fact that a non A-stable method needs to respect some additional criteria to be stable, on the time step it uses for example, whereas an A-stable method is stable no matter the time step.
         As we said before, we would like to use large time steps to quickly get the steady state on our applications, and that is why  we look for A-stability in out methods.
 
+    \subsection{Explicit methods}
+
+      \paragraph{}
+      Explicit methods are called this way because at each step, the computation of the next solution is straightforward: they give it explicitly as a function of current available data.
+      They are largely used in unsteady computational fluid dynamic simulations.
+      Their strength comes from the fact that they are usually simple and therefore easy to implement in a solver, and computationally inexpensive compared to non explicit methods.
+
+
+      \subsubsection{Explicit Euler method}
+
+        \paragraph{}
+        The explicit Euler method is the most simple time integration method.
+        It consists in integrating equation (\ref{eq:init_value_ode}) between $t_n$ and $t_{n+1}$ assuming the function $\operatorname{G}$ stays constant, equal to $\operatorname{G}\left(\Xi_n\right)$.
+        Equivalently, it consists in replacing the time derivative $\frac{\mathrm{d} \Xi}{\mathrm{d} t}$ by a finite difference $\frac{\Xi_{n+1} - \Xi_n}{\Delta t}$.
+        Then, the method gives:
+        \begin{equation}
+          \Xi_{n+1} = \Xi_n - \Delta t \operatorname{G}\left(\Xi_n\right) \ .
+        \end{equation}
+
+        \paragraph{}
+        After verifying that this is a first order method, a quick stability analysis gives a stability region equal to the open unity disk centered in -1.
+        Practically, this stability region is often deemed unsatisfactory as it forces the use of small time steps.
+        Yet this method is a classic that we had to introduce before talking about more complex methods.
+
+
+      \subsection{Runge--Kutta methods}
+
+        \paragraph{}
+        Instead of making one step forward in time as the explicit Euler method, the Runge--Kutta methods will make a set of intermediate steps, and the final solution is found as a combinaison of those intermediate steps.
+        The general idea is as such.
+        Supposing we know the value of $\Xi_n$ in $t_n$, we set the intermediates steps $t_{n, i} = t_n + c_i\Delta t$ for $1 \leq i \leq k$, with a fixed $k$.
+        We can now integrate exactly between $t_n$ and $t_{n, i}$ equation (\ref{eq:init_value_ode}):
+        \begin{equation}
+          \Xi\left(t_{n, i}\right) = \Xi_n - \Delta t \int_{t_n}^{t_{n,i}} \operatorname{G}\left(\Xi\left(t\right)\right) \mathrm{d}t\ .\
+        \end{equation}
+        The integral on the right hand side is then approximated with a \PS{quadrature} using the previously computed intermediate steps:
+        \begin{equation}
+          \int_{t_n}^{t{n,i}} \operatorname{G}\left(\Xi\left(t\right)\right) \mathrm{d}t \approx \sum_{j = 1}^{i-1} a_{ij} \operatorname{G}\left(\Xi\left(t_{n,j}\right)\right) \ .
+        \end{equation}
+        Once each intermediate step in known, we finally integrate between $t_n$ and $t_{n+1}$ equation (\ref{eq:init_value_ode}) and approximate the integral using the intermediate steps.
+
+        \paragraph{}
+        To sum up, a Runge--Kutta method iterates in the following way:
+        \begin{equation}
+          \left\{\begin{aligned}
+            \Xi_{n+1} &= \Xi_n - \Delta t \sum_{i = 1}^k b_i \operatorname{G}\left(\Xi_{n,i}\right) \\
+            \textrm{with}\quad \Xi_{n,i} &= \Xi_n - \Delta t \sum_{j = 1}^{i-1} a_{ij} \operatorname{G}\left(\Xi_{n,j}\right)
+          \end{aligned}\right. \ .
+        \end{equation}
+
+        \paragraph{}
+        A Runge--Kutta method is characterised by its size $k$ and the quadrature coefficients $a_{ij, 1\leq j<i\leq k}$, $b_{i, 1\leq i\leq k}$ and $c_{i, 1\leq i\leq k}$.
+        There are as many Runge--Kutta methods as there are choices in the quadrature coefficients, but not all choices give good methods.
+        There are criteria that the coefficients must follow to ensure the consistency of the method, and then criteria with more complexity as the order increases.
+        The quadrature coefficients are often arranged in the Butcher tableau:
+        \begin{equation}
+          \begin{array}{c|c}
+            c & A \rule[-1.1ex]{0pt}{0pt} \RKBar b^T
+          \end{array}
+          \qquad = \qquad
+          \begin{array}{c|ccccc}
+            0\\
+            c_2    & a_{21} \\
+            c_3    & a_{31} & a_{32} \\
+            \vdots & \vdots &        & \ddots\\
+            c_k    & a_{k1} & a_{k2} & \hdots & a_{k,k-1} \RKBar
+            b_1    & b_2    & \hdots & b_{k-1} & b_k
+          \end{array} \ .
+        \end{equation}
+
+        \begin{table}
+          \begin{tabular}{P{.15\textwidth}P{.3\textwidth}P{.4\textwidth}}
+            \begin{tabular}{c|c}
+              0 \RKBar 1
+            \end{tabular} &
+            \begin{tabular}{c|cc}
+              0 \\ 1/2 & 1/2 \RKBar 0 & 1
+            \end{tabular} &
+            \begin{tabular}{c|cccc}
+              0 \\ 1/2 & 1/2 \\ 1/2 & 0 & 1/2 \\ 1 & 0 & 0 & 1 \RKBar 1/6 & 1/3 & 1/3 & 1/6
+            \end{tabular} \\
+            RK1 & RK2 & RK4 \\
+          \end{tabular}
+          \caption{Butcher tableau for the explicit Euler, Midpoint and RK4 methods}\label{tab:rk_butcher}
+        \end{table}
+
+        \paragraph{}
+        The Butcher tableau of some well known Runge--Kutta methods are shown in table \ref{tab:rk_butcher}.
+        The RK1 method is in fact equivalent to the explicit Euler method.
+        The RK2 method is one of the 2 steps second order Runge--Kutta method.
+        This one is also called the Midpoint method.
+        The RK4 method is a fourth order method with 4 steps.
+        This is the most famous Runge--Kutta method, vastly used for explicit time integration of ordinary differential equations.
+
+        \paragraph{}
+        It can be shown that the order $p$ of the method less or equal to the number of steps $k$.
+        Up to 4 steps, it is possible to chose the quadrature coefficients to have $p = k$.
+        Above that, getting a bound on the order depending on the number of steps is still an open problem as of today.
+        For a Runge--Kutta method of order $p$, the corresponding function used for the stability analysis is \cite{HairerWanner1996}:
+        \begin{equation}
+          g\left(z\right) = 1 + z + \frac{z^2}{2} + \dots + \frac{z^p}{p!} + O\left(z^{p+1}\right) \ .
+        \end{equation}
+        When $p = k$, the last term $O\left(z^{p+1}\right)$ is in fact null.
+        We show on the figure \ref{fig:rk_stab} the stability region of the Runge--Kutta methods of orders up to 4.
+
+        \begin{figure}
+          \centering
+          \includegraphics[width=.45\textwidth]{figures/rk_stab.png}
+          \caption{Stability regions (in color) of the four first order Runge--Kutta methods.}
+          \label{fig:rk_stab}
+        \end{figure}
+
+        \paragraph{}
+        We can see that Runge--Kutta methods are not A-stable, and they do not have a large stability region.
+        Increasing the order of the method does increase the stability region, but not enough for our applications.
+        Practically, this impose the use of small time steps, which is agreeable for unsteady computations but not for our steady ones.
+        If ont iteration of the method is inexpensive, the total number of iterations needed to reach the steady solution will make the overall computation too costly.
+
+
+      \subsection{Adams--Bashforth methods}
+
+        \paragraph{}
+        We could try to use other explicit methods, such as the multi step Adams--Bashforth methods.
+        The $k$th order Adams--Bashforth method uses the last $k$ computed steps to find the next one.
+        One can indeed check that the index $k$ designating the method also corresponds to its order \cite{HairerNorsettWanner1993}.
+
+        \paragraph{}
+        The idea is to apply a Lagrange interpolation of the function $\operatorname{G}$ from equation (\ref{eq:init_value_ode}) in the $k$ last computed points, and then replace $\operatorname{G}$ with the interpolation polynomial when integrating from $t_n$ to $t_{n+1}$.
+        Contrary to the Runge--Kuta methods, as we reuse previous information, a single $\operatorname{G}$ evaluation is required at each step.
+        The coast of one iteration of the Adams--Bashforth method is then really cheap \PS{(reformuler)}.
+        The stability analysis for such methods is a bit more complex \cite{HairerNorsettWanner1993, HairerWanner1996}, and so we show the result that we obtained numerically on figure \ref{fig:ab_stab} without \PS{faire le calcul : deriving the calculus ?}.
+        The conclusion is even worse than with the Runge--Kutta methods, as the stability region decreases as the order increases.
+        The Adams--Bashforth can reach a high order of accuracy while staying computationally inexpensive, but they lack drastically of stability, and that is why they are often not used in computational fluid dynamics computations.
+        More generally, an explicit multi step method cannot be A-stable \cite{Dahlquist1963}.
+
+        \begin{figure}
+          \centering
+          \includegraphics[width=.6\textwidth]{figures/ab_stab.png}
+          \caption{Stability regions (in color) of the four first Adams-Bashforth methods.}
+          \label{fig:ab_stab}
+        \end{figure}
 
 
     \subsection{Méthodes implicites}
