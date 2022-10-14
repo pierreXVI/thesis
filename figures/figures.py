@@ -66,6 +66,8 @@ def fig_rk():
 
 
 def fig_bdf():
+    plt.rcParams['text.latex.preamble'] = r'\usepackage{sfmath} \boldmath'
+
     def r(k):
         def sub_r(z):
             coeff = np.zeros(k + 1, dtype=complex)
@@ -85,30 +87,33 @@ def fig_bdf():
                                                (-2, -3, -5, -8, -15, -30),
                                                (2, 3, 5, 8, 15, 30),
                                                ):
-        res_x = 700
-        res_y = 700
+        res_x = 100
+        res_y = 100
 
         x, y = np.meshgrid(np.linspace(x_min, x_max, res_x), np.linspace(y_min, y_max, res_y))
 
         ax = fig.add_subplot(2, 3, i)
+        ax.grid(False)
         ax.set_aspect('equal')
         for axis in ('left', 'bottom'):
             ax.spines[axis].set_position('zero')
             ax.spines[axis].set_linewidth(2)
         for axis in ('right', 'top'):
             ax.spines[axis].set_color('none')
+        ax.xaxis.set_tick_params(labelsize=20)
+        ax.yaxis.set_tick_params(labelsize=20)
         ax.yaxis.tick_left()
         ax.xaxis.tick_bottom()
         rk_i = r(i)(x + 1j * y)
         ax.pcolormesh(x, y, np.ma.masked_array(rk_i, mask=1 - rk_i), cmap=clr.ListedColormap([c]), shading='auto')
         ax.plot([None], '--', c=c, lw=20)
-        ax.set_title('BDF{0}'.format(i), y=-.1)
-        ax.grid()
+        ax.set_title(r'\textbf{{ BDF{0} }}'.format(i), y=-.1, fontsize=30)
+        ax.grid(True)
 
     fig.set_size_inches(19.20, 10.00)
     plt.subplots_adjust(0.00, 0.05, 1.0, 0.99, 0.05, 0.2)
     # plt.show()
-    plt.savefig("images/bdf_stab.png", transparent=True)
+    plt.savefig("bdf_stab.png", transparent=True)
 
 
 def fig_ab():
@@ -232,6 +237,6 @@ def fig_precond():
 
 if __name__ == '__main__':
     # fig_rk()
-    # fig_bdf()
-    fig_ab()
+    fig_bdf()
+    # fig_ab()
     pass

@@ -130,7 +130,7 @@
       By working with the equation and deriving the jump condition, it is possible to compute the quantity at the interface from a possibly discontinuous state at the interface.
       Then it is possible to evaluate the flux associated with this state going through the surface.
       This approach can be called the exact Riemann solver as it uses the exact solution of the Riemann problem.
-      But the drawback from this approach usually is the computational coast required to find this exact solution.
+      But the drawback from this approach usually is the computational cost required to find this exact solution.
       What is usually done is to use approximate Riemann solvers, compromising between speed and accuracy.
       Several Riemann solvers\footnote{\PS{Est-ce qu'on parle toujours de solveur de Riemann (qui trouve la solution du problème idoine) ou on parle de "schéma de flux numérique" ?}} are available to the user in our solver, such as the well known Roe, HLLC or AUSM+ schemes \cite{Roe1981, Toro2009}.
 
@@ -355,6 +355,7 @@
         This other characterisation comes from the fact that a non A-stable method needs to respect some additional criteria to be stable, on the time step it uses for example, whereas an A-stable method is stable no matter the time step.
         As we said before, we would like to use large time steps to quickly get the steady state on our applications, and that is why  we look for A-stability in out methods.
 
+
     \subsection{Explicit methods}
 
       \paragraph{}
@@ -368,7 +369,7 @@
         \paragraph{}
         The explicit Euler method is the most simple time integration method.
         It consists in integrating equation (\ref{eq:init_value_ode}) between $t_n$ and $t_{n+1}$ assuming the function $\operatorname{G}$ stays constant, equal to $\operatorname{G}\left(\Xi_n\right)$.
-        Equivalently, it consists in replacing the time derivative $\frac{\mathrm{d} \Xi}{\mathrm{d} t}$ by a finite difference $\frac{\Xi_{n+1} - \Xi_n}{\Delta t}$.
+        Equivalently, it consists in replacing the time derivative $\frac{\mathrm{d} \Xi}{\mathrm{d} t}$ by a finite difference $\frac{\Xi_{n+1} - \Xi_n}{\Delta t}$ and evaluating $\operatorname{G}$ in $\Xi_n$.
         Then, the method gives:
         \begin{equation}
           \Xi_{n+1} = \Xi_n - \Delta t \operatorname{G}\left(\Xi_n\right) \ .
@@ -412,7 +413,7 @@
         The quadrature coefficients are often arranged in the Butcher tableau:
         \begin{equation}
           \begin{array}{c|c}
-            c & A \rule[-1.1ex]{0pt}{0pt} \RKBar b^T
+            c & A \rule[-1.1ex]{0pt}{0pt} \RKBar \transpose{b}
           \end{array}
           \qquad = \qquad
           \begin{array}{c|ccccc}
@@ -483,8 +484,8 @@
 
         \paragraph{}
         The idea is to apply a Lagrange interpolation of the function $\operatorname{G}$ from equation (\ref{eq:init_value_ode}) in the $k$ last computed points, and then replace $\operatorname{G}$ with the interpolation polynomial when integrating from $t_n$ to $t_{n+1}$.
-        Contrary to the Runge--Kuta methods, as we reuse previous information, a single $\operatorname{G}$ evaluation is required at each step.
-        The coast of one iteration of the Adams--Bashforth method is then really cheap \PS{(reformuler)}.
+        Contrary to the Runge--Kutta methods, as we reuse previous information, a single $\operatorname{G}$ evaluation is required at each step.
+        The cost of one iteration of the Adams--Bashforth method is then really cheap \PS{(reformuler)}.
         The stability analysis for such methods is a bit more complex \cite{HairerNorsettWanner1993, HairerWanner1996}, and so we show the result that we obtained numerically on figure \ref{fig:ab_stab} without \PS{faire le calcul : deriving the calculus ?}.
         The conclusion is even worse than with the Runge--Kutta methods, as the stability region decreases as the order increases.
         The Adams--Bashforth can reach a high order of accuracy while staying computationally inexpensive, but they lack drastically of stability, and that is why they are often not used in computational fluid dynamics computations.
@@ -498,9 +499,112 @@
         \end{figure}
 
 
-    \subsection{Méthodes implicites}
+    \subsection{Implicit methods}
 
-      \subsubsection{Méthode d'Euler implicite}
+      \paragraph{}
+      We explained in the previous section why explicit time integration methods are not suited for our applications.
+      It is then natural to look at implicit methods.
+      Contrary to the explicit methods, implicit methods do not give the looked for solution right away, but as the solution of a specific equation.
+      The name is appropriate: the next state is not given explicitly but implicitly.
+
+
+      \subsubsection{Implicit Euler method}
+
+        \paragraph{}
+        The implicit Euler method is the equivalent of the explicit Euler method but on the implicit side.
+        It is quite similar, as it consists in integrating equation (\ref{eq:init_value_ode}) assuming the function $\operatorname{G}$ is constant, but this time equal to $\operatorname{G}\left(\Xi_{n+1}\right)$.
+        We then have:
+        \begin{equation}
+          \Xi_{n+1} = \Xi_n - \Delta t \operatorname{G}\left(\Xi_{n+1}\right)
+          \Leftrightarrow \Xi_{n+1} - \Xi_n + \Delta t \operatorname{G}\left(\Xi_{n+1}\right) = 0
+        \end{equation}
+        and the next state $\Xi_{n+1}$ is given as the solution of a nonlinear problem, the root of a nonlinear function.
+
+        \paragraph{}
+        After checking that this is a first order method, we can also do the stability analysis to find the corresponding function $g\left(z\right) = \left(1 - z\right)^{-1}$, that gives a stability region equal to the whole complex plane minus the closed unity disk centered in 1.
+        Therefore this method is A-stable.
+
+
+      \subsubsection{Implicit Runge--Kutta methods}
+
+        \paragraph{}
+        Runge--Kutta methods can also be implicit methods.
+        This happens when the quadratures use points that have not already been computed.
+        In other words, this corresponds to a full $A$ matrix in the butcher tableau, where it is strictly lower triangular for explicit Runge--Kutta methods.
+        This also means that any step of the Runge--Kutta method may be used in any other step, and therefore we may have to simultaneously solve an implicit system of equations.
+        This may lead to awfully expensive methods, and therefore users tend to restrict themselves to some particular methods.
+
+        \paragraph{}
+        Despite their cost, implicit Runge--Kutta methods can be appealing.
+        The main reason is that they can easily achieve a high order of accuracy.
+        For example, the methods based on Gauss--Legendre quadratures achieve an order $2k$ with $k$ steps, and they are all A-stable \cite{Iserles2008}.
+        Theoretically this means we can achieve an arbitrary high order while keeping the stability quality with these methods.
+        However, users usually stop at the 3-stage 6th order method, as the computational cost tend to be too much for higher order methods.
+
+        \paragraph{}
+        When applying the stability analysis to a Runge--Kutta method, we can derive the function $g$ using the arrays $A$, $b$ and $c$:
+        \begin{equation}
+          g\left(z\right) = 1 + z \transpose{b} \left(\operatorname{Id} - zA\right)^{-1} \transpose{\left(1, \dots, 1\right)} \ .
+        \end{equation}
+        We will not try to show the corresponding stability regions as there are too many methods possible.
+        Instead, we will review some of the most frequent from the litterature.
+
+        \paragraph{Diagonally Implicit Runge--Kutta methods}
+        The Diagonally Implicit Runge--Kutta methods \cite{Alexander1977}, or DIRK methods, are Runge--Kutta methods with a lower triangular matrix $A$.
+        Then, each step is given as an implicit problems using the already known steps.
+        The difference is that instead of solving a full implicit system, we just need to solve each implicit step successively.
+        This help drastically reduce the cost of the method.
+        Furthermore, if all quadrature coefficient $a_{ii}$ are equals, as we invert at each step the matrix $\operatorname{Id} + a_{ii} \Delta t \frac{\mathrm{d} \operatorname{G}}{\mathrm{d} \Xi}\left(\Xi_n\right)$, this can help the linear solve.
+        This variant is called Singly Diagonally Implicit Runge--Kutta methods (SDIRK) \cite{HairerWanner1996}.
+
+        \paragraph{Rosenbrock methods}
+        Rosenbrock methods are also called linearly implicit Runge--Kutta methods.
+        \PS{TODO ?}
+
+
+      \subsubsection{Backward differentiation formula}
+
+        \paragraph{}
+        As we extended the explicit Runge--Kutta methods to implicit methods, we can also extend the Adams-Bashforth method to an implicit one.
+        When interpolating the function $\operatorname{G}$, we add ont point to the Lagrange interpolation: the point we want to compute.
+        This new method is called an Adams-Moulton method.
+        However, the stability region of Adams-Moulton is quite narrow, as they were originally not made for stiff equations \cite{Iserles2008}.
+        This is why the BDF methods were introduced.
+        Contrary to Adams-Bashforth and Adams-Moulton methods, they use the Lagrange interpolation of the solution $\Xi$ instead of the function $\operatorname{G}$.
+        Then, we can replace the time derivative of the solution by the time derivative of the interpolating polynomial, and evaluate this new equality at the next time step $t_{n+1}$.
+        This gives an implicit equation we need to solve to get $\Xi_{n+1}$.
+        The name of those methods come from the fact that if we use a constant time step between iterations, this equation can be written using the differentiating operator defined by $\nabla^0 \square_i = \square_i$ and $\nabla^{j+1} \square_i = \nabla^j \square_i - \nabla^j \square_{i-1}$:
+        \begin{equation}
+          \sum_{i=1}^k \frac{1}{i} \nabla^i \Xi_{n+1} + \Delta t \operatorname{G}\left(\Xi_{n+1}\right) = 0
+        \end{equation}
+
+        \paragraph{}
+        We can show that the order of the method is equal to the index of the method, corresponding to the number of previous states needed to compute the next one.
+        These methods allow for an arbitrary high order without increasing the coast, as the implicit equation is not harder to solve as the order increases.
+        However, the stability analysis limits the higher order achievable.
+        The stability analysis of the BDF methods can be done numerically.
+        At this stage, we can note that the first order BDF method is in fact the implicit Euler method.
+        Also, methods of order 7 or higher are unstable, so we can limit our analysis on methods with orders from 1 to 6.
+        The corresponding stability regions are satisfying, as can be seen on figure \ref{fig:bdf_stab}.
+        Particularly, the first and second methods are A-stable.
+        More generally, there are no A-stable multi steps methods with an order higher than 2 \cite{Dahlquist1963, HairerWanner1996}.
+
+        \begin{figure}
+          \centering
+          \includegraphics[width=\textwidth]{figures/bdf_stab.png}
+          \caption{Stability regions (in color) of the BDF methods}
+          \label{fig:bdf_stab}
+        \end{figure}
+
+      \paragraph{}
+      This introduction to the classic time integration methods helps us to decide what to do for our solver.
+      As we said earlier, we want to solve an ordinary differential equation in order to recover the steady solution, reached after a long time.
+      Then, explicit methods that constrain the time step are not well fitted.
+      Even if they cost more, in an algorithmic way, implicit methods are indeed the best choice for our stiff equations.
+      It is often better to do a single expensive iteration over a large time step with an implicit method, than making a lot of inexpensive iterations over small time steps with an explicit method.
+      This is finally why we will continue working with the A-stable implicit Euler method.
+      \PS{et parce que c'est dans CHARME ?}
+
 
 
       \subsubsection{Principe des méthodes implicites}
