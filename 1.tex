@@ -179,7 +179,7 @@
       Slope limiters are used to prevent the formation of local extrema, which can be harmful to the computation.
 
 
-  \section{Time integration methods}
+  \section{Introduction to the time integration methods}
 
     \paragraph{}
     With the help of a spatial discretisation method, the equation we want to solve is now an ordinary differential equation.
@@ -276,7 +276,7 @@
         \begin{equation}
           J = \begin{pmatrix} -1 & 0 \\ 0 & 10^3 \end{pmatrix}, \quad y_0 = \begin{pmatrix} 1 \\ 0 \end{pmatrix} \ .
         \end{equation}
-        The solution of the equation is then :
+        The solution of the equation is then:
         \begin{equation}
           y\left(t\right) = \begin{pmatrix} e^{-t} \\ 0 \end{pmatrix} \ .
         \end{equation}
@@ -607,4 +607,25 @@
 
 
 
-      \subsubsection{Principe des méthodes implicites}
+  \section{\PS{Principe des méthodes implicites}}
+
+  	\paragraph{}
+	As we explained in the previous section, implicit time integration methods give the next state as the solution of a non-linear equation, or a system of non-linear equations.
+	If we want to use implicit methods, we then need to be able to solve a non-linear problem.
+	We will continue our discussion using the implicit Euler method, but everything can easily be adapted for any other implicit method.
+	For Diagonally Implicit Runge--Kutta methods, we apply the non-linear solve succesively for each step.
+	For BDF methods, we apply the non-linear solve on a slightly different equation.
+
+	\paragraph{}
+	We can use a Newton method to solve a non-linear problem of the form:
+	\begin{equation}\label{eq:nonlinear}
+		F\left(\Xi_{n+1}\right) = 0 \ .
+	\end{equation}
+	\PS{Newton's ? + Vérifier si fonction F pas déja utilisée}.
+	The idea is to linearise equation (\ref{eq:nonlinear}) in $\Xi_n$:
+	\begin{equation}
+	  F\left(\Xi_n\right) + \frac{\mathrm{d} F}{\mathrm{d} \Xi}\left(\Xi_n\right) x = 0
+	\end{equation}
+	with the unknown $x = \Xi_{n+1} - \Xi_n$.
+
+
