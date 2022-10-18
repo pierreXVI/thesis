@@ -260,7 +260,7 @@
         Depending on the application, we will expect different level of stability in order to avoid a numerically induced divergence of the computation.
 
         \paragraph{}
-        To analyse the stability of a time integration method, we usually apply it on the ordinary differential equation with a lineal right hand side: the Dahlquist test equation \cite{HairerWanner1996}.
+        To analyse the stability of a time integration method, we usually apply it on the ordinary differential equation with a linear right hand side: the Dahlquist test equation \cite{HairerWanner1996}.
         The reason is that if we have a solution $\tilde{\Xi}$ of equation (\ref{eq:init_value_ode}), we can linearise $\operatorname{G}$ in $\tilde{\Xi}$.
         With $y = \Xi - \tilde{\Xi}$ and $J = -\frac{\partial \operatorname{G}}{\partial \Xi}\left(\tilde{\Xi}\right)$, assumed constant, we then have:
         \begin{equation}\label{eq:dahlquist}
@@ -439,7 +439,7 @@
             \end{tabular} \\
             RK1 & RK2 & RK4 \\
           \end{tabular}
-          \caption{Butcher tableau for the explicit Euler, Midpoint and RK4 methods}\label{tab:rk_butcher}
+          \caption{Butcher tableau for the explicit Euler, Midpoint and RK4 methods.}\label{tab:rk_butcher}
         \end{table}
 
         \paragraph{}
@@ -547,7 +547,7 @@
           g\left(z\right) = 1 + z \transpose{b} \left(\operatorname{Id} - zA\right)^{-1} \transpose{\left(1, \dots, 1\right)} \ .
         \end{equation}
         We will not try to show the corresponding stability regions as there are too many methods possible.
-        Instead, we will review some of the most frequent from the litterature.
+        Instead, we will review some of the most frequent from the literature.
 
         \paragraph{Diagonally Implicit Runge--Kutta methods}
         The Diagonally Implicit Runge--Kutta methods \cite{Alexander1977}, or DIRK methods, are Runge--Kutta methods with a lower triangular matrix $A$.
@@ -592,7 +592,7 @@
         \begin{figure}
           \centering
           \includegraphics[width=\textwidth]{figures/bdf_stab.png}
-          \caption{Stability regions (in color) of the BDF methods}
+          \caption{Stability regions (in color) of the BDF methods.}
           \label{fig:bdf_stab}
         \end{figure}
 
@@ -608,26 +608,203 @@
       \PS{et parce que c'est dans CHARME ?}
 
 
-
-  \section{\PS{Principe des méthodes implicites}}
-
-  	\paragraph{}
-	As we explained in the previous section, implicit time integration methods give the next state as the solution of a non-linear equation, or a system of non-linear equations.
-	If we want to use implicit methods, we then need to be able to solve a non-linear problem.
-	We will continue our discussion using the implicit Euler method, but everything can easily be adapted for any other implicit method.
-	For Diagonally Implicit Runge--Kutta methods, we apply the non-linear solve succesively for each step.
-	For BDF methods, we apply the non-linear solve on a slightly different equation.
-
-	\paragraph{}
-	We can use a Newton method to solve a non-linear problem of the form:
-	\begin{equation}\label{eq:nonlinear}
-		F\left(\Xi_{n+1}\right) = 0 \ .
-	\end{equation}
-	\PS{Newton's ? + Vérifier si fonction F pas déja utilisée}.
-	The idea is to linearise equation (\ref{eq:nonlinear}) in $\Xi_n$:
-	\begin{equation}
-	  F\left(\Xi_n\right) + \frac{\mathrm{d} F}{\mathrm{d} \Xi}\left(\Xi_n\right) x = 0
-	\end{equation}
-	with the unknown $x = \Xi_{n+1} - \Xi_n$.
+  \section{Implicit methods framework}
+  \PS{Revoir structure}
 
 
+    \subsection{Methodology of the implicit time integration}
+
+      \paragraph{}
+      As we explained in the previous section, implicit time integration methods give the next state as the solution of a nonlinear equation, or a system of nonlinear equations.
+      If we want to use implicit methods, we then need to be able to solve a nonlinear problem.
+      We will continue our discussion using the implicit Euler method, but everything can easily be adapted for any other implicit method.
+      For Diagonally Implicit Runge--Kutta methods, we apply the nonlinear solve successively for each step.
+      For BDF methods, we apply the nonlinear solve on a slightly different equation.
+
+
+      \subsubsection{From a nonlinear problem \dots}
+
+      	\paragraph{}
+      	We can use Newton's method to solve a nonlinear problem of the form:
+      	\begin{equation}
+      		\tilde{f}\left(\Xi_{n+1}\right) = 0 \ .
+      	\end{equation}
+        Equivalently, as we work here for a single $n$ at a time, we could express this equation in terms of the increment $x = \Xi_{n+1} - \Xi_n$:
+        \begin{equation}\label{eq:nonlinear}
+      		f\left(x\right) = 0 \ .
+      	\end{equation}
+        Newton's methods starts from an initial guess $x_0$.
+        We usually take $x_0 = 0$ as it equivalent to take $\Xi_n$ as an initial guess for $\Xi_{n+1}$.
+        The method will then iterate to approximate the solution of equation (\ref{eq:nonlinear}).
+
+        \paragraph{}
+        At each step of Newton's method, we linearise \PS{au premier ordre} in the current estimation $x_i$ the nonlinear function $f$ evaluated  in the next iteration $x_{i+1}$ and we set this linearisation equal to 0, the desired value:
+        \begin{equation}\label{eq:nonlinear_linearised}
+          f\left(x_{i+1}\right) \approx f\left(x_i\right) + f'\left(x_i\right) \left( x_{i+1} - x_i \right) = 0
+        \end{equation}
+        This gives a linear problem of which $x_{i+1}$ is the solution.
+        \PS{Refs sur méthode de Newton ?}
+
+
+      \subsubsection{\dots to a linear one}
+
+        \paragraph{}
+        We can rewrite equation (\ref{eq:nonlinear_linearised}) into the classic linear problem \PS{notation x déjà utilisée}:
+        \begin{equation}\label{eq:linear}
+          Ax = b
+        \end{equation}
+        where we can identify $A = f'\left(x_i\right)$, $b = -f\left(x_i\right)$ ans $x = \left( x_{i+1} - x_i \right)$.
+        A lot of methods were conceived to solve such linear problems, and we will discuss later how we will handle it.
+
+
+      \paragraph{}
+      To sum up, we started from the partial diferential equation (\ref{eq:pde}) arising from the physical model.
+      With a spatial discretisation method, and after choosing an initial value, this transforms into an ordinary differential equation (\ref{eq:init_value_ode}).
+      For stability reasons, we decided to use implicit time integration methods.
+      Iteratively, such methods are going to produce one or several nonlinear problems of the form of equation (\ref{eq:nonlinear}).
+      The newton's method used to solve such problems is going to produce a succession of linear problems of the form of equation (\ref{eq:linear}).
+      This complicated sequence of operation describes the time integration procedure used in our solver to find the solution of steady problems.
+      It is schematised on figure \ref{fig:steady_solve}, where the blue circles correspond to the problems being solved, while green circles correspond to the methods used to solve them.
+      In this theses, we are interested in the non grayed out parts.
+
+      \begin{figure}
+        \centering
+        \includegraphics[width=.8\textwidth]{figures/steady_solve.png}
+        \caption{Procedure used to find the solution of steady problems.}
+        \label{fig:steady_solve}
+      \end{figure}
+
+
+    \subsection{Nonlinear solver}
+
+
+    \subsection{Linear solver}
+
+      \paragraph{}
+      We want to be able so solve efficiently linear systems like (\ref{eq:linear}).
+      We additionally assume that $A$ is an invertible matrix.
+      Let us note the size of the linear system $N$.
+      This size is quite large in our typical applications, but the linear system is sparse.
+      This means that the coefficients of the matrix $A$ are mostly zeros.
+      This is because a coefficient in the matrix $A$ corresponds to a link between two degrees of freedom.
+      For the spatial discretisation methods we use, a cell depends on a small number of neighboring cells, and therefore a degree of freedom does is not linked with most of the others \PS{(c'est clair ?)}.
+      Such sparse matrices can be seen on figure \ref{fig:sparse}.
+      Using the sparsity of the matrix is essential, as it would not be possible to store it as a dense matrix in the memory of a computer.
+      Instead, we use some clever formats such as the Compressed Sparse Row format \cite{Saad2003}.
+      Some operations such as matrix vector products are more efficiently done using such formats.
+
+  		\begin{figure}
+  			\centering
+  			\begin{subfigure}[t]{0.3\textwidth}
+  				\centering
+  				\includegraphics[width=\textwidth]{figures/GT01R.png}
+          \caption{GT01R: 2D inviscid flow in the inter-blade channel of a linear cascade turbine.}
+  				\label{fig:sparse.GT01R}
+  			\end{subfigure}
+  			\hfill
+  			\begin{subfigure}[t]{0.3\textwidth}
+  				\centering
+  				\includegraphics[width=\textwidth]{figures/HV15R.png}
+  				\caption{HV15R: 3D RANS simulation of an engine fan.}
+  				\label{fig:sparse.HV15R}
+  			\end{subfigure}
+  			\hfill
+  			\begin{subfigure}[t]{0.3\textwidth}
+  				\centering
+  				\includegraphics[width=\textwidth]{figures/RM07R.png}
+  				\caption{RM07R: 3D viscous flow in a jet engine compressor.}
+  				\label{fig:sparse.RM07R}
+  			\end{subfigure}
+  			\caption{Matrices from various CFD simulations \cite{PacullAubertBuisson2011} using a Finite Volumes method. Colored points correspond to nonzero values.}
+  			\label{fig:sparse}
+  		\end{figure}
+
+      \paragraph{}
+      Many methods exists to solve linear problems.
+      Some are even taught in school, such as the Gaussian elimination.
+      Such methods are called direct methods, as they first do some work and then find directly the exact solution of the problem.
+      But for problems with huge size as the ones we encounter in computational fluid dynamics, the amount of work is too much to be computed with today's means.
+      It would take too much time as well as too much memory.
+      Instead, we can use iterative methods.
+      An iterative method starts from an initial guess $x_0$ and produces as it iterates a supposedly better estimation of the solution $x_n$.
+      The subscript $n$ has nothing to do with the subscript used to identify the iterates of the time integration method: we work at a given fixed time step here.
+      We can then decide when to stop the method, whether the solution estimate is good enough or the solve is taking too much time.
+      Iterative methods are the most well fitted to solve large sparse linear problems, and they are the preferred solution in computational fluid dynamics.
+
+      \paragraph{}
+      Among the iterative methods are what could be called the "classic" methods, or relaxation.
+      They are the Jacobi, Gauss--Seidel or Successive Over Relaxation methods.
+      They decompose the matrix into $A = M - N$ with $M$ a matrix easily invertible.
+      The choice of $M$ depends on the method.
+      Then, starting from a given $x_0$, at each step we compute $x_{n+1} = M^{-1} \left( N x_n + b \right)$.
+      Those methods are often deemed not efficient enough for computational fluid dynamics applications.
+      They are often used, however, as preconditioning methods, as we will see later.
+
+      \paragraph{}
+      Another class of iterative methods is becoming the standard for computational fluid dynamics: the Krylov subspace methods.
+      A Krylov subspace method projects the linear problem (\ref{eq:linear}) on a smaller linear subspace called Krylov subspace.
+      The obtained smaller system is then solved, much more easily.
+      The cleverness resides in the fact that those Krylov subspaces are \PS{emboités}, and each iteration reuses the information obtained in the previous ones.
+
+      \paragraph{}
+      In the following, we note at iteration $n$ the residual $r_n = b - A x_n$.
+      Practically, we keep $n \ll N$ so that the cost of the method stays reasonable, but this does not change the following.
+      The corresponding Krylov subspaces are defined as:
+  		\begin{equation}
+  			\krylov[A, r_0]{n} = \operatorname{Vect}\left( r_0, A r_0, \dots, A^{n-1} r_0 \right) \ .
+  		\end{equation}
+      Then, we seek the next iterate in $\krylov{n}$ satisfying a Petrov--Galerkin condition \cite{SimonciniSzyld2007}:
+  		\begin{equation}
+  			x_n \in x_0 + \krylov[A, r_0]{n} \quad \textrm{such as} \quad r_n \perp \mathcal{L}_n
+  		\end{equation}
+      where $\mathcal{L}_n$ is a linear subspace with dimension $n$.
+      For example, $\mathcal{L}_n = \krylov{n}$ corresponds to a Galerkin condition, and $\mathcal{L}_n = A \krylov{n}$ is a minimum residual condition.
+
+      \paragraph{}
+      To construct the growing Krylov subspace, we can use the Arnoldi iteration \cite{TrefethenBau1997}.
+    \paragraph{}
+    There are many Krylov subspace methods that can solve a linear problem, characterised by the choice of $\mathcal{L}_n$.
+    The minimal residual condition gives the GMRES method \cite{SaadSchultz1986}, vastly used in computational fluid dynamics \cite{FrancoCamierAndrejEtAl2020} and other fields of numerical simulations \cite{ErnstGander2012, Mercier2015}.
+    Its main advantage is that even if its iterations may be slightly more expensive than other methods such as the Bi-CGSTAB method \cite{Vorst1992, TrefethenBau1997}, the residual norm is minimised and the error is then decreasing as the method iterates \PS{phrase pas claire ?}.
+    The GMRES method already exists in our solver and is often used.
+    Because it is discussed a lot in the literature, many variants and enhancements were developed \cite{Vasseur2016}.
+    For those reasons, we decided to keep the GMRES method as the base of our linear solver.
+    \subsection{Evaluating the Jacobian matrices}
+
+      \paragraph{}
+      At this point, we know how to evaluate the function $f$ from equation (\ref{eq:nonlinear}), that is often expressed as a linear combination of previous states and $\operatorname{G}$ evaluations, where $\operatorname{G}$ is the function introduced in equation (\ref{eq:init_value_ode}), the function from our starting ordinary differential equation.
+      On the other hand, computing its derivative with regard to $x$ is a different story.
+      This derivative $f'\left(x\right)$ uses the Jacobian matrix of the function $\operatorname{G}$.
+      As the function $\operatorname{G}$ comes from the spatial discretisation method applied to the original partial differential equations (\ref{eq:pde}), is is complex, not in the sense of imaginary numbers but of complicated.
+      The underlying algorithm is hard to fully understand and to write, and the numerical evaluation us usually expensive.
+      Finding an algorithm that computes the exact Jacobian matrix analytically would amount to too much work in out industrial software.
+      We must use other alternatives to get the Jacobian matrix we need for our Newton's method.
+
+      \paragraph{}
+      An idea would be to use \emph{Automatic Differentiation} \cite{Griewank2000}.
+      This means to give the source code of the $\operatorname{G}$ function to some software \cite{HascoeetPascual2012}, that gives in return a way to compute its Jacobian matrix.
+      One advantage of this method is that the cost of derivating the function is done only once, at software compilation.
+      After that, computing the Jacobian matrix amount to calling a function.
+      Another advantage is that the given Jacobian is supposedly exact, contrary to some alternatives we will discuss later.
+      For those reasons, Automatic Differentiation is today being used in actual computational fluid dynamics softwares \cite{BilanceriBeuxElmahiEtAl2011, KenwayMaderHeEtAl2019}.
+      In our software, using Automatic Differentiation did seem too hard and therefore we looked at other methods instead.
+      \PS{Plus justifier ? Reformuler ?}
+
+      \paragraph{}
+      A possible idea is to use an approximation of the Jacobian matrix that is inexpensive to compute.
+      We said that the function $\operatorname{G}$ comes from the second order or higher Finite Volume method used as the spatial discretisation method.
+      We can take the function $\operatorname{G}_1$ given by the first order corresponding method, and use its Jacobian matrix instead.
+      Indeed, computing $\operatorname{G}_1$ is inexpensive in comparaison to $\operatorname{G}$, and the same goes for the corresponding Jacobian matrices.
+      Going further, we could also approximate the Jacobian matrix of $\operatorname{G}_1$: when $\operatorname{G}$ uses some complex models such as turbulence models, it is often decided to not include those models contributions to the Jacobian matrix, for complexity and stability reasons \PS{ref ici}.
+      This is what is done originally in out in-house solver: using a cheap low order approximation of the Jacobian matrix.
+
+      \paragraph{}
+      An other idea is to group the Newto
+
+
+
+    \PS{Nécessité de calculer des Jacobiennes --> JFNK}
+
+    \PS{Résolution système linéaire --> GMRES}
+
+    \PS{Préconditionnement sans utiliser la matrice --> FGMRES}

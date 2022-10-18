@@ -10,10 +10,10 @@
 \usepackage{ifthen}
 \usepackage{caption}
 \usepackage{graphicx}
+\usepackage{subcaption}
 
 % \usepackage{mathtools}
 %\usepackage{url}
-% \usepackage{subcaption}
 
 
 \renewcommand*{\vec}[1]{\underline{#1}}
@@ -22,13 +22,13 @@
 \newcommand{\norm}[2][]{\left\|{#2}\right\|\ifthenelse{\equal{#1}{}}{}{_{{#1}}}}
 \newcommand{\RKBar}{\rule[-1.1ex]{0pt}{0pt} \\ \hline \rule{0pt}{2.6ex} &}
 \newcommand{\transpose}[1]{{#1}^T}
+\newcommand{\krylov}[2][]{\ifthenelse{\equal{#1}{}}{\mathcal{K}_{#2}}{\mathcal{K}_{#2}\left({#1}\right)}}
 
 
 % \newcommand{\transpose}[2][-3mu]{\ensuremath{\mskip1mu\prescript{\smash{\mathrm t\mkern#1}}{}{\mathstrut#2}}}
 % \newcommand{\matrixsymb}[2]{\mathcal{M}_{#1}\left(\mathbb{#2}\right)}
 % \newcommand{\orthogroup}[2]{\operatorname{O}_{#1}\left(\mathbb{#2}\right)}
 % \newcommand{\adj}[1]{{#1}^*}
-% \newcommand{\krylov}[2][]{\ifthenelse{\equal{#1}{}}{\mathcal{K}_{#2}}{\mathcal{K}_{#2}\left({#1}\right)}}
 % \renewcommand{\parallel}{{\mathbin{/\mkern-5mu/}}}
 
 
