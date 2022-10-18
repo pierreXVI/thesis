@@ -76,7 +76,7 @@
     \subsection{The Finite Volumes method}
 
       \paragraph{}
-      The spatial discretisation method used in the solver CHARME is called the Finite Volumes method \cite{EymardGallouetHerbin2000}.
+      The spatial discretisation method used in the solver CHARME is called the Finite Volumes method \cite{EymardGallouetHerbin2000, Leterrier2003}.
       This method is particularly well fitted for conservatives equations such as equation (\ref{eq:pde_conservative}).
       Such equation has the property that the quantity $\xi$ is conserved: without source terms, the variation of the total quantity on $\xi$ over the domain $\mathcal{D}$ is equal to the flux $f\left(\xi\right)$ coming through the boundary $\partial\mathcal{D}$.
       In the case of the Navier--Stokes equations (\ref{eq:ns}), the density, the momentum and the energy are conserved throughout time, apart from what comes in and out of the domain.
@@ -407,7 +407,7 @@
         \end{equation}
 
         \paragraph{}
-        A Runge--Kutta method is characterised by its size $k$ and the quadrature coefficients $a_{ij, 1\leq j<i\leq k}$, $b_{i, 1\leq i\leq k}$ and $c_{i, 1\leq i\leq k}$.
+        A Runge--Kutta method is characterised by its size $k$ and by the quadrature coefficients: $a_{ij, 1\leq j<i\leq k}$, $b_{i, 1\leq i\leq k}$ and $c_{i, 1\leq i\leq k}$.
         There are as many Runge--Kutta methods as there are choices in the quadrature coefficients, but not all choices give good methods.
         There are criteria that the coefficients must follow to ensure the consistency of the method, and then criteria with more complexity as the order increases.
         The quadrature coefficients are often arranged in the Butcher tableau:
@@ -603,6 +603,8 @@
       Even if they cost more, in an algorithmic way, implicit methods are indeed the best choice for our stiff equations.
       It is often better to do a single expensive iteration over a large time step with an implicit method, than making a lot of inexpensive iterations over small time steps with an explicit method.
       This is finally why we will continue working with the A-stable implicit Euler method.
+      This method is at the base of all other implicit methods, as they can be seen as small variations of the implicit Euler methods.
+      Choosing it is also smart as updating it into an other implicit time integration method will not require too much work.
       \PS{et parce que c'est dans CHARME ?}
 
 
