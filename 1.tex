@@ -1,5 +1,11 @@
 \chapter{Analysis of existing methods}
 
+  \paragraph{}
+  As we aim to enhance the performances of the solver CEDRE on steady problems, we first have to define some notions.
+  In particular, we need to explain what performances means.
+  In this chapter we will introduce the general problem, and the tools used to solve it.
+  We will confirm some choices already made in the solver, and identify the \PS{features} we would like to modify or replace.
+
   \section{Problem setup}
 
     \paragraph{}
@@ -36,7 +42,7 @@
     with the \PS{relation de fermeture} $\rho E = \frac{p}{\gamma - 1} + \rho\frac{\vec{u} \cdot \vec{u}}{2}$.
     The deviatoric stress tensor $\tau$ accounts for the viscosity of the fluid, and its computation depends on the model used.
     Without it, one recovers the Euler equations.
-    To this simple form can be added source terms from the reactive model, source terms from the turbulence model, divergence terms from a diffusive model, etc.
+    To this simple form can be added source terms from the reactive model, source terms from the turbulence model, divergence terms from a diffusive model \PS{diffusion des particules}, etc.
     Yet it is clear that with a bit of rewriting, we can go back to the starting form (\ref{eq:pde}) and even the conservative form with source terms (\ref{eq:pde_conservative}).
     The quantity $\xi$ is no longer a scalar but a vector with the density $\rho$, each component of the momentum $\rho\vec{u}$ and the energy $\rho E$ as its components.
     Apart from this small change, the idea is the same.
@@ -603,9 +609,9 @@
       Even if they cost more, in an algorithmic way, implicit methods are indeed the best choice for our stiff equations.
       It is often better to do a single expensive iteration over a large time step with an implicit method, than making a lot of inexpensive iterations over small time steps with an explicit method.
       This is finally why we will continue working with the A-stable implicit Euler method.
-      This method is at the base of all other implicit methods, as they can be seen as small variations of the implicit Euler methods.
+      This method is already used in our solver as the base implicit method, for the same reasons we want to use it.
+      Furthermore, it is at the base of all other implicit methods, as they can be seen as small variations of the implicit Euler methods.
       Choosing it is also smart as updating it into an other implicit time integration method will not require too much work.
-      \PS{et parce que c'est dans CHARME ?}
 
 
   \section{Implicit methods framework}
