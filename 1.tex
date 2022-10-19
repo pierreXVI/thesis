@@ -772,9 +772,42 @@
     There are many Krylov subspace methods that can solve a linear problem, characterised by the choice of $\mathcal{L}_n$.
     The minimal residual condition gives the GMRES method \cite{SaadSchultz1986}, vastly used in computational fluid dynamics \cite{FrancoCamierAndrejEtAl2020} and other fields of numerical simulations \cite{ErnstGander2012, Mercier2015}.
     Its main advantage is that even if its iterations may be slightly more expensive than other methods such as the Bi-CGSTAB method \cite{Vorst1992, TrefethenBau1997}, the residual norm is minimised and the error is then decreasing as the method iterates \PS{phrase pas claire ?}.
+    This allows for some control on the residual norm.
+    With the Bi-CGSTAB method for example, also available in our solver, the residual norms do not have to be decreasing, which can lead to chaotic convergence.
     The GMRES method already exists in our solver and is often used.
-    Because it is discussed a lot in the literature, many variants and enhancements were developed \cite{Vasseur2016}.
+    Because it is discussed a lot in the literature, many variants and enhancements were developed \cite{Vasseur2016} \PS{et d'autres refs stp}.
     For those reasons, we decided to keep the GMRES method as the base of our linear solver.
+    \paragraph{}
+    The convergence of Krylov subspace methods, and more generally of iterative methods, depends on the linear system matrix.
+    It is common knowledge that the convergence is linked to the condition number of the matrix \cite{Nevanlinna1994}.
+    The condition number of an inversible matrix $A$ is defined as:
+    \begin{equation}
+      \kappa\left( A \right) = \norm{A} \norm{A^{-1}}
+    \end{equation}
+    and so it depends on the chosen norm.
+    A problem is said to be well conditioned when $\kappa = O\left(1\right)$, and ill conditioned when $\kappa \gg 1$.
+    For the Euclidean norm $\norm[2]{\cdot}$, we have
+		\begin{equation}\label{eq:conditioning}
+			\kappa\left( A \right) = \frac{\sigma_{\max}}{\sigma_{\min}}
+		\end{equation}
+    where $\sigma_{\min}$ and $\sigma_{\max}$ are the smallest and largest singular values of the matrix $A$.
+    As a reminder, the singular values of $A$ are the eigenvalues of $A^* A$ where $A^*$ notes the conjugate transpose of $A$.
+    The relation (\ref{eq:conditioning}) is often simplified as
+    \begin{equation}
+      \kappa\left( A \right) = \frac{\left|\lambda_{\max}\right|}{\left|\lambda_{\min}\right|}
+    \end{equation}
+    with $\lambda_{\min}$ and $\lambda_{\max}$ the eigenvalue of $A$ with the smallest and largest modulus.
+    If this help picture what the condition number stands for, this is only true for normal matrices: matrices that commute with their conjugate transpose.
+    However, the matrices we face in our field have no reasons to be normal matrices.
+    An amusing result is found in \cite{GreenbaumPtakStrakos1996}.
+    For a given decreasing convergence curve and a given spectrum, it is possible to construct a linear problem such as the convergence of GMRES follows the given curve and the matrix has the given spectrum.
+    In other words, there are ill conditioned matrices for which GMRES converges quickly, and well conditioned matrices on which GMRES will be slow.
+    In particular, we can find a matrix with the best condition number possible, meaning 1, on which GMRES will make no progress until the last iteration.
+    This is because of the nonnormality of the matrix \cite{GreenbaumStrakos1994, GreenbaumPtakStrakos1996}.
+    To handle it in the analysis on the convergence, one must not look at the spectrum but the pseudospectrum \cite{Trefethen1999}.
+    This analysis is quite complex, and is mostly done in an analytical context, not an industrial one.
+    Using Krylov subspace methods with nonnormal matrices and the study of their convergence is no simple task \cite{LiesenTichy2004, Huhtanen2005}.
+    As the matrices we encounter in our computational fluid dynamic problems are \PS{quelconques}, meaning \PS{à priori non-normales}, we decided not to study finely the spectrum of the operator.
     \subsection{Evaluating the Jacobian matrices}
 
       \paragraph{}
