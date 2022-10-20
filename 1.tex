@@ -34,7 +34,7 @@
     \begin{equation}\label{eq:ns}
       \left\{\begin{aligned}
         &\partial_t\left(\rho         \right) &&+ \nabla\cdot\left( \rho \vec{u} \right) &&= 0 \\
-        &\partial_t\left(\rho \vec{u} \right) &&+ \nabla\cdot\left( \rho \vec{u} \otimes \vec{u} + p \id \right) &&= \nabla\cdot \mat{\tau}\\
+        &\partial_t\left(\rho \vec{u} \right) &&+ \nabla\cdot\left( \rho \vec{u} \otimes \vec{u} + p \mat{\operatorname{Id}} \right) &&= \nabla\cdot \mat{\tau}\\
         &\partial_t\left( \rho E      \right) &&+ \nabla\cdot\left( \left(\rho E + p\right) \vec{u} \right) &&=
           \nabla\cdot\left( \mat{\tau} \cdot \vec{u} \right)
       \end{aligned}\right.
@@ -768,46 +768,153 @@
 
       \paragraph{}
       To construct the growing Krylov subspace, we can use the Arnoldi iteration \cite{TrefethenBau1997}.
-    \paragraph{}
-    There are many Krylov subspace methods that can solve a linear problem, characterised by the choice of $\mathcal{L}_n$.
-    The minimal residual condition gives the GMRES method \cite{SaadSchultz1986}, vastly used in computational fluid dynamics \cite{FrancoCamierAndrejEtAl2020} and other fields of numerical simulations \cite{ErnstGander2012, Mercier2015}.
-    Its main advantage is that even if its iterations may be slightly more expensive than other methods such as the Bi-CGSTAB method \cite{Vorst1992, TrefethenBau1997}, the residual norm is minimised and the error is then decreasing as the method iterates \PS{phrase pas claire ?}.
-    This allows for some control on the residual norm.
-    With the Bi-CGSTAB method for example, also available in our solver, the residual norms do not have to be decreasing, which can lead to chaotic convergence.
-    The GMRES method already exists in our solver and is often used.
-    Because it is discussed a lot in the literature, many variants and enhancements were developed \cite{Vasseur2016} \PS{et d'autres refs stp}.
-    For those reasons, we decided to keep the GMRES method as the base of our linear solver.
-    \paragraph{}
-    The convergence of Krylov subspace methods, and more generally of iterative methods, depends on the linear system matrix.
-    It is common knowledge that the convergence is linked to the condition number of the matrix \cite{Nevanlinna1994}.
-    The condition number of an inversible matrix $A$ is defined as:
-    \begin{equation}
-      \kappa\left( A \right) = \norm{A} \norm{A^{-1}}
-    \end{equation}
-    and so it depends on the chosen norm.
-    A problem is said to be well conditioned when $\kappa = O\left(1\right)$, and ill conditioned when $\kappa \gg 1$.
-    For the Euclidean norm $\norm[2]{\cdot}$, we have
-		\begin{equation}\label{eq:conditioning}
-			\kappa\left( A \right) = \frac{\sigma_{\max}}{\sigma_{\min}}
-		\end{equation}
-    where $\sigma_{\min}$ and $\sigma_{\max}$ are the smallest and largest singular values of the matrix $A$.
-    As a reminder, the singular values of $A$ are the eigenvalues of $A^* A$ where $A^*$ notes the conjugate transpose of $A$.
-    The relation (\ref{eq:conditioning}) is often simplified as
-    \begin{equation}
-      \kappa\left( A \right) = \frac{\left|\lambda_{\max}\right|}{\left|\lambda_{\min}\right|}
-    \end{equation}
-    with $\lambda_{\min}$ and $\lambda_{\max}$ the eigenvalue of $A$ with the smallest and largest modulus.
-    If this help picture what the condition number stands for, this is only true for normal matrices: matrices that commute with their conjugate transpose.
-    However, the matrices we face in our field have no reasons to be normal matrices.
-    An amusing result is found in \cite{GreenbaumPtakStrakos1996}.
-    For a given decreasing convergence curve and a given spectrum, it is possible to construct a linear problem such as the convergence of GMRES follows the given curve and the matrix has the given spectrum.
-    In other words, there are ill conditioned matrices for which GMRES converges quickly, and well conditioned matrices on which GMRES will be slow.
-    In particular, we can find a matrix with the best condition number possible, meaning 1, on which GMRES will make no progress until the last iteration.
-    This is because of the nonnormality of the matrix \cite{GreenbaumStrakos1994, GreenbaumPtakStrakos1996}.
-    To handle it in the analysis on the convergence, one must not look at the spectrum but the pseudospectrum \cite{Trefethen1999}.
-    This analysis is quite complex, and is mostly done in an analytical context, not an industrial one.
-    Using Krylov subspace methods with nonnormal matrices and the study of their convergence is no simple task \cite{LiesenTichy2004, Huhtanen2005}.
-    As the matrices we encounter in our computational fluid dynamic problems are \PS{quelconques}, meaning \PS{à priori non-normales}, we decided not to study finely the spectrum of the operator.
+      As a result, the matrix $A$ is only used through matrix vector products.
+      Indeed, Krylov subspace methods do not require the matrix $A$ to solve the linear system (\ref{eq:linear}), just to know how to compute matrix vector products.
+      We will use this property later on.
+
+      \paragraph{}
+      There are many Krylov subspace methods that can solve a linear problem, characterised by the choice of $\mathcal{L}_n$.
+      The minimal residual condition gives the Generalized Minimal Residual method or GMRES \cite{SaadSchultz1986}, vastly used in computational fluid dynamics \cite{FrancoCamierAndrejEtAl2020} and other fields of numerical simulations \cite{ErnstGander2012, Mercier2015}.
+      Its main advantage is that even if its iterations may be slightly more expensive than other methods such as the Bi-CGSTAB method \cite{Vorst1992, TrefethenBau1997}, the residual norm is minimised and the error is then decreasing as the method iterates \PS{phrase pas claire ?}.
+      This allows for some control on the residual norm.
+      With the Bi-CGSTAB method for example, also available in our solver, the residual norms do not have to be decreasing, which can lead to chaotic convergence.
+      The GMRES method already exists in our solver and is often used.
+      Because it is discussed a lot in the literature, many variants and enhancements were developed \cite{CoulaudGiraudRametEtAl2013, Vasseur2016, JolivetTournier2016}.
+      For those reasons, we decided to keep the GMRES method as the base of our linear solver.
+
+      \paragraph{}
+      The convergence of Krylov subspace methods, and more generally of iterative methods, depends on the linear system matrix.
+      It is common knowledge that the convergence is linked to the condition number of the matrix \cite{Nevanlinna1994}.
+      The condition number of an inversible matrix $A$ is defined as:
+      \begin{equation}
+        \kappa\left( A \right) = \norm{A} \norm{A^{-1}}
+      \end{equation}
+      and so it depends on the chosen norm.
+      A problem is said to be well conditioned when $\kappa = O\left(1\right)$, and ill conditioned when $\kappa \gg 1$.
+      For the Euclidean norm $\norm[2]{\cdot}$, we have
+  		\begin{equation}\label{eq:conditioning}
+  			\kappa\left( A \right) = \frac{\sigma_{\max}}{\sigma_{\min}}
+  		\end{equation}
+      where $\sigma_{\min}$ and $\sigma_{\max}$ are the smallest and largest singular values of the matrix $A$.
+      As a reminder, the singular values of $A$ are the eigenvalues of $A^* A$ where $A^*$ notes the conjugate transpose of $A$.
+      The relation (\ref{eq:conditioning}) is often simplified as
+      \begin{equation}
+        \kappa\left( A \right) = \frac{\left|\lambda_{\max}\right|}{\left|\lambda_{\min}\right|}
+      \end{equation}
+      with $\lambda_{\min}$ and $\lambda_{\max}$ the eigenvalue of $A$ with the smallest and largest modulus.
+      If this help picture what the condition number stands for, this is only true for normal matrices: matrices that commute with their conjugate transpose.
+      However, the matrices we face in our field have no reasons to be normal matrices.
+      An amusing result is found in \cite{GreenbaumPtakStrakos1996}.
+      For a given decreasing convergence curve and a given spectrum, it is possible to construct a linear problem such as the convergence of GMRES follows the given curve and the matrix has the given spectrum.
+      In other words, there are ill conditioned matrices for which GMRES converges quickly, and well conditioned matrices on which GMRES will be slow.
+      In particular, we can find a matrix with the best condition number possible, meaning 1, on which GMRES will make no progress until the last iteration.
+      This is because of the nonnormality of the matrix \cite{GreenbaumStrakos1994, GreenbaumPtakStrakos1996}.
+      To handle it in the analysis on the convergence, one must not look at the spectrum but the pseudospectrum \cite{Trefethen1999}.
+      This analysis is quite complex, and is mostly done in an analytical context, not an industrial one.
+      Using Krylov subspace methods with nonnormal matrices and the study of their convergence is no simple task \cite{LiesenTichy2004, Huhtanen2005}.
+      As the matrices we encounter in our computational fluid dynamic problems are \PS{quelconques}, meaning \PS{à priori non-normales}, we decided not to study finely the spectrum of the operator.
+
+      \paragraph{}
+      Even if we will not look deeply into the spectrum of the matrix, we still to help to the linear solver with preconditioning.
+      Preconditioning consists in multiplying the equation (\ref{eq:linear}) with a preconditioning operator $P$ to the left for left preconditioning:
+      \begin{equation}
+        PAx = Pb
+      \end{equation}
+      and to the right for right preconditioning:
+      \begin{equation}
+        \left\{\begin{aligned} APx' &= b \\	Px' &= x \end{aligned}\right. \ .
+      \end{equation}
+      The idea is to transform $A$ into a matrix that is more easily inversible.
+      The matrix we need to invert is now $PA$ for left preconditioning and $AP$ for right preconditioning.
+      If the preconditioning operator is close to $A^{-1}$ and is cheap to compute, this new matrix is close to $\operatorname{Id}$ and so is easily inversible.
+      If $P$ is too close to $A^{-1}$, computing the preconditioning will be as expensive as solving the original linear problem.
+      If $P$ is too easy to compute, meaning close to $\operatorname{Id}$, tor preconditioning will be useless.
+      Choosing a preconditioning means making a compromise between those two extrema.
+
+      \paragraph{}
+      Just as Krylov subspace methods only need to compute matrix vector products, and not to know the matrix, we do not need to know the preconditioning matrix, but only to know how to apply it on any given vector.
+
+      \paragraph{}
+       To better understand how preconditioning works, let us take an example, inspired from example 35.2 of \cite{TrefethenBau1997}.
+       We take a square matrix of size 200 by 200, which is the sum of a diagonal part and a random perturbations part:
+       \begin{equation}
+         \begin{aligned}
+           A &= A_{diag} + \frac{1}{2\sqrt{N}}A_{rand} \\
+           \textrm{where}\quad A_{diag, k} &= 2\sin\left( \frac{2 k \pi}{N - 1} \right) - 1 + i \cos\left( \frac{2 k \pi}{N - 1} \right) \\
+           \textrm{and}\quad A_{rand} &\hookrightarrow \mathcal{N}\left(0, 1\right) \ .
+         \end{aligned}
+       \end{equation}
+       The vector $b$ is a vector of ones.
+       The spectrum of $A$ is displayed on figure \ref{fig:preconditioning} in blue.
+       It is spread out around the origin \PS{(ça se dit en anglais ?)}
+       When we apply the Jacobi preconditioning, meaning the preconditioning matrix is the invert of the diagonal part, the spectrum is gathered around 1.
+       This helps a lot GMRES, as can be seen on figure \ref{fig:preconditioning}: it struggles to reduce the residual norm on the standard problem, but does it easily on the preconditioned problem.
+       This is only a dummy example, but it helps visualise the importance of preconditioning.
+
+   		\begin{figure}
+   			\centering
+   			\includegraphics[width=\textwidth]{figures/preconditioning.png}
+   			\caption{Spectrum of $A$ in blue and $A_{pre} = AD^{-1}$ in orange (left). GMRES convergence pour those matrices (right).}
+   			\label{fig:preconditioning}
+   		\end{figure}
+
+      \paragraph{}
+      We need to use preconditioners when solving the linear system (\ref{eq:linear}) with GMRES.
+      One of the most unsophisticated preconditioners is the Jacobi one.
+      It is the one used in the example above: the preconditioning matrix is the invert of the diagonal part of $A$.
+      Its advantage resides in its simplicity.
+      It is inexpensive and easily \PS{parallélisables}.
+      On the other hand, it lacks of efficiency, and that is why many preconditioners were developed in the literature.
+      A slightly variation consists in taking the diagonal blocs instead of the diagonal elements.
+      This makes sense for our matrices, as they can be divided in blocs, each bloc corresponding to the degrees of freedom in a cell.
+      The resulting preconditioner, called Block Jacobi, already exists in our solver, and is often used as the standard preconditioner.
+
+      \paragraph{}
+      Others preconditioners exists in our solver.
+      One consists in using the invert of the cell volumes as a diagonal matrix: the preconditioning matrix is a diagonal matrix, where each diagonal element is the inverse of the corresponding mesh cell volume.
+      This was originally conceived to preserve the conservative properties through the GMRES solve \PS{clair ?}.
+      As it is even simpler than the Jacobi preconditioner, it shows poor performances.
+      Some work was done towards Polynomial preconditioning: the preconditioning matrix $P$ is equal to the partial Neumann serie of $\operatorname{Id} - A$, as it approximates $A^{-1}$ \cite{DuboisGreenbaumRodrigue1979}.
+      Its major drawback is its computational cost, as it require multiple matrix vector products.
+      For this reason we decided not to look into it.
+
+      \paragraph{}
+      We were at first interested in some other preconditioners found in the literature, such as the Incomplete LU preconditioner.
+      When taking the LU factorisation of the sparse matrix $A$, the triangular matrices $L$ and $U$ loose the sparsity pattern of $A$.
+      This is troublesome as it is not possible to store dense matrices of the size of $A$.
+      The Incomplete LU preconditioner, characterised by its index $k$, computes only the coefficients of the triangular factors that belong to the sparsity pattern of $A^{k+1}$.
+      This way, the factorisation in incomplete in the sense that it does not recreates $A$, but it is still sparse and can be used as a preconditioner.
+      The Incomplete LU factorisation is often used in computational fluid dynamics \cite{LiuZhangZhongEtAl2015, AhrabiMavriplis2020}, but we decided it was not a good fit for our solver, due to the difficulty in developing the method in an industrial size solver, and because it relies directly on the matrix.
+      This second point will make sense later in the document.
+      \PS{En gros on a pas une bonne matrice donc on veut pas qu'elle soit au coeur du précond, et si on fait du JFNK on a même pas la matrice. Est-ce que je peux laisser ça comme ça ou est-ce que c'est pas terrible ?}
+
+      \paragraph{}
+      As we do not need explicitly the preconditioning matrix $P$, and its effet should be near $A^{-1}$, one could take as a preconditioning procedure another Krylov subspace method:
+      To apply the preconditioning to any vector $v$ would mean solving $Ax = v$ with a Krylov subspace method.
+      However, applying a Krylov subspace method is not a linear operator.
+      To handle this case, we need to modify the GMRES algorithm into the Flexible Generalized minimal residual method, or FGMRES \cite{Saad1993, SimonciniSzyld2002}.
+      We decided to add this method to our solver for multiple reasons.
+      We can precondition GMRES with an inner GMRES, and as GMRES was already written in our solver this idea was simple to do.
+      This preconditioning does not need more information on the matrix $A$ than the outer GMRES does: in particular it does not require to know the matrix coefficients.
+      This is interesting to us for some reasons that are discussed lated.
+      Finally, this method interest many scientists \cite{CoulaudGiraudRametEtAl2013, Vasseur2016} and has shown promising results in numerical simulation \cite{Pinel2010}.
+
+      \paragraph{}
+      The GMRES method is often used with restarting: instead of keeping on iterating the method, one could stop it and start again.
+      This is the Restarted GMRES method.
+      The cost of one iteration increases as the method iterates.
+      Restarting allows for some control on the Krylov subspace dimension, and therefore on computational cost and memory usage.
+      The issue with restarting is that it can be harmful to the convergence.
+      When the Krylov subspace generated on the restart is too close to the previously generated Krylov subspace, the residual norm may stagnate \cite{Simoncini1999}.
+      A solution to this problem would be to reuse information between restarts.
+      This is done with the Loose GMRES method \cite{BakerJessupManteuffel2005} or with Augmentation or Deflation techniques  \cite{ChapmanSaad1997, Morgan2002, RamosKehlNabben2020}.
+      Augmentation and Deflation give in fact equivalent results \cite{CoulaudGiraudRametEtAl2013}.
+      Their idea is to recycle the spectral information acquired at the end of the cycle onto the next cycle.
+      Recycling spectral information could even be done throughout multiple linear solve, during a nonlinear solve for example \cite{Gaul2014}.
+      Those techniques look promising but we did not have time to try them in our solver, as we focused on other points.
+      \PS{Je peux dire ça ?}
+
+
     \subsection{Evaluating the Jacobian matrices}
 
       \paragraph{}

@@ -1,4 +1,3 @@
-import matplotlib
 import matplotlib.colors as clr
 import matplotlib.pyplot as plt
 import numpy as np
@@ -176,7 +175,7 @@ def fig_ab():
     fig.savefig("ab_stab.png", transparent=True)
 
 
-def fig_precond():
+def fig_preconditioning():
     from scipy.sparse.linalg import gmres as gmres_scipy
 
     class GMRESCounter:
@@ -192,51 +191,43 @@ def fig_precond():
     ax1 = fig.add_subplot(121)
     ax2 = fig.add_subplot(122)
     ax1.set_aspect('equal')
-    ax2.set_xlabel(r'$n_{iter}$')
-    ax2.set_ylabel(r'$\frac{||r_n||}{||r_0||}$', rotation=0)
+    ax2.set_xlabel(r'$n_{iter}$', fontsize=30)
+    ax2.set_ylabel(r'$\frac{\left\| r_n \right\|}{\left\| r_0 \right\|}$', rotation=0, labelpad=30, fontsize=30)
 
     n = 200
     angle = 2 * np.arange(n) * np.pi / (n - 1)
     a = np.diagflat(2 * np.sin(angle) - 1 + 1j * np.cos(angle)) + np.random.normal(size=(n, n)) / (2 * np.sqrt(n))
 
-    val, vec = scipy.linalg.eig(a)
+    val = scipy.linalg.eigvals(a)
     cond_a = np.linalg.cond(a)
-    cond_v = np.linalg.cond(vec)
     ax1.plot(np.real(val), np.imag(val), 'x', mew=1, ms=6)
 
     counter = GMRESCounter()
     gmres_scipy(a, np.ones(n), callback=counter, maxiter=12)
-    l1, = ax2.semilogy(counter.res, '+')
+    l1, = ax2.semilogy(counter.res, '+', label=r'$\kappa\left(A\right) = {0:0.2f}$'.format(cond_a))
 
     jacobi = scipy.sparse.diags(1 / a.diagonal())
 
     a_prec = a @ jacobi
-    val, vec = scipy.linalg.eig(a_prec)
+    val = scipy.linalg.eigvals(a_prec)
     cond_a_pre = np.linalg.cond(a_prec)
-    cond_v_pre = np.linalg.cond(vec)
     ax1.plot(np.real(val), np.imag(val), '+', mew=1, ms=6)
 
     counter = GMRESCounter()
     gmres_scipy(a_prec, np.ones(n), callback=counter, maxiter=12)
-    l2, = ax2.semilogy(counter.res, 'x')
+    l2, = ax2.semilogy(counter.res, 'x', label=r'$\kappa\left(A_{{pre}}\right) = {0:0.2f}$'.format(cond_a_pre))
 
-    leg = ax2.legend([l1, l2], ['', ''], handletextpad=16, loc='lower center', bbox_to_anchor=(-0.75, 0.0))
+    ax2.legend(loc='lower center', bbox_to_anchor=(-0.75, -0.075))
 
-    ax2.text(-1, 0.035,
-             r'$\begin{{aligned}}'
-             r'\kappa\left(A\right) &= {0:0.2f} & \kappa\left(V\right) &= {1:0.2f} \\[10pt]'
-             r'\kappa\left(A_{{pre}}\right) &= {2:0.2f} \quad& \kappa\left(V_{{pre}}\right) &= {3:0.2f} \\'
-             r'\end{{aligned}}$'.format(cond_a, cond_v, cond_a_pre, cond_v_pre),
-             transform=ax2.transAxes,
-             zorder=leg.zorder + 1,
-             fontsize=matplotlib.rcParams['legend.fontsize']
-             )
-
+    fig.set_size_inches(19.2, 7.23)
+    plt.subplots_adjust(0.05, 0.1, 0.99, 0.99)
     plt.show()
+    # fig.savefig("preconditioning.png", transparent=True)
 
 
 if __name__ == '__main__':
     # fig_rk()
-    fig_bdf()
+    # fig_bdf()
     # fig_ab()
+    fig_preconditioning()
     pass
