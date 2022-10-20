@@ -683,6 +683,19 @@
 
     \subsection{Nonlinear solver}
 
+      \paragraph{}
+      As we said, we solve the nonlinear problem with Newton's method.
+      What was done in our solver was in fact a single step of Newton's method, which means a single linearisation of the nonlinear problem.
+      We thought we would benefit from an actual Newton's method, so we implemented it.
+      Contrary to what was done before, several linear problems need to be solved during one time step, which means using several Jacobian matrices.
+
+      \paragraph{}
+      The issue when using Newton's method is that it should be accompanied by a Line Search algorithm to determine the step size $\alpha$, so that the next iterate of the method is:
+      \begin{equation}
+        x_{i+1} = x_i - \alpha f'\left(x_i\right)^{-1} f\left(x_i\right) \ .
+      \end{equation}
+      During this thesis, we did some work towards using a complete Newton's method, but we did not have time to develop a Line Search algorithm, and so we ended up using the standard method from our solver: a single linearisation of the nonlinear problem.
+
 
     \subsection{Linear solver}
 
@@ -893,11 +906,12 @@
       To apply the preconditioning to any vector $v$ would mean solving $Ax = v$ with a Krylov subspace method.
       However, applying a Krylov subspace method is not a linear operator.
       To handle this case, we need to modify the GMRES algorithm into the Flexible Generalized minimal residual method, or FGMRES \cite{Saad1993, SimonciniSzyld2002}.
-      We decided to add this method to our solver for multiple reasons.
+      We saw several advantages to this method.
       We can precondition GMRES with an inner GMRES, and as GMRES was already written in our solver this idea was simple to do.
       This preconditioning does not need more information on the matrix $A$ than the outer GMRES does: in particular it does not require to know the matrix coefficients.
       This is interesting to us for some reasons that are discussed lated.
       Finally, this method interest many scientists \cite{CoulaudGiraudRametEtAl2013, Vasseur2016} and has shown promising results in numerical simulation \cite{Pinel2010}.
+      For all those reasons, we decided to add this method to our solver.
 
       \paragraph{}
       The GMRES method is often used with restarting: instead of keeping on iterating the method, one could stop it and start again.
@@ -920,9 +934,12 @@
       \paragraph{}
       At this point, we know how to evaluate the function $f$ from equation (\ref{eq:nonlinear}), that is often expressed as a linear combination of previous states and $\operatorname{G}$ evaluations, where $\operatorname{G}$ is the function introduced in equation (\ref{eq:init_value_ode}), the function from our starting ordinary differential equation.
       On the other hand, computing its derivative with regard to $x$ is a different story.
+      As this derivative is the matrix we use when solving the linear problem, is is crucial to have a good representation of it.
       This derivative $f'\left(x\right)$ uses the Jacobian matrix of the function $\operatorname{G}$.
       As the function $\operatorname{G}$ comes from the spatial discretisation method applied to the original partial differential equations (\ref{eq:pde}), is is complex, not in the sense of imaginary numbers but of complicated.
       The underlying algorithm is hard to fully understand and to write, and the numerical evaluation us usually expensive.
+      Furthermore, our software keeps evolving, and models are constantly added and modify.
+      It would require a constant work to maintain the Jacobian matrix computation.
       Finding an algorithm that computes the exact Jacobian matrix analytically would amount to too much work in out industrial software.
       We must use other alternatives to get the Jacobian matrix we need for our Newton's method.
 
@@ -945,12 +962,40 @@
       This is what is done originally in out in-house solver: using a cheap low order approximation of the Jacobian matrix.
 
       \paragraph{}
-      An other idea is to group the Newto
+      When we decided to use Krylov subspace methods as our linear solver, we highlighted the fact that they only need to know how to compute matrix vector products.
+      Using this, and the fact that the matrix in a Jacobian matrix, we could approximate the matrix vector product of $f'\left(x\right)$ with a vector $v$ by:
+      \begin{equation}\label{eq:matrix_free}
+        f'\left(x\right) v \approx \frac{f\left(x + \varepsilon v\right) - f\left(x\right)}{\varepsilon}
+      \end{equation}
+      with a scalar parameter $\varepsilon$ discussed below.
+      This is the finite difference approximation of the Jacobian matrix vector product.
+      A quick analysis shows that the error on this approximation is $o\left(\varepsilon\right)$.
+      Usually the value of $f\left(x\right)$ is previously computed, so one evaluation of $f$ is required for one matrix vector product.
+      We could also use the centered finite difference approximation:
+      \begin{equation}
+        f'\left(x\right) v \approx \frac{f\left(x + \varepsilon v\right) - f\left(x - \varepsilon v\right)}{\varepsilon}
+      \end{equation}
+      that gives an smaller error in \PS{article} $o\left(\varepsilon^2\right)$, but it requires two $f$ evaluations, so it is twice as expensive as the first order approximation.
+      Therefore, we will use the first order approximation.
 
+      \paragraph{}
+      Using this approximation, it is possible to recover the full Jacobian matrix.
+      If we apply the approximation (\ref{eq:matrix_free}) for each vector of the \PS{base canonique} as the vector $v$, we can gather each columns of the Jacobian matrix.
+      This gives what is often called the finite difference Jacobian matrix.
+      Instead of computing a matrix vector product for each direction, a technique consists in computing independent directions beforehand to get a coloring of the matrix: two directions are of the same color if they are independent through the matrix.
+      Then, a smaller number of matrix vector product approximations are required: as much as there are colors.
+      This is often called the finite difference Jacobian matrix with coloring \cite{GebremedhinMannePothen2005}.
+      Those techniques are still not well fitted for our solver.
+      As we work with large dimensions, computing the Jacobian matrix takes time.
+      Furthermore, we explained that we do not need to know explicitly the matrix.
+      That is why we will use the approximation (\ref{eq:matrix_free}) instead of recomputing the Jacobian matrix first.
 
+      \paragraph{}
+      Now the choices we made for our nonlinear and linear solve strategies are starting to make sense.
+      Working with different Jacobian matrices is not an issue, as they are not actually computed.
+      The Krylov subspace method GMRES does not need the Jacobian matrix, only to compute matrix vector products.
+      The flexible preconditioning also does not need the Jacobian matrix for the same reason, contrary to other types of preconditioners such as ILU preconditioners.
 
-    \PS{Nécessité de calculer des Jacobiennes --> JFNK}
-
-    \PS{Résolution système linéaire --> GMRES}
-
-    \PS{Préconditionnement sans utiliser la matrice --> FGMRES}
+      \paragraph{}
+      Overall, using Newton's method to solve the nonlinear problem and a Krylov subspace method to solve the linear problem while using a matrix free method is known as the Jacobian Free Newton--Krylov method, or JFNK.
+      This methods and its variants are as of today still discussed \cite{KnollKeyes2004, Turpault2003} and used on actual computational fluid dynamics solvers \cite{LiuZhangZhongEtAl2015, FrancoCamierAndrejEtAl2020}.

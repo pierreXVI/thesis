@@ -221,8 +221,8 @@ def fig_preconditioning():
 
     fig.set_size_inches(19.2, 7.23)
     plt.subplots_adjust(0.05, 0.1, 0.99, 0.99)
-    plt.show()
-    # fig.savefig("preconditioning.png", transparent=True)
+    # plt.show()
+    fig.savefig("preconditioning.png", transparent=True)
 
 
 if __name__ == '__main__':
