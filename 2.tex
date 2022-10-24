@@ -1,15 +1,15 @@
 \chapter{Development workflow in CEDRE}
 
   \paragraph{}
-  In this chapter we will discuss the details of what was implemented in CEDRE.
+  In this chapter we will discuss the details of how we implemented selected methods in CEDRE.
   This does not constitute research work, but it ended up being a large part of the work done during this thesis.
   It is also not without interest, as we used advanced features in order to implement what we set out to do.
 
 
-  \section{Fonctionnement CEDRE}
+  \section{Description of CEDRE}
 
     \paragraph{}
-    The software system CEDRE \cite{ReflochCourbetMurroneEtAl2011} gather several solvers to solve problems in the field of multiphysics.
+    The software system CEDRE gather several solvers to solve problems in the field of multiphysics \cite{ReflochCourbetMurroneEtAl2011}.
     Each solver is dedicated to a given model.
     As of today there are seven solvers embedded in CEDRE:
     \begin{itemize}
@@ -39,6 +39,11 @@
     \paragraph{}
     Despite allowing some flexibility in the programming language, most of CEDRE is written in Fortran.
     We decided to keep working with Fortran to help the integration of our work.
+    As CEDRE is used by industrial clients, and as they rely on their own supercomputer, we need to limit ourselves to Fortran 2003 standards, so as to ensure compatibility.
+
+
+  \section{Implementation details}
+
 
     \paragraph{}
     In this thesis, we focused on the most used solver: CHARME.
@@ -50,12 +55,14 @@
     The same reason was also used as a criterium in our choices, as was explained previously.
     Choosing the Jacobian Free Newton--Krylov method goes towards fully implicit coupling between solvers, instead of the explicit coupling existing today.
 
-    \paragraph{FGMRES}
-    In order for our work to be usable in every other solver, we had to work on the common library BIBCEDRE.
-    When the implicit Euler method of CHARME needs to solve a linear problem, it uses BIBCEDRE.
-    It contains everything needed to solve linear problems, such as GMRES and preconditioners.
-    A linear problem is stored in BIBCEDRE as the Fortran derived type \mintinline{fortran}{type_sys}.
-    In order to add Flexible proconditioning to the existing GMRES, we added a pointer to an inner instance of \mintinline{fortran}{type_sys} inside of \mintinline{fortran}{type_sys}, so that linear system and its corresponding solver may use an inner solver for an inner problem:
+    \subsection{FGMRES}
+
+    \paragraph{}
+      In order for our work to be usable in every other solver, we had to work on the common library BIBCEDRE.
+      When the implicit Euler method of CHARME needs to solve a linear problem, it uses BIBCEDRE.
+      It contains everything needed to solve linear problems, such as GMRES and preconditioners.
+      A linear problem is stored in BIBCEDRE as the Fortran derived type \mintinline{fortran}{type_sys}.
+      In order to add Flexible proconditioning to the existing GMRES, we added a pointer to an inner instance of \mintinline{fortran}{type_sys} inside of \mintinline{fortran}{type_sys}, so that linear system and its corresponding solver may use an inner solver for an inner problem:
 \begin{minted}{fortran}
   type type_sys
     ! Inner linear system and solver
@@ -64,28 +71,32 @@
     ... ! Additional data
   end type type_sys
 \end{minted}
-    This way, when we need to apply the preconditioner during a GMRES iteration, we can use the inner \mintinline{fortran}{type_sys} instance to call the inner GMRES.
-    Furthermore, having a pointer to an inner instance allows for multiple depths of preconditioning: the inner GMRES may also be a FGMRES method, preconditioned by another GMRES, etc.
+      This way, when we need to apply the preconditioner during a GMRES iteration, we can use the inner \mintinline{fortran}{type_sys} instance to call the inner GMRES.
+      Furthermore, having a pointer to an inner instance allows for more freedom for the inner solver.
+      One could for instance use multiple depths of preconditioning and have the inner GMRES also be a FGMRES method, preconditioned by another GMRES, etc.
 
 
-    \paragraph{Matrix free}
-    Sparse matrices are stored in an in-house format, using an array for the diagonal blocks, another one for the extra-diagonal blocks and a third one to index the extra-diagonal blocks.
-    Matrix vector products are made inside BIBCEDRE to handle this matrix format, with the routine:
+    \subsection{Matrix free}
+
+      \paragraph{}
+      Sparse matrices are stored in an in-house format, using an array for the diagonal blocks, another one for the extra-diagonal blocks and a third one to index the extra-diagonal blocks.
+      Matrix vector products are made inside BIBCEDRE to handle this matrix format, with the routine:
 \begin{minted}{fortran}
   subroutine gmvec(sys, i_p, i_ap)
     type(type_sys), intent(inout) :: sys
     integer,        intent(in)    :: i_p
     integer,        intent(in)    :: i_ap
 \end{minted}
-    that takes three arguments: the \mintinline{fortran}{type_sys} instance, an index identifying the vector to multiply and an index identifying the vector where to put the result.
-    As we explained when we introduces Krylov subspace methods, GMRES uses the linear system matrix through this matrix vector product routine.
-    In order to use the matrix free approximation from equation (\ref{eq:matrix_free}), we need to replace this routine by another that computes the approximation.
-    Unfortunately, the approximation uses a function that belongs to the client solver.
-    The library BIBCEDRE does not know this function and how to compute it, as it is part of CHARME or any other client solver.
-    As we said, we want to write generic solutions, and so merging the library BIBCEDRE with the solver CHARME is not a good solution.
-    What we need here is to allow BIBCEDRE to use a callback from the client solver.
-    We did that using the Fortran 2003 feature: polymorphism.
-    Without going into too much details, we added a member to the type \mintinline{fortran}{type_sys} that contains the context to evaluate a matrix vector product:
+      that takes three arguments: the \mintinline{fortran}{type_sys} instance, an index identifying the vector to multiply and an index identifying the vector where to put the result.
+      As we explained when we introduces Krylov subspace methods, GMRES uses the linear system matrix through this matrix vector product routine.
+      Classically, a client solver such as CHARME fills the matrix coefficients, and then let BIBCEDRE solve the linear system.
+      In order to use the matrix free approximation from equation (\ref{eq:matrix_free}), we only need to replace this routine by a new one that computes the approximation.
+      Unfortunately, the approximation uses a function that belongs to the client solver.
+      The library BIBCEDRE does not know this function and how to compute it, as it is part of CHARME or any other client solver.
+      As we said, we want to write generic solutions, and so merging the library BIBCEDRE with the solver CHARME is not a good solution.
+      What we need here is to allow BIBCEDRE to use a callback from the client solver.
+      We did that using the Fortran 2003 feature: polymorphism.
+      Without going into too much details, we added a member to the type \mintinline{fortran}{type_sys} that contains the context to evaluate a matrix vector product:
 \begin{minted}{fortran}
   type type_sys
     ! Matrix vector product context
@@ -94,7 +105,7 @@
     ... ! Additional data
   end type type_sys
 \end{minted}
-    with:
+      with:
 \begin{minted}{fortran}
   type type_gmvec_ctx
     procedure(interface_gmvec), pointer, nopass :: gmvec
@@ -102,14 +113,32 @@
     ... ! Additional data
   end type type_gmvec_ctx
 \end{minted}
-    This way, when the client solver creates an instance \mintinline{fortran}{sys} of \mintinline{fortran}{type_sys}, it can choose how to evaluate matrix vector products by setting the procedure pointer \mintinline{fortran}{sys%gmvec_ctx%gmvec}.
-    It can for example point to the already existing routine to use the classical matrix vector product, but it also can use a custom routine that implements the approximation (\ref{eq:matrix_free}).
-    Furthermore, the client solver can use polymorphism and create an extended type of \mintinline{fortran}{type_gmvec_ctx} in order to store additional data into the context.
-    Finally, with this implementation, any solver that wants to use the approximation (\ref{eq:matrix_free}) just needs to write the corresponding routine and set the context accordingly.
+      This way, when the client solver creates an instance \mintinline{fortran}{sys} of \mintinline{fortran}{type_sys}, it can choose how to evaluate matrix vector products by setting the procedure pointer \mintinline{fortran}{sys%gmvec_ctx%gmvec}.
+      It can for example point to the already existing routine to use the classical matrix vector product, but it also can use a custom routine that implements the approximation (\ref{eq:matrix_free}).
+      Furthermore, the client solver can use polymorphism and create an extended type of \mintinline{fortran}{type_gmvec_ctx} in order to store additional data into the context.
+      This is what is done by the solver CHARME, as it does need additional data to approximate the Jacobian matrix vector product.
+      Finally, with this implementation, any solver that wants to use the approximation (\ref{eq:matrix_free}) just needs to write the corresponding routine and set the context accordingly.
+      Then, a user can choose at execution time whether to use the standard Jacobian matrix or the matrix free method.
 
-
-  \section{Implémentation CHARME}
-
-    \subsection{Polymorphisme Fortran}
 
     \subsection{Choix epsilon}
+      \PS{Bouger cette partie ?}
+
+
+      \paragraph{}
+      When we introduced the approximation (\ref{eq:matrix_free}) we saw a new parameter $\varepsilon$.
+      It is easy to check that the truncation error on this approximation decreases linearly with regard to $\varepsilon$.
+      It is natural to take a small value for $\varepsilon$.
+      But unfortunately, we work with floating-point arithmetic, so dividing by a small $\varepsilon$ introduces roundoff error.
+      This parameter needs to balance truncation and roundoff error.
+      We need to decide on a strategy for the choice of epsilon.
+      We could take for example $\varepsilon = \sqrt{\varepsilon_\textrm{mach}}$ where $\varepsilon_\textrm{mach}$ is the machine epsilon: around $10^{-6}$ for single precision and $10^{-15}$ for double precision.
+      This choice is often discarded as it is deemed too simplistic.
+      Instead, works from the literature tend to use the same few options \cite{ParkNourgalievMartineauEtAl2009, LiuZhangZhongEtAl2015, AbhyankarBrownConstantinescuEtAl2018} that come from \cite{PerniceWalker1998} and \cite{DennisSchnabel1996}.
+      Those options are well described in \cite{KnollKeyes2004}.
+      In particular, the one that we encounter the most is the ones from \cite{PerniceWalker1998}:
+      \begin{equation}
+        \varepsilon_\textrm{wp} = \frac{\sqrt{\varepsilon_0 \left(1 + \norm[2]{x}\right) }}{\norm[2]{v}} \ .
+      \end{equation}
+      \PS{Attention notations, c'est $x$ et $v$ dans (\ref{eq:matrix_free}) ?}
+      Here $\varepsilon_0$ is the estimated relative error in function evaluation, usually set equal to machine epsilon $\varepsilon_\textrm{mach}$.
