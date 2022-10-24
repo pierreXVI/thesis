@@ -1,0 +1,115 @@
+\chapter{Development workflow in CEDRE}
+
+  \paragraph{}
+  In this chapter we will discuss the details of what was implemented in CEDRE.
+  This does not constitute research work, but it ended up being a large part of the work done during this thesis.
+  It is also not without interest, as we used advanced features in order to implement what we set out to do.
+
+
+  \section{Fonctionnement CEDRE}
+
+    \paragraph{}
+    The software system CEDRE \cite{ReflochCourbetMurroneEtAl2011} gather several solvers to solve problems in the field of multiphysics.
+    Each solver is dedicated to a given model.
+    As of today there are seven solvers embedded in CEDRE:
+    \begin{itemize}
+      \item CHARME, the fluid solver, for compressible multifluid and reactive flow, with RANS or LES turbulence models
+      \item SPIREE, the dispersed phase solver using an Eulerian framework
+      \item SPARTE, the dispersed phase solver using a Lagrangian framework
+      \item ASTRE, the radiation solver using a Monte Carlo method
+      \item REA, the radiation solver using a discrete ordinates method
+      \item FILM, for shallow water equations used to model ice accretion
+      \item ACACIA, the conduction solver, for heat transfer in solids.
+    \end{itemize}
+    Combining different solvers, CEDRE is able to numerically simulate multiphysic phenomena.
+    Using those solvers, CEDRE applications goes from aerodynamics to aeroacoustics, aerothermics, combustion, icing, etc.
+    The solver are coupled either through boundary conditions as for example in a thermal interaction at a fluid-structure contact, or inside the computational domain as for example in the case of mass and energy transfer between dispersed phases and the main flow.
+    The coupling can either be one-way or two-way, depending on the user's choice.
+    Each solver is integrated in time separately, and the coupling consists in some data exchange between iterations: it is an explicit coupling.
+
+    \paragraph{}
+    Some functionalities common to multiple solvers exists outside the solver in helper libraries.
+    For instance:
+    \begin{itemize}
+      \item ASSEMBLAGE acts as the conductor by handling the overall simulation, telling the solvers what to do and when to do it, when to exchange data and with which other coupled solver
+      \item BIBCEDRE contains tool for geometrical operations, linear algebra methods, mesh handling, parallel communications and other general functionalities
+      \item THERMOLIB is used to compute the different thermophysical properties such as heat capacities, chemical reaction rates, etc. \PS{Lionel je dis pas de bêtise sur les coefficients de réaction chimique ?}
+    \end{itemize}
+
+    \paragraph{}
+    Despite allowing some flexibility in the programming language, most of CEDRE is written in Fortran.
+    We decided to keep working with Fortran to help the integration of our work.
+
+    \paragraph{}
+    In this thesis, we focused on the most used solver: CHARME.
+    Indeed, not only is it the most used, but other solvers use it as a base on many applications.
+    When simulating ice accretion around a wing profile for example, a standard methodology with CEDRE is to first get the base aerodynamic flow with CHARME, and then compute the ice particles with SPIREE or SPARTE.
+    Working with the solver CHARME was the way to benefit the most from our work.
+    Even if during this thesis we only worked on CHARME, we always kept in mind that the finality was multiphysics simulations using multiple solvers.
+    That is why we tried to develop generic functionalities so that they could be easily imported to other solvers, provided the developers of said solvers wanted to use them.
+    The same reason was also used as a criterium in our choices, as was explained previously.
+    Choosing the Jacobian Free Newton--Krylov method goes towards fully implicit coupling between solvers, instead of the explicit coupling existing today.
+
+    \paragraph{FGMRES}
+    In order for our work to be usable in every other solver, we had to work on the common library BIBCEDRE.
+    When the implicit Euler method of CHARME needs to solve a linear problem, it uses BIBCEDRE.
+    It contains everything needed to solve linear problems, such as GMRES and preconditioners.
+    A linear problem is stored in BIBCEDRE as the Fortran derived type \mintinline{fortran}{type_sys}.
+    In order to add Flexible proconditioning to the existing GMRES, we added a pointer to an inner instance of \mintinline{fortran}{type_sys} inside of \mintinline{fortran}{type_sys}, so that linear system and its corresponding solver may use an inner solver for an inner problem:
+\begin{minted}{fortran}
+  type type_sys
+    ! Inner linear system and solver
+    type(type_sys), pointer :: sys_int => null()
+
+    ... ! Additional data
+  end type type_sys
+\end{minted}
+    This way, when we need to apply the preconditioner during a GMRES iteration, we can use the inner \mintinline{fortran}{type_sys} instance to call the inner GMRES.
+    Furthermore, having a pointer to an inner instance allows for multiple depths of preconditioning: the inner GMRES may also be a FGMRES method, preconditioned by another GMRES, etc.
+
+
+    \paragraph{Matrix free}
+    Sparse matrices are stored in an in-house format, using an array for the diagonal blocks, another one for the extra-diagonal blocks and a third one to index the extra-diagonal blocks.
+    Matrix vector products are made inside BIBCEDRE to handle this matrix format, with the routine:
+\begin{minted}{fortran}
+  subroutine gmvec(sys, i_p, i_ap)
+    type(type_sys), intent(inout) :: sys
+    integer,        intent(in)    :: i_p
+    integer,        intent(in)    :: i_ap
+\end{minted}
+    that takes three arguments: the \mintinline{fortran}{type_sys} instance, an index identifying the vector to multiply and an index identifying the vector where to put the result.
+    As we explained when we introduces Krylov subspace methods, GMRES uses the linear system matrix through this matrix vector product routine.
+    In order to use the matrix free approximation from equation (\ref{eq:matrix_free}), we need to replace this routine by another that computes the approximation.
+    Unfortunately, the approximation uses a function that belongs to the client solver.
+    The library BIBCEDRE does not know this function and how to compute it, as it is part of CHARME or any other client solver.
+    As we said, we want to write generic solutions, and so merging the library BIBCEDRE with the solver CHARME is not a good solution.
+    What we need here is to allow BIBCEDRE to use a callback from the client solver.
+    We did that using the Fortran 2003 feature: polymorphism.
+    Without going into too much details, we added a member to the type \mintinline{fortran}{type_sys} that contains the context to evaluate a matrix vector product:
+\begin{minted}{fortran}
+  type type_sys
+    ! Matrix vector product context
+    class(type_gmvec_ctx), pointer :: gmvec_ctx => null()
+
+    ... ! Additional data
+  end type type_sys
+\end{minted}
+    with:
+\begin{minted}{fortran}
+  type type_gmvec_ctx
+    procedure(interface_gmvec), pointer, nopass :: gmvec
+
+    ... ! Additional data
+  end type type_gmvec_ctx
+\end{minted}
+    This way, when the client solver creates an instance \mintinline{fortran}{sys} of \mintinline{fortran}{type_sys}, it can choose how to evaluate matrix vector products by setting the procedure pointer \mintinline{fortran}{sys%gmvec_ctx%gmvec}.
+    It can for example point to the already existing routine to use the classical matrix vector product, but it also can use a custom routine that implements the approximation (\ref{eq:matrix_free}).
+    Furthermore, the client solver can use polymorphism and create an extended type of \mintinline{fortran}{type_gmvec_ctx} in order to store additional data into the context.
+    Finally, with this implementation, any solver that wants to use the approximation (\ref{eq:matrix_free}) just needs to write the corresponding routine and set the context accordingly.
+
+
+  \section{Implémentation CHARME}
+
+    \subsection{Polymorphisme Fortran}
+
+    \subsection{Choix epsilon}
