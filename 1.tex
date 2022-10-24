@@ -974,7 +974,7 @@
       Usually, the value of $f\left(x\right)$ is previously computed, so one evaluation of $f$ is required for one matrix-vector product.
       We could also use the centered finite difference approximation:
       \begin{equation}
-        f'\left(x\right) v \approx \frac{f\left(x + \varepsilon v\right) - f\left(x - \varepsilon v\right)}{\varepsilon}
+        f'\left(x\right) v \approx \frac{f\left(x + \varepsilon v\right) - f\left(x - \varepsilon v\right)}{2\varepsilon}
       \end{equation}
       that gives an smaller error in \PS{article} $o\left(\varepsilon^2\right)$, but it requires two $f$ evaluations, so it is twice as expensive as the first order approximation.
       Therefore, we will use the first-order approximation.
