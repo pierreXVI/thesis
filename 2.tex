@@ -136,9 +136,121 @@
       This choice is often discarded as it is deemed too simplistic.
       Instead, works from the literature tend to use the same few options \cite{ParkNourgalievMartineauEtAl2009, LiuZhangZhongEtAl2015, AbhyankarBrownConstantinescuEtAl2018} that come from \cite{PerniceWalker1998} and \cite{DennisSchnabel1996}.
       Those options are well described in \cite{KnollKeyes2004}.
-      In particular, the one that we encounter the most is the ones from \cite{PerniceWalker1998}:
-      \begin{equation}
-        \varepsilon_\textrm{wp} = \frac{\sqrt{\varepsilon_0 \left(1 + \norm[2]{x}\right) }}{\norm[2]{v}} \ .
+      In particular, the one that we encounter the most is the one from \cite{PerniceWalker1998}:
+      \begin{equation}\label{eq:epsilon_wp}
+        \varepsilon_\textrm{wp} = \frac{\sqrt{\varepsilon_0 \left(1 + \norm[2]{x}\right) }}{\norm[2]{v}}
       \end{equation}
-      \PS{Attention notations, c'est $x$ et $v$ dans (\ref{eq:matrix_free}) ?}
-      Here $\varepsilon_0$ is the estimated relative error in function evaluation, usually set equal to machine epsilon $\varepsilon_\textrm{mach}$.
+      using the same $x$ and $v$ as in equation (\ref{eq:matrix_free}).
+      Here $\varepsilon_0$ is the estimated relative error in function evaluation.
+      A reason this choice is so popular is that apart from this $\varepsilon_0$ value, it does not require any user input.
+      Furthermore, $\varepsilon_0$ if often simply set to machine epsilon $\varepsilon_\textrm{mach}$.
+
+      \paragraph{}
+      To analyse this strategy in the choice of $\varepsilon$, we do the following numerical experiment.
+      We consider the 1D Burgers' equation over a regular periodic mesh made of 10 cells (or segments in 1D).
+      The function $f$ is taken as the right-hand side of equation (\ref{eq:ode}) when solving the Burgers' equation, using a first-order Finite Volume method as the spatial discretisation method, itself using an exact Riemann solver (Godunov 's scheme).
+      This function was chosen because it is a nonlinear conservative equation, often viewed in computational fluid dynamics as a simplified version of Euler equations and it contains most aspects of nonlinear hyperbolic equations.
+      The vectors $x$ and $v$ are $10 + r_1$ and $0.1 \left(2 r_2 - 1\right)$ where $r_1$ and $r_2$ are random vectors following a uniform distribution on $\left[0, 1\right[$, obtained with the Python package NumPy: \mintinline{python}{numpy.random.random}.
+
+      \begin{figure}
+        \centering
+        \includegraphics[width=\textwidth]{figures/epsilon_Burgers_10.png}
+        \caption{
+          Error in the Jacobian matrix vector product approximation as a function of $\varepsilon$, and in particular for the most popular choice $\varepsilon_\textrm{wp}$.
+          The function is the right-hand side of equation (\ref{eq:ode}) from a Finite Volume method using an exact Riemann solver for Burgers' equation, over a 10 cell 1D regular mesh.
+        }
+        \label{fig:epsilon_burgers_10}
+      \end{figure}
+
+      \paragraph{}
+      The experiment result can be seen on figure \ref{fig:epsilon_burgers_10}.
+      The relative error in the approximation is shown as a function of $\varepsilon$ with small gray crosses.
+      On the right part of the figure, the error decreases linearly with regard to $\varepsilon$.
+      This correspond to a truncation error dominated region.
+      On the left part, the error increases as $\varepsilon$ decreases.
+      This correspond to a roundoff error dominated region.
+      Also, this increase is not smooth as the linear decrease, because roundoff errors tend to produce more chaotic results.
+      The choice of $\varepsilon$ from \cite{PerniceWalker1998} is also shown in the figure, as the large blue dot.
+      As we can see, it falls into a low error region, not too much on the left, not too much on the right.
+
+      \paragraph{}
+      The issue we noticed is the following.
+      Some references in the literature do not specify the norm used in equation (\ref{eq:epsilon_wp}).
+      As it is most of the time the Euclidian norm $\norm[2]{\,\cdot\,}$, or 2-norm, we can assume that it is also the case when it is not specified.
+      However, this means that in our example the value of $\varepsilon_\textrm{wp}$ will depend on the vector size.
+      With our example, if we increase the number of cells in our mesh the typical size of the vector components stay roughly the same, so the shape of the error as a function of $\varepsilon$ should not change much from the one in figure \ref{fig:epsilon_burgers_10}.
+      But if the vector components size stay the same, the 2-norm does increases with the vector dimension.
+      We can even see that when the dimension is $N \gg 1$, $\varepsilon_\textrm{wp} \sim N^{-1/4}$.
+      Having $\varepsilon$ to depend on $N$ did not make sense to us, as we are working with possibly large vectors in our industrial applications.
+      That is why we decided to use a variation from what is currently found in the literature: we will use the norm $\norm[2]{\,\cdot\,} / \sqrt{N}$ that can be seen as a scaled 2-norm.
+      We then get a new strategy for the choice of $\varepsilon$ that we note $\varepsilon_{\textrm{wp}, N}$.
+
+      \begin{figure}
+        \centering
+        \includegraphics[width=\textwidth]{figures/epsilon_Burgers.png}
+        \caption{
+          Error in the Jacobian matrix vector product approximation as a function of $\varepsilon$ (left) and of the dimension $N$ (right).
+          On the left figure, colored cross markers correspond to the values computed on a mesh of $10^1$, $10^2$, ... cells, and circle markers to the last value with $10^7$ cells.
+          Grey cross markers on the left figure correspond to a mesh of $10^7$ cells.
+        }
+        \label{fig:epsilon_burgers}
+      \end{figure}
+
+      \paragraph{}
+      We compared the two strategies on the same test case, while increasing the number of cells from 10 to 100, 1000, ..., up to $10^7$.
+      Figure \ref{fig:epsilon_burgers} shows the result of this experiment.
+      On the left, we see that the shape of the relative error as a function of $\varepsilon$ when $N = 10^7$ is similar to when $N = 10$, albeit the roundoff error dominated region is more regular.
+      In particular, the ideal trade off between the two error types did not move a lot.
+      We see that as expected, the value or $\varepsilon_\textrm{wp}$ decreases: this translate as the fact that the blue dot moved to the left.
+      When looking at the error as a function of the dimension $N$, we can even recover the $-1/4$ expected slope.
+      In the right figure we see in fact a $1/4$ slope but the error is inversely proportional to the value of $\varepsilon$ so if the error \PS{varies in} $N^{1/4}$, then $\varepsilon_\textrm{wp}$ \PS{varies in} $N^{-1/4}$.
+      Because of the shape of the error as a function of $\varepsilon$, if $\varepsilon_\textrm{wp}$ changes with $N$ it will eventually end up increasing the error.
+      This is an undesired feature.
+      Our new choice $\varepsilon_{\textrm{wp}, N}$ on the other hand does not change a lot when $N$ increases.
+      Therefore, the error level stays the same no matter the dimension.
+
+      \paragraph{}
+      The same numerical experiment was made on a more complex case: the 1D Euler equations.
+      Here, the function $f$ corresponds to the right-hand side of equation (\ref{eq:ode}) given by a centered Finite Volume method used as the spatial discretisation method, in which the interface flux are defined as an average of left and right fluxes.
+      This means the Riemann solver just averages the left and right fluxes.
+      This spatial method is known for its instability when used in an actual solver, but it is useful in this experiment as the analytic Jacobian matrix is easy to derive, contrary to methods using more complex Riemann solvers.
+      This physical model assigns 3 degrees of freedom in each cell.
+      We will use the primitive variables.
+      The vector $x$ corresponds to a uniform density of $1\si{\kilogram\per\cubic\meter}$, a velocity equal to a sine making one period over the mesh and of amplitude $10\si{\meter\per\second}$, and uniform pressure of $10^5\si{\pascal}$.
+      The vector $v$ is a random vector in $\left[0, 1\right]$ as before, where the first component is scaled by $10^{-3}$, the second by $10^{-2}$, and the third by $10^{2}$, in order to impose $10^{-3}$ relative perturbations.
+
+      \begin{figure}
+        \centering
+        \includegraphics[width=\textwidth]{figures/epsilon_Euler.png}
+        \caption{
+          Error in the Jacobian matrix vector product approximation as a function on $\varepsilon$ (left) and of the dimension $N$ (right).
+          The function is the right-hand side of equation (\ref{eq:ode}) from a Finite Volume method using a centered scheme for the Euler equations over a regular 1D mesh.
+          On the left figure, colored cross markers correspond to the values computed on a mesh of $10^1$, $10^2$, ... cells, and circle markers to the last value with $10^7$ cells.
+          Grey cross markers on the left figure correspond to a mesh of $10^7$ cells.
+        }
+        \label{fig:epsilon_euler}
+      \end{figure}
+
+      \paragraph{}
+      Figure \ref{fig:epsilon_euler} shows the corresponding results.
+      As for the previous experiment, $\varepsilon_\textrm{wp}$ depends on the dimension $N$, and then the associated error ends up increasing as $N$ grows.
+      Our correction $\varepsilon_{\textrm{wp}, N}$ does not exhibit the same drawback.
+      Even if it does not fall at the bottom of the error curve, it at least does not lead to a larger error.
+
+      \paragraph{}
+      In this late case, we see that at the beginning the two errors were close.
+      In the first one, their starting position were a bit different.
+      This is largely due to the randomness of this analysis: the one used to construct the $x$ and $v$ vectors.
+      In fact, it would be unwise to draw conclusion from the position of the points in figures \ref{fig:epsilon_burgers} and \ref{fig:epsilon_euler}.
+      Changing the choice of vectors, or the function $f$, or even the randomness in the vectors is enough to modify their position.
+      For example, we can not conclude anything from the fact that $\varepsilon_\textrm{wp}$ is almost at the bottom of the error curve in figure \ref{fig:epsilon_burgers}.
+      It may as well be a bit mort en the side.
+      What we can use from this analysis, however, is the tendencies that choices of $\varepsilon$ show.
+      The main conclusion is then that with our strategy we removed a dependency of the relative error on the dimension, which makes sense as this dependency is not expected a priori.
+
+      \paragraph{}
+      The issue of this analysis is that it relies on extremely simple examples.
+      The function $f$ in our actual applications is in fact much more complicated than the two we used here.
+      But in order to do this analysis we need to be able to compute the relative error, and this means we need to be able to compute a Jacobian matrix vector product analytically.
+      Unfortunately this is not possible for our applications.
+      If it was, we would not even need to introduce the approximation (\ref{eq:matrix_free}) and therefore to do this analysis.
