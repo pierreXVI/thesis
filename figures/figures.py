@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import scipy.linalg
 import scipy.special
+import matplotlib.gridspec as gridspec
 
 plt.rcParams.update({
     'xtick.labelsize': 15,
@@ -222,9 +223,117 @@ def fig_preconditioning():
     fig.savefig("preconditioning.png", transparent=True)
 
 
+def fig_eps():
+    class EpsWP2:
+
+        def __str__(self):
+            return r'$\varepsilon_\textrm{wp}$ based on $|| \,\cdot\, ||_2$'
+
+        def __call__(self, _x, _v):
+            _eps = np.finfo(_x.dtype).eps
+            norm_x = np.linalg.norm(_x)
+            norm_v = np.linalg.norm(_v)
+            return np.sqrt(_eps * (1 + norm_x)) / norm_v
+
+    class EpsWPn:
+
+        def __str__(self):
+            return r'$\varepsilon_\textrm{wp}$ based on $|| \,\cdot\, ||_2 / \sqrt{N}$'
+
+        def __call__(self, _x, _v):
+            sqrt_n = np.sqrt(_x.size)
+            _eps = np.finfo(_x.dtype).eps
+            norm_x = np.linalg.norm(_x) / sqrt_n
+            norm_v = np.linalg.norm(_v) / sqrt_n
+            return np.sqrt(_eps * (1 + norm_x)) / norm_v
+
+    class Burgers:
+        @staticmethod
+        def riemann(u_l, u_r):
+            return np.logical_or(u_l >= 0, u_r <= 0) * np.where((u_l + u_r) > 0, u_l * u_l / 2, u_r * u_r / 2)
+
+        @staticmethod
+        def d_riemann(u_l, u_r):
+            z = np.zeros_like(u_l)
+            return np.logical_or(u_l >= 0, u_r <= 0) * np.where((u_l + u_r) > 0, np.stack((u_l, z)), np.stack((z, u_r)))
+
+        @staticmethod
+        def f(_x):
+            y = Burgers.riemann(_x[:-1], _x[1:])
+            y0 = Burgers.riemann(_x[-1], _x[0])
+            return -np.diff(y, prepend=y0, append=y0) * _x.shape[0]
+
+        @staticmethod
+        def jac_matvec(_x, _v):
+            d_r = Burgers.d_riemann(_x[:-1], _x[1:])
+            d_r0 = Burgers.d_riemann(_x[-1], _x[0])
+            y = (d_r[0] * _v[:-1] + d_r[1] * _v[1:])
+            y0 = (d_r0[0] * _v[-1] + d_r0[1] * _v[0])
+            return -np.diff(y, prepend=y0, append=y0) * _x.shape[0]
+
+        @staticmethod
+        def x(n):
+            return np.random.random(n) + 10
+
+        @staticmethod
+        def v(n):
+            return 1e-1 * (2 * np.random.random(n) - 1)
+
+    epsilons = (EpsWP2(), EpsWPn())
+    data = {eps: ([], []) for eps in epsilons}
+    list_n = np.logspace(1, 7, 7, dtype=int)
+    list_e = np.logspace(-10, -1.5, 500)
+    err_0 = err_1 = None
+    for n in list_n:
+        x = Burgers.x(n)
+        v = Burgers.v(n)
+        f0 = Burgers.f(x)
+        ref = Burgers.jac_matvec(x, v)
+        for eps in epsilons:
+            e = eps(x, v)
+            er = np.linalg.norm(ref - (Burgers.f(x + e * v) - f0) / e) / np.linalg.norm(ref)
+            data[eps][0].append(e)
+            data[eps][1].append(er)
+        if n == list_n[0]:
+            err_0 = np.array(
+                [np.linalg.norm(ref - (Burgers.f(x + e * v) - f0) / e) for e in list_e]) / np.linalg.norm(ref)
+        elif n == list_n[-1]:
+            err_1 = np.array(
+                [np.linalg.norm(ref - (Burgers.f(x + e * v) - f0) / e) for e in list_e]) / np.linalg.norm(ref)
+
+    with plt.rc_context({'figure.figsize': [12, 6], 'lines.markeredgewidth': 1, 'lines.markersize': 15}):
+        fig1 = plt.figure()
+        ax = fig1.add_subplot()
+        ax.loglog(list_e, err_0, 'x', ms=3, color='grey')
+        ax.loglog(data[epsilons[0]][0][0], data[epsilons[0]][1][0], 'o', label=str(epsilons[0]))
+        ax.legend()
+        ax.set_xlabel(r'$\varepsilon$')
+        ax.set_ylabel('Relative error in\nJacobian vector product approximation', labelpad=30)
+
+        fig2 = plt.figure()
+        gs = gridspec.GridSpec(1, 3)
+        ax1 = fig2.add_subplot(gs[0, :2])
+        ax2 = fig2.add_subplot(gs[0, 2], sharey=ax1)
+        ax1.loglog(list_e, err_1, 'x', ms=3, color='grey')
+        for eps in epsilons:
+            color = ax1.loglog(*data[eps], '+-', ms=8, mew=2)[0].get_color()
+            ax1.loglog(data[eps][0][-1], data[eps][1][-1], 'o', label=str(eps), color=color)
+            ax2.loglog(list_n, data[eps][1], '+-', ms=8, mew=2, color=color)
+            ax2.loglog(list_n[-1], data[eps][1][-1], 'o', color=color)
+        ax1.legend()
+        ax1.set_xlabel(r'$\varepsilon$')
+        ax2.set_xlabel(r'$N$')
+        ax1.set_ylabel('Relative error in\nJacobian vector product approximation', labelpad=30)
+
+        # plt.show()
+        fig1.savefig('Burgers_10.png')
+        fig2.savefig('Burgers_10000000.png')
+
+
 if __name__ == '__main__':
     # fig_rk()
     # fig_bdf()
     # fig_ab()
-    fig_preconditioning()
+    # fig_preconditioning()
+    # fig_eps()
     pass
