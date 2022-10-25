@@ -22,8 +22,39 @@ plt.rcParams.update({
     'lines.markersize': 3,
     'lines.linewidth': 3,
     'text.latex.preamble': r"\usepackage{amsmath}",
-    'text.usetex': True
+    'text.usetex': True,
+    'font.size': 15
 })
+
+
+def annotate_slope(axis, s, base=0.2, dx=0.0, dy=0.0, transpose=False):
+    xm, xp, ym, yp = np.inf, -np.inf, np.inf, -np.inf
+    for line in axis.get_lines():
+        if line.get_xdata().size and line.get_ydata().size:
+            xm = min(xm, np.min(line.get_xdata()))
+            xp = max(xp, np.max(line.get_xdata()))
+            ym = min(ym, np.min(line.get_ydata()))
+            yp = max(yp, np.max(line.get_ydata()))
+
+    line_x = np.array([np.power(xm, base) * np.power(xp, 1 - base), xp])
+    line_y = np.array([ym, ym * np.power(line_x[1] / line_x[0], s)])
+    if dx:
+        line_x *= np.power(xm / xp, dx * (1 - base))
+    if dy:
+        line_y *= np.power(yp / ym, dy * (1 - base * s * np.log(xp / xm) / np.log(yp / ym)))
+
+    axis.plot(line_x, line_y, 'k')
+    if not transpose:
+        axis.plot([line_x[0], line_x[1], line_x[1]], [line_y[0], line_y[0], line_y[1]], 'k-.')
+        axis.annotate(1, xy=(np.sqrt(line_x[0] * line_x[1]), line_y[0]), xytext=(0, -5 - plt.rcParams['font.size']),
+                      textcoords='offset pixels')
+        axis.annotate(s, xy=(line_x[1], np.sqrt(line_y[0] * line_y[1])), xytext=(10, 0), textcoords='offset pixels',
+                      ha='left')
+    else:
+        axis.plot([line_x[0], line_x[0], line_x[1]], [line_y[0], line_y[1], line_y[1]], 'k-.')
+        axis.annotate(1, xy=(np.sqrt(line_x[0] * line_x[1]), line_y[1]), xytext=(0, 10), textcoords='offset pixels')
+        axis.annotate(s, xy=(line_x[0], np.sqrt(line_y[0] * line_y[1])), xytext=(-10, 0), textcoords='offset pixels',
+                      ha='right')
 
 
 def fig_rk():
@@ -272,12 +303,12 @@ def fig_eps():
             return -np.diff(y, prepend=y0, append=y0) * _x.shape[0]
 
         @staticmethod
-        def x(n):
-            return np.random.random(n) + 10
+        def x(_n):
+            return np.random.random(_n) + 10
 
         @staticmethod
-        def v(n):
-            return 1e-1 * (2 * np.random.random(n) - 1)
+        def v(_n):
+            return 1e-1 * (2 * np.random.random(_n) - 1)
 
     epsilons = (EpsWP2(), EpsWPn())
     data = {eps: ([], []) for eps in epsilons}
@@ -320,6 +351,7 @@ def fig_eps():
             ax1.loglog(data[eps][0][-1], data[eps][1][-1], 'o', label=str(eps), color=color)
             ax2.loglog(list_n, data[eps][1], '+-', ms=8, mew=2, color=color)
             ax2.loglog(list_n[-1], data[eps][1][-1], 'o', color=color)
+        annotate_slope(ax2, 0.25, transpose=True, base=0.4, dy=0.9, dx=0.3)
         ax1.legend()
         ax1.set_xlabel(r'$\varepsilon$')
         ax2.set_xlabel(r'$N$')
