@@ -1,9 +1,9 @@
 import matplotlib.colors as clr
+import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.linalg
 import scipy.special
-import matplotlib.gridspec as gridspec
 
 plt.rcParams.update({
     'xtick.labelsize': 15,
@@ -310,7 +310,68 @@ def fig_eps():
         def v(_n):
             return 1e-1 * (2 * np.random.random(_n) - 1)
 
+    class Euler:
+        gamma = 1.4
+        foo_gamma = gamma / (gamma - 1)
+
+        @staticmethod
+        def riemann(w_l, w_r):
+            return np.column_stack((
+                w_l[:, 0] * w_l[:, 1] + w_r[:, 0] * w_r[:, 1],
+                w_l[:, 0] * w_l[:, 1] ** 2 + w_l[:, 2] + w_r[:, 0] * w_r[:, 1] ** 2 + w_r[:, 2],
+                (w_l[:, 0] * w_l[:, 1] ** 2 / 2 + Euler.foo_gamma * w_l[:, 2]) * w_l[:, 1] +
+                (w_r[:, 0] * w_r[:, 1] ** 2 / 2 + Euler.foo_gamma * w_r[:, 2]) * w_r[:, 1]
+            )) / 2
+
+        @staticmethod
+        def d_riemann(w_l, w_r):
+            z = np.zeros((w_l.shape[0],))
+            o = np.ones((w_l.shape[0],))
+            return np.array([
+                [
+                    [w_l[:, 1], w_l[:, 0], z],
+                    [w_l[:, 1] ** 2, 2 * w_l[:, 0] * w_l[:, 1], o],
+                    [w_l[:, 1] ** 3 / 2, 3 * w_l[:, 0] * w_l[:, 1] ** 2 / 2 + Euler.foo_gamma * w_l[:, 2],
+                     Euler.foo_gamma * w_l[:, 1]]
+                ], [
+                    [w_r[:, 1], w_r[:, 0], z],
+                    [w_r[:, 1] ** 2, 2 * w_r[:, 0] * w_r[:, 1], o],
+                    [w_r[:, 1] ** 3 / 2, 3 * w_r[:, 0] * w_r[:, 1] ** 2 / 2 + Euler.foo_gamma * w_r[:, 2],
+                     Euler.foo_gamma * w_r[:, 1]]
+                ]]) / 2
+
+        @staticmethod
+        def f(_x):
+            y = Euler.riemann(_x[:-1], _x[1:])
+            y0 = Euler.riemann(_x[None, -1], _x[None, 0])
+            return -np.diff(y, prepend=y0, append=y0, axis=0) * _x.shape[0]
+
+        @staticmethod
+        def jac_matvec(_x, _v):
+            d_r = Euler.d_riemann(_x[:-1], _x[1:])
+            d_r0 = Euler.d_riemann(_x[None, -1], _x[None, 0])
+            y = np.einsum('ijk,kj->ki', d_r[0], _v[:-1]) + np.einsum('ijk,kj->ki', d_r[1], _v[1:])
+            y0 = np.einsum('ijk,j->ki', d_r0[0], _v[-1]) + np.einsum('ijk,j->ki', d_r0[1], _v[0])
+            return -np.diff(y, prepend=y0, append=y0, axis=0) * _x.shape[0]
+
+        @staticmethod
+        def x(_n):
+            _x = np.zeros((_n, 3))
+            _x[:, 0] = 1
+            _x[:, 1] = 10 * np.sin(np.linspace(0, 2 * np.pi, _n, endpoint=False))
+            _x[:, 2] = 1E5
+            return _x
+
+        @staticmethod
+        def v(_n):
+            _v = np.random.random((_n, 3))
+            _v[:, 0] *= 1e-3
+            _v[:, 1] *= 1e-2
+            _v[:, 2] *= 1e+2
+            return _v
+
     epsilons = (EpsWP2(), EpsWPn())
+
     data = {eps: ([], []) for eps in epsilons}
     list_n = np.logspace(1, 7, 7, dtype=int)
     list_e = np.logspace(-10, -1.5, 500)
@@ -331,6 +392,22 @@ def fig_eps():
         elif n == list_n[-1]:
             err_1 = np.array(
                 [np.linalg.norm(ref - (Burgers.f(x + e * v) - f0) / e) for e in list_e]) / np.linalg.norm(ref)
+
+    data_euler = {eps: ([], []) for eps in epsilons}
+    list_n_euler = np.logspace(1, 7, 7, dtype=int)
+    list_e_euler = np.logspace(-13, -1, 500)
+    x = v = f0 = ref = None
+    for n in list_n_euler:
+        x = Euler.x(n)
+        v = Euler.v(n)
+        f0 = Euler.f(x)
+        ref = Euler.jac_matvec(x, v)
+        for eps in epsilons:
+            e = eps(x, v)
+            er = np.linalg.norm(ref - (Euler.f(x + e * v) - f0) / e) / np.linalg.norm(ref)
+            data_euler[eps][0].append(e)
+            data_euler[eps][1].append(er)
+    err = np.array([np.linalg.norm(ref - (Euler.f(x + e * v) - f0) / e) for e in list_e_euler]) / np.linalg.norm(ref)
 
     with plt.rc_context({'figure.figsize': [12, 6], 'lines.markeredgewidth': 1, 'lines.markersize': 15}):
         fig1 = plt.figure()
@@ -356,10 +433,27 @@ def fig_eps():
         ax1.set_xlabel(r'$\varepsilon$')
         ax2.set_xlabel(r'$N$')
         ax1.set_ylabel('Relative error in\nJacobian vector product approximation', labelpad=30)
+        fig1.savefig('epsilon_Burgers_10.png')
+        fig2.savefig('epsilon_Burgers.png')
+
+        fig = plt.figure()
+        gs = gridspec.GridSpec(1, 3)
+        ax1 = fig.add_subplot(gs[0, :2])
+        ax2 = fig.add_subplot(gs[0, 2], sharey=ax1)
+        ax1.loglog(list_e_euler, err, 'x', ms=3, color='grey')
+        for eps in epsilons:
+            color = ax1.loglog(*data_euler[eps], '+-', ms=8, mew=2)[0].get_color()
+            ax1.loglog(data_euler[eps][0][-1], data_euler[eps][1][-1], 'o', label=str(eps), color=color)
+            ax2.loglog(list_n_euler, data_euler[eps][1], '+-', ms=8, mew=2, color=color)
+            ax2.loglog(list_n_euler[-1], data_euler[eps][1][-1], 'o', color=color)
+        annotate_slope(ax2, 0.25, transpose=True, base=0.4, dy=1, dx=0.3)
+        ax1.legend()
+        ax1.set_xlabel(r'$\varepsilon$')
+        ax2.set_xlabel(r'$N$')
+        ax1.set_ylabel('Relative error in\nJacobian vector product approximation', labelpad=30)
+        fig.savefig('epsilon_Euler.png')
 
         # plt.show()
-        fig1.savefig('Burgers_10.png')
-        fig2.savefig('Burgers_10000000.png')
 
 
 if __name__ == '__main__':
