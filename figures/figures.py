@@ -36,7 +36,7 @@ def fig_rk():
     def r(k):
         return np.vectorize(lambda z: sum(np.power(z, range(k + 1)) / scipy.special.factorial(range(k + 1))))
 
-    fig = plt.figure()
+    fig = plt.figure(figsize=(6.28, 8.11))
     ax = fig.add_subplot(111)
     ax.grid(False)
     ax.set_aspect('equal')
@@ -58,7 +58,6 @@ def fig_rk():
     handles, labels = ax.get_legend_handles_labels()
     ax.legend(handles[::-1], labels[::-1], loc='upper left')
     ax.grid(True)
-    fig.set_size_inches(6.28, 8.11)
     plt.subplots_adjust(0.00, 0.02, 1.0, 0.99)
     # plt.show()
     fig.savefig("rk_stab.png", transparent=True)
@@ -78,7 +77,7 @@ def fig_bdf():
 
         return np.vectorize(sub_r)
 
-    fig = plt.figure()
+    fig = plt.figure(figsize=(19.20, 10.00))
     c = [.8, .0, .0, 1]
     for (i, x_min, x_max, y_min, y_max) in zip((1, 2, 3, 4, 5, 6),
                                                (-2, -2, -4, -4, -10, -20),
@@ -109,7 +108,6 @@ def fig_bdf():
         ax.set_title(r'\textbf{{ BDF{0} }}'.format(i), y=-.1, fontsize=30)
         ax.grid(True)
 
-    fig.set_size_inches(19.20, 10.00)
     plt.subplots_adjust(0.00, 0.05, 1.0, 0.99, 0.05, 0.2)
     # plt.show()
     plt.savefig("bdf_stab.png", transparent=True)
@@ -151,7 +149,7 @@ def fig_ab():
 
         return np.vectorize(sub_r)
 
-    fig = plt.figure()
+    fig = plt.figure(figsize=(8.40, 8.20))
     ax = fig.add_subplot(111)
     ax.grid(False)
     ax.set_aspect('equal')
@@ -169,7 +167,6 @@ def fig_ab():
     ax.legend(loc='upper left')
     ax.grid(True)
 
-    fig.set_size_inches(8.40, 8.20)
     plt.subplots_adjust(0.00, 0.02, 1.0, 0.99)
     # plt.show()
     fig.savefig("ab_stab.png", transparent=True)
