@@ -1,9 +1,9 @@
 \chapter{Development workflow in CEDRE}
 
   \paragraph{}
-  In this chapter we will discuss the details of how we implemented selected methods in CEDRE.
+  In this brief chapter we will discuss the details of how we implemented selected methods in CEDRE.
   This does not constitute research work, but it ended up being a large part of the work done during this thesis.
-  It is also not without interest, as we used advanced features in order to implement what we set out to do.
+  It is also not without interest, as we sometime used advanced features in order to implement what we set out to do.
 
 
   \section{Description of CEDRE}
@@ -57,7 +57,7 @@
 
     \subsection{FGMRES}
 
-    \paragraph{}
+      \paragraph{}
       In order for our work to be usable in every other solver, we had to work on the common library BIBCEDRE.
       When the implicit Euler method of CHARME needs to solve a linear problem, it uses BIBCEDRE.
       It contains everything needed to solve linear problems, such as GMRES and preconditioners.
@@ -96,6 +96,8 @@
       As we said, we want to write generic solutions, and so merging the library BIBCEDRE with the solver CHARME is not a good solution.
       What we need here is to allow BIBCEDRE to use a callback from the client solver.
       We did that using the Fortran 2003 feature: polymorphism.
+      The Fortran 2003 standard is almost ten years old as of today, and many may consider that the functionalities added to the previous Fortran 95 standard are therefore not that innovative.
+      But in the context of an project as large as CEDRE, developed by researchers and used by industrial partners, even the Fortran 2003 standard and in particular polymorphism are innovative.
       Without going into too much details, we added a member to the type \mintinline{fortran}{type_sys} that contains the context to evaluate a matrix vector product:
 \begin{minted}{fortran}
   type type_sys
@@ -183,7 +185,10 @@
       We can even see that when the dimension is $N \gg 1$, $\varepsilon_\textrm{wp} \sim N^{-1/4}$.
       Having $\varepsilon$ to depend on $N$ did not make sense to us, as we are working with possibly large vectors in our industrial applications.
       That is why we decided to use a variation from what is currently found in the literature: we will use the norm $\norm[2]{\,\cdot\,} / \sqrt{N}$ that can be seen as a scaled 2-norm.
-      We then get a new strategy for the choice of $\varepsilon$ that we note $\varepsilon_{\textrm{wp}, N}$.
+      We then get a new strategy for the choice of $\varepsilon$ that we note $\varepsilon_{\textrm{wp}, N}$:
+      \begin{equation}
+        \varepsilon_{\textrm{wp}, N} = \frac{\sqrt{\varepsilon_0 \left(1 + \norm[2]{x} / \sqrt{N}\right) }}{\norm[2]{v} / \sqrt{N}} \ .
+      \end{equation}
 
       \begin{figure}
         \centering
@@ -238,7 +243,7 @@
       Even if it does not fall at the bottom of the error curve, it at least does not lead to a larger error.
 
       \paragraph{}
-      In this late case, we see that at the beginning the two errors were close.
+      In this last case, we see that at the beginning the two errors were close.
       In the first one, their starting position were a bit different.
       This is largely due to the randomness of this analysis: the one used to construct the $x$ and $v$ vectors.
       In fact, it would be unwise to draw conclusion from the position of the points in figures \ref{fig:epsilon_burgers} and \ref{fig:epsilon_euler}.
@@ -289,7 +294,28 @@
         \varepsilon = \frac{\sqrt{\varepsilon_0 \left(1 + \norm{x}\right) }}{\norm{N} \norm{v}} \ .
       \end{equation}
       We take as a matrix norm the one induced by the vector norm.
-      When using the 2-norm, the corresponding norm is $\norm[2]{N} = \max{N_{ii}}$ as N is diagonal with strictly positive coefficients.
-      When using the scaled 2-norm discussed is the previous part, the corresponding norm is the same.
-      This is nice because whether the strategy we use in the choice of $\varepsilon$, it does not interfere with the handling of normalisation.
+      This means that:
+      \begin{equation}
+        \norm{N} = \sup_{v \ne 0} \frac{\norm{Nv}}{\norm{v}} \ .
+      \end{equation}
+      When using the 2-norm, the corresponding norm is $\norm{N} = \max{N_{ii}}$ as N is diagonal with strictly positive coefficients.
+      When using the scaled 2-norm discussed is the previous part, the corresponding norm is also the same.
+      This is nice because whether strategy we use in the choice of $\varepsilon$, it does not interfere with the handling of normalisation.
       \PS{Par contre c'est en effet la théorie mais en pratique j'ai oublié de l'implémenter comme ça dans CEDRE, et on utilise la norme de Frobenius normalisée par la taille des vecteurs. Oups.}
+
+
+    \subsection{Preconditioning}
+
+      \paragraph{}
+      Our matrix free implementation also needs to be compatible with the already existing preconditioning from BIBCEDRE.
+      There are two way to precondition the linear system in BIBCEDRE.
+      \begin{itemize}
+        \item The \emph{outer} left preconditioning, that is applied once before the linear solve.
+          It changes the numerical values of the matrix coefficients and of the right hand side.
+          Once it is applied, the solve can continue as if nothing had happened.
+        \item The \emph{inner} right preconditioning, that is applied before each matrix vector product, and once more at the end of the solve.
+      \end{itemize}
+      Handling the inner preconditioning with out matrix free implementation is easy as those two operations are independent from each other.
+      The outer preconditioning relies on the fact that the preconditioners available are simple, and therefore it is inexpensive to apply it to the whole matrix, less expensive than applying after each matrix vector product.
+      We loose this advantage with out matrix free method.
+      We still apply once the left preconditioning to the right hand side before the solve, but we now need to apply it after each matrix vector approximation.
