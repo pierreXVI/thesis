@@ -171,7 +171,7 @@
   month   = jul,
   comment = {Recyclage méthodes Krylov, tests sur équation de Schrödinger},
   doi     = {10.13140/2.1.4015.3284},
-  file    = {:Recycling Krylov Subspace Methods for Sequences of Linear Systems – Analysis and Applications - Gaul.pdf:PDF},
+  file    = {:Recycling Krylov Subspace Methods for Sequences of Linear Systems ___ Analysis and Applications - Gaul.pdf:PDF},
 }
 
 @Article{Gutknecht2006,
@@ -468,7 +468,7 @@
   abstract  = {This work introduces a general framework for constructing high-order, linearly stable, partitioned solvers for multiphysics problems from a monolithic implicit–explicit Runge–Kutta (IMEX-RK) discretization of the semi-discrete equations. The generic multiphysics problem is modeled as a system of n systems of partial differential equations where the ith subsystem is coupled to the other subsystems through a coupling term that can depend on the state of all the other subsystems. This coupled system of partial differential equations reduces to a coupled system of ordinary differential equations via the method of lines where an appropriate spatial discretization is applied to each subsystem. The coupled system of ordinary differential equations is taken as a monolithic system and discretized using an IMEX-RK discretization with a specific implicit–explicit decomposition that introduces the concept of a predictor for the coupling term. We propose four coupling predictors that enable the monolithic system to be solved in a partitioned manner, i.e., subsystem-by-subsystem, and preserve the IMEX-RK structure and therefore the design order of accuracy of the monolithic scheme. The four partitioned solvers that result from these predictors are high-order accurate, allow for maximum re-use of existing single-physics software, and two of the four solvers allow the subsystems to be solved in parallel at a given stage and time step. We also analyze the stability of a coupled, linear model problem with a specific coupling structure and show that one of the partitioned solvers achieves unconditional linear stability for this problem, while the others are unconditionally stable only for certain values of the coupling strength. We demonstrate the performance of the proposed partitioned solvers on several classes of multiphysics problems including a simple linear system of ODEs, advection–diffusion–reaction systems, fluid–structure interaction problems, and particle-laden flows, where we verify the design order of the IMEX schemes and study various stability properties.},
   comment   = {IMEX RK (ASIRK) pour couplage},
   doi       = {10.1016/j.cma.2018.09.015},
-  file      = {:High Order, Linearly Stable, Partitioned Solvers for General Multiphysics Problems Based on Implicit Explicit Runge Kutta Schemes - HuangPerssonZahr.pdf:PDF},
+  file      = {:High Order, Linearly Stable, Partitioned Solvers for General Multiphysics Problems Based on Implicit-Explicit Runge-Kutta Schemes - HuangPerssonZahr.pdf:PDF},
   keywords  = {Multiphysics simulations, Partitioned solvers, High-order methods, Implicit–explicit Runge–Kutta, Fluid–structure interaction, prio1, relevant},
   priority  = {prio1},
   relevance = {relevant},
@@ -549,7 +549,7 @@
   abstract = {This paper presents an efficient and highly-parallelizable preconditioning technique for Newton–Krylov solvers. The proposed method can be viewed as a generalization of the implicit line smoothing technique by extending the groups of implicitly-solved unknowns from lines to blocks. The blocks are formed by partitioning the computational domain such that the strong connections between unknowns are not broken by the partition boundaries. The ILU algorithm is used to obtain an approximate (or exact) factorization for each block. Then, a block-Jacobi iteration is formulated in which the degrees of freedom within the blocks are solved implicitly. To stabilize the iterations for high-CFL systems, a dual-CFL strategy, with a lower CFL in the preconditioner matrix, is developed. The performance of the proposed method as a linear preconditioner is demonstrated for second- and third-order steady-state solutions of Reynolds-Averaged Navier–Stokes (RANS) equations on the NASA Common Research Model (CRM), including the high-lift configuration. For the studied test cases, it is shown that in comparison with the traditional ILU(k) method, the proposed preconditioner requires significantly less memory and it can result in notably faster solutions.},
   comment  = {Block ILU(k)},
   doi      = {10.1016/j.cma.2019.112637},
-  file     = {:An Implicit Block ILU Smoother for Preconditioning of Newton Krylov Solvers with Application in High Order Stabilized Finite Element Methods - AhrabiMavriplis.pdf:PDF},
+  file     = {:An Implicit Block ILU Smoother for Preconditioning of Newton-Krylov Solvers with Application in High Order Stabilized Finite Element Methods - AhrabiMavriplis.pdf:PDF},
   keywords = {Computational fluid dynamics, Newton–Krylov methods, Steady- state RANS simulations, Preconditioning techniques, High-order methods, Stabilized finite-element methods},
   url      = {http://www.sciencedirect.com/science/article/pii/S0045782519305213},
 }
@@ -1481,6 +1481,7 @@
 Studies were made at the Naval Ordnance Laboratory of the shock detachment distance on spheres fired in a small aerophysics range. This chapter presents an experimental measurement of shock detachment distance on spheres fired in air at hypervelocities. It presents the results from some of the shock detachment measurements obtained on spheres fired into air. The experimental program was conducted in a small aerophysics range, 30 ft long, equipped with a two-stage light gas launcher and high-speed optical and radiation instrumentation. Investigations of this type can yield accurate information about the thermodynamic state variables of high temperature air in equilibrium as well as a check of the calculated values available in the literature. Moreover, if the density is sufficiently low, then the shock detachment distance becomes a measure of the lag in the exchange between the energy of translational motion and the internal modes and chemical reactions.},
   comment   = {Shpere lobb},
   doi       = {10.1016/B978-1-4831-9828-6.50031-X},
+  file      = {:books/The High Temperature Aspects of Hypersonic Flow.pdf:PDF},
   issn      = {0365-2467},
   url       = {https://www.sciencedirect.com/science/article/pii/B978148319828650031X},
 }
