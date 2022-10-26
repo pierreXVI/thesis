@@ -319,3 +319,13 @@
       The outer preconditioning relies on the fact that the preconditioners available are simple, and therefore it is inexpensive to apply it to the whole matrix, less expensive than applying after each matrix vector product.
       We loose this advantage with out matrix free method.
       We still apply once the left preconditioning to the right hand side before the solve, but we now need to apply it after each matrix vector approximation.
+
+
+  \paragraph{}
+  Without getting into too much details, this chapter explained how the selected methods and modifications were implemented into the solver CEDRE.
+  Besides some minor developments, the main feature is the matrix free implementation.
+  As it was explained, this implementation is generic so that it can be used with any solver that wants to solve a linear problem with the library BIBCEDRE.
+  The idea was also that if multiple solver use this implementation, it becomes easy to do a coupled implicit solve.
+  Without it, because of the structure of CEDRE with the library ASSEMBLAGE conducting the solvers, a coupled implicit solve is not possible without reworking the basic structure of CEDRE.
+  During this thesis, however, because we were limited in the time allowed to us, the implementation was only used for the reactive Navier--Stokes solver CHARME.
+  This is why we had to compromise, and develop only for the CHARME solver but in a generic way.
