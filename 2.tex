@@ -123,19 +123,19 @@
       Then, a user can choose at execution time whether to use the standard Jacobian matrix or the matrix-free method.
 
       \paragraph{}
-      The computational cost of the matrix vector approximation is approximately the cost of one function evaluations.
-      It requires some additional operations, such as vector subtractions, vector scaling, but those operations are way less expensive.
+      The computational cost of the matrix-vector approximation is approximately the cost of one function evaluation.
+      It requires some additional operations, such as vector subtractions, and vector scaling, but those operations are way less expensive.
       Using a matrix-free algorithm is clearly less expensive in terms of memory, as we do not need to store the matrix at all.
       Some even claim that it can lead to a less expensive method in terms of time \PS{et les refs ?}.
       This happens when the alternative, which is computing the Jacobian matrix, is an expensive task.
       In CHARME, the Jacobian matrix that is traditionally used is inexpensive to compute, with a cost similar to a function evaluation.
       The issue is that the function evaluation itself is expensive in our solver.
       This is troublesome, and the issue is currently addressed by the team of developers in charge of the solver.
-      In the meantime, it means that the cost of the matrix free approximation will suffer even more.
-      Practically, using it increase the computational time of one iteration.
+      In the meantime, it means that the cost of the matrix-free approximation will suffer even more.
+      Practically, using it increases the computational time of one iteration.
       We now hope that as it will not improve the iteration speed, it will improve the convergence of our solver.
-      Also, as we said the team responsible for CEDRE is working improve the speed of the function evaluation.
-      If they succeed, their work will then benefit greatly our method.
+      Also, as we said the team responsible for CEDRE is working to improve the speed of the function evaluation.
+      If they succeed, our method will then benefit greatly from their work.
 
 
     \subsection{Strategy for the choice of \texorpdfstring{$\varepsilon$}{epsilon}}
