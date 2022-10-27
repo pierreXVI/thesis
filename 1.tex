@@ -79,18 +79,18 @@
     Indeed, before solving equation (\ref{eq:pde}) we need to decide how to transform the continuous model into a discretised one.
     We also have to look at how the spatial derivatives arising from equation (\ref{eq:pde}) translate in the discretised model.
 
-    \subsection{The Finite Volumes method}
+    \subsection{The Finite Volume method}
 
       \paragraph{}
-      The spatial discretisation method used in the solver CHARME is called the Finite Volumes method \cite{EymardGallouetHerbin2000, Leterrier2003}.
+      The spatial discretisation method used in the solver CHARME is called the Finite Volume method \cite{EymardGallouetHerbin2000, Leterrier2003}.
       This method is particularly well fitted for conservatives equations such as equation (\ref{eq:pde_conservative}).
       A such equation has the property that the quantity $\xi$ is conserved: without source terms, the variation of the total quantity on $\xi$ over the domain $\mathcal{D}$ is equal to the flux $f\left(\xi\right)$ coming through the boundary $\partial\mathcal{D}$.
       In the case of the Navier--Stokes equations (\ref{eq:ns}), the density, the momentum and the energy are conserved throughout time, apart from what comes in and out of the domain.
       In a close domain where nothing comes in or out, they are indeed conserved.
-      The main interest of the Finite Volumes method is that this property stays true through the spatial discretisation step.
+      The main interest of the Finite Volume method is that this property stays true through the spatial discretisation step.
 
       \paragraph{}
-      The Finite Volumes method consists in integrating the partial differential equation over each cell of the mesh.
+      The Finite Volume method consists in integrating the partial differential equation over each cell of the mesh.
       Writing $\mathcal{V}_i$ the volume of the $i$th cell:
       \begin{equation}
         \int_{\mathcal{V}_i} \frac{\partial \xi}{\partial t} \mathrm{d}v + \int_{\mathcal{V}_i} \nabla\cdot \vec{\operatorname{f}}\left(\xi\right) \mathrm{d}v = \int_{\mathcal{V}_i} \operatorname{S} \mathrm{d}v\ .
@@ -116,7 +116,7 @@
         \oint_{\partial\mathcal{V}_i} \vec{\operatorname{f}}\left(\xi\right) \cdot \vec{\mathrm{d}s} \approx \sum_{j\textrm{ neighbor of } i} \vec{\operatorname{f}}_{ij} \cdot \vec{s_{ij}}
       \end{equation}
       where $\vec{\operatorname{f}}_{ij} \cdot \vec{s_{ij}}$ is an approximation of the flux going through the face between cells $i$ and $j$.
-      This approximation is a key element of the Finite Volumes method, therefore we will discuss it later.
+      This approximation is a key element of the Finite Volume method, therefore we will discuss it later.
       We can now compute the function $\operatorname{G}$ from equation (\ref{eq:ode}): for each face of the mesh we compute $\vec{\operatorname{f}}_{ij} \cdot \vec{s_{ij}}$, we add this value to the $i$th component and remove it from the $j$th component of our new vector.
       Then, after adding the source terms we get a vector containing the result of $\operatorname{G}\left(\Xi\right)$.
       As can be seen, every contribution of the flux added in a cell is removed from another, and therefore this spatial discretisation method preserves the \PS{conservativity} of the underlying equation.
@@ -127,7 +127,7 @@
       \PS{Déplacer après la reconstruction ? C'est plus fondamental mais ça intervient après}
 
       \paragraph{}
-      The last remaining problem with this presentation of the Finite Volumes method is how to compute the flux going through cell interfaces.
+      The last remaining problem with this presentation of the Finite Volume method is how to compute the flux going through cell interfaces.
       On the interfaces between two cells, we know the left and right quantities $\xi_L$ and $\xi_R$, and we need to compute the corresponding flux.
       It is possible here to use a reconstruction method to get a better approximation of the quantities left and right of the interface, and therefore we end up using the left and right quantities $\xi_L^*$ and $\xi_R^*$.
       The idea is now to compute the flux going through the face as a function of $\xi_L^*$, $\xi_R^*$ and the surface vector $\vec{s}$.
@@ -144,7 +144,7 @@
     \subsection{Gradient reconstruction methods}
 
       \paragraph{}
-      The standard Finite Volumes method represents quantities with the averaged value in each cell.
+      The standard Finite Volume method represents quantities with the averaged value in each cell.
       This corresponds to a first-order discretisation method.
       Simply put, it means that it can represent quantities exactly as 0-order polynomials locally to each cell.
       There are ways to achieve a higher order representation such as with the MUSCL approach \PS{(ref nécessaire ?)}.
@@ -180,7 +180,7 @@
 
       \paragraph{}
       We briefly explained above the spatial discretisation method used in our solver, as it might help our analysis of the time integration part.
-      The Finite Volumes method averages the partial differential equation over each cell of the mesh, which transforms the flux divergence into a \PS{bilan surfacique de flux}.
+      The Finite Volume method averages the partial differential equation over each cell of the mesh, which transforms the flux divergence into a \PS{bilan surfacique de flux}.
       A reconstruction method, the $k$-exact method or the Multislope method, is then used to get a higher-order representation of the solution so that the surface flux can be computed at each face.
       Slope limiters are used to prevent the formation of local extrema, which can be harmful to the computation.
 
@@ -202,6 +202,7 @@
     We will solve the equation numerically, which means we will iteratively compute the next solution after a given time step, knowing the current one.
     It is also possible to modify the equation, as we are interested in the final state, not in the transient one.
     It is possible for example to use local time stepping, which consists in having each cell of the mesh move forward in time with its own time step.
+    \PS{C'est fou j'ai pas la moindre ref du pas de temps local de CEDRE, Lionel il n'y a rien sur le Upoint ?}
     The resulting transient states do not make sense from a physical point of view, as the equation solved is not the initial one, but it converges to the same steady solution.
     Therefore, it is alright to change the equation as long as it gives the same steady solution.
     Finally, this way of finding a converged steady solution is what is called a \emph{Pseudo-Transient Continuation} method \cite{KelleyKeyes1996}.
@@ -733,7 +734,7 @@
   				\caption{RM07R: 3D viscous flow in a jet engine compressor.}
   				\label{fig:sparse.RM07R}
   			\end{subfigure}
-  			\caption{Matrices from various CFD simulations \cite{PacullAubertBuisson2011} using a Finite Volumes method. Coloured points correspond to nonzero values.}
+  			\caption{Matrices from various CFD simulations \cite{PacullAubertBuisson2011} using a Finite Volume method. Coloured points correspond to nonzero values.}
   			\label{fig:sparse}
   		\end{figure}
 

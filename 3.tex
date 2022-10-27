@@ -29,7 +29,7 @@
         Our first application is a typical aerodynamics test case.
         It is a 2D simulation of the flow around an RAE 2822 wing profile.
         The only fluid is standard air.
-        The Mach number is taken equal to 0.75, the chord is equal to $1\si{\meter}$, the angle of attack is $2.8\si{\degree}$ and we use the atmospheric conditions at 10km.
+        The Mach number is taken equal to 0.75, the chord is equal to $1\si{\meter}$, the angle of attack is $0\si{\degree}$ and we use the atmospheric conditions at 10km.
         This gives a Reynolds number of \num{6.3e6}.
 
         \paragraph{}
@@ -55,7 +55,7 @@
 
         \begin{figure}
           \includegraphics[width=\textwidth]{figures/rae_mesh.png}
-          \caption{\PS{TODO}}
+          \caption{Mesh for the RAE 2822 test case. Close up on the expected shock location and the wall on the leading edge.}
           \label{fig:rae_mesh}
         \end{figure}
 
@@ -64,18 +64,65 @@
         Simply put, every scale of the turbulence is modelled \PS{c'est bien ça ?}.
         For this case, we decided to use the famous Spalart--Allmaras turbulence model.
         It is well known for being one of the simplest turbulence models, which is fine for us as we want to set up a simple first test case.
-
-        \paragraph{}
-        \PS{KEX ou MTP ? Finir introduction du cas.}
+        The spatial discretisation method is a second-order Finite Volume method, using the HLLC Riemann solver and Multislope method with a Van--Leer slope limiter.
+        We also use local time stepping to speed up the convergence.
 
 
       \subsubsection{Analysis of the results}
 
+        \PS{Figure champ (mach)}
+
+        \PS{Figure CP comparative}
+
+        \PS{Qu'est-ce qu'on peut regarder pour avoir une différence, flux de chaleur ?}
 
         \paragraph{}
-        Haha
+        We are now going to compare the results from the two different simulations.
+        It is first worth noting that before trying the JFNK method, we need to start the computation using the traditional method.
+        We assume that because of the matrix-free approximation, it is less robust at the beginning.
+        Only some iterations are needed, to start the no slip boundary layer for instance.
+        After that, we can restart the computation with the traditional method on one side and with the new method on the other.
 
+        \paragraph{}
+        We can first look at a global image of the flow.
+        This is done in figure \PS{TODO} where we can look at the pressure field near the airfoil.
+        In particular, we see the shock on the upper part, as expected.
+        The two computations give similar results: they are indistinguishable by just looking at the pressure field.
+        This is to be expected as the traditional method gives already satisfying results on such cases.
+        We can also look at the pressure coefficient around the airfoil in figure \PS{TODO}.
+        Once again, the two curves are indistinguishable.
+        Finally, we can look at the aerodynamic coefficients, the drag and lift coefficients, throughout the simulation on figure \PS{TODO}.
+        This time, we see an improvement from our method: the coefficients are much more stable, which mean the convergence is better with out method.
 
+        \paragraph{}
+        In order to find out if our method did help the convergence of the solver, we need to look at the residuals.
+        To define the residuals, we need to go back at the partial differential equation (\ref{eq:pde}) from which we started.
+        The residual is in fact the value of the function $\operatorname{F}$ from this equation.
+        We can then understand its name for steady problems: it is what is left and still needs to be removed to find the steady solution.
+        To decide on the convergence of a steady simulation, we look at this residual norm throughout the computational domain $\mathcal{D}$.
+        More precisely, we look at this residual component by component.
+        For example, the residual 2-norm associated with the $i$th component is:
+        \begin{equation}
+          \norm[2]{\operatorname{F}_i} = \int_\mathcal{D} \left| \operatorname{F}_i \right| \mathrm{d}v
+        \end{equation}
+        and the $\infty$-norm is:
+        \begin{equation}
+          \norm[\infty]{\operatorname{F}_i} = \max_\mathcal{D} \left| \operatorname{F}_i \right|
+        \end{equation}
+        In this fluid dynamics applications, we can look at the residual norm associated to the conservatives variables: the density, the momentum components, the energy and the turbulent variable from the Spalart--Allmaras model $\nu_t$.
+
+        \paragraph{}
+        Figure \PS{TODO} shows the residual norms from our two computations.
+        The gain from using the JFNK method appears clearly.
+        The final residual norm is much smaller for each and every conservative components.
+        This means that the Jacobian free Newton--Krylov method is able to reach a better convergence level than the traditional method.
+        In other words, the better Jacobian matrix approximation from our new method leads to a better convergence than the older poor approximation.
+        \PS{Que dire de plus ?}
+
+        \paragraph{}
+        On this first test case, we looked at the residual norms as the fields computed by both methods were almost identical.
+        Moreover, our method was even able to reach better convergence levels.
+        This validates our method on a first simple case, albeit with turbulence modelling and a shock.
 
 
     \subsection{Sphère hypersonique}
