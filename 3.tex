@@ -67,6 +67,10 @@
         The spatial discretisation method is a second-order Finite Volume method, using the HLLC Riemann solver and Multislope method with a Van--Leer slope limiter.
         We also use local time stepping to speed up the convergence.
 
+        \paragraph{}
+        It is
+
+        \PS{Note pour moi même: est-ce que je refais JFNK ordre 1 pour montrer qu'on retrouve la méthode classique ? Sauf que vu qu'il y a la turbulence j'en suis pas certain, mais ça montrerai que c'est bien sur deux points de vue (tout les modèles + discrétisation spatiale) donc oui fais le }
 
       \subsubsection{Analysis of the results}
 
@@ -125,7 +129,19 @@
         This validates our method on a first simple case, albeit with turbulence modelling and a shock.
 
 
-    \subsection{Sphère hypersonique}
+    \subsection{Hypersonic reactive sphere}
+
+      \paragraph{}
+      The second application we selected to compare the Jacobian Free Newton--Krylov with the traditional one is the computation of the flow around a hypersonic sphere.
+      Because of the high-energy of the surrounding flow, the air molecules can separate and even form a plasma \PS{check traduction}.
+      This is a simple yet representative test case of CEDRE applications.
+      It then makes a lot of sense to analyse our new method on it.
+
+      \subsubsection{Definition of the test case}
+
+        \paragraph{}
+        The mesh is 2D axisymetric and is shown in figure \PS{TODO} 
+
 
 
   \section{Utilisation de la formulation sans matrice sur un nouveau modèle de fluide}
