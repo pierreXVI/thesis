@@ -132,15 +132,31 @@
     \subsection{Hypersonic reactive sphere}
 
       \paragraph{}
-      The second application we selected to compare the Jacobian Free Newton--Krylov with the traditional one is the computation of the flow around a hypersonic sphere.
+      The second application we selected to compare the Jacobian Free Newton--Krylov with the traditional one is the computation of the flow around a hypersonic solid sphere.
       Because of the high-energy of the surrounding flow, the air molecules can separate and even form a plasma \PS{check traduction}.
       This is a simple yet representative test case of CEDRE applications.
       It then makes a lot of sense to analyse our new method on it.
 
       \subsubsection{Definition of the test case}
 
+        \PS{AVEC OU SANS CHIMIE ?}
+
         \paragraph{}
-        The mesh is 2D axisymetric and is shown in figure \PS{TODO} 
+        The 2D mesh and is shown in figure \PS{TODO}.
+        It is a regular mesh made of quadrangles, with refinment in the radial direction at the wall boundary and at the expected shock location.
+        This expected shock location is obtained from a previous computation, made with a coarser mesh.
+        This mesh is used in an 2D axysimetric computation to get the flow around a 3D solid sphere.
+
+        \paragraph{}
+        The main feature of this test case is that it simulates a hyoersonic flow.
+        At the left, the input boundary condition feeds air at Mach 15.
+        This will induce a strong shock, meaning a strong discontinuity in the flow.
+        As this is a typical application of our solver, it is of importance to us that the new method behaves well with such flow features.
+        When going through the strong shock, the temperature of the flow will augment a lot.
+        The flow is made of air, or a mixture of 77\% \ce{N_2} and 23\% \ce{O_2}.
+        At the high temperature they reach after the shock, the molecules can decompose into \ce{N}, \ce{O}, and \ce{NO}.
+        They can eved get \PS{ionisées}
+
 
 
 
