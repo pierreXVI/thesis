@@ -54,6 +54,7 @@
         Special treatment such as refinement was applied to the mesh at the expected shock location.
 
         \begin{figure}
+          \centering
           \includegraphics[width=\textwidth]{figures/rae_mesh.png}
           \caption{Mesh for the RAE 2822 test case. Close up on the expected shock location and the wall on the leading edge.}
           \label{fig:rae_mesh}
@@ -85,6 +86,7 @@
         After that, we can restart the computation with the traditional method on one side and with the new method on the other.
 
         \begin{figure}
+          \centering
           \includegraphics[width=\textwidth]{figures/rae_coefficients.png}
           \caption{\PS{TODO: Aerodynamic coefficients (lift and drag) for the profile throughout the computation.}}
           \label{fig:rae_coefficients}
@@ -120,6 +122,7 @@
 
 
         \begin{figure}
+          \centering
           \includegraphics[width=\textwidth]{figures/rae_residuals.png}
           \caption{\PS{TODO: Residual norm for the turbulent viscosity throughout the computation.}}
           \label{fig:rae_residuals}
@@ -151,8 +154,15 @@
 
         \PS{AVEC OU SANS CHIMIE ?}
 
+        \begin{figure}
+          \centering
+          \includegraphics[width=0.6\textwidth]{figures/sphere_mesh.png}
+          \caption{\PS{TODO: c'est pas le bon maillage}}
+          \label{fig:sphere_mesh}
+        \end{figure}
+
         \paragraph{}
-        The 2D mesh and is shown in figure \PS{TODO}.
+        The 2D mesh and is shown in figure \ref{fig:sphere_mesh}.
         It is a regular mesh made of quadrangles, with refinement in the radial direction at the wall boundary and at the expected shock location.
         The refinement at the wall boundary helps to compute more precisely the physical phenomena that happen in said boundary.
         The refinement at the shock is a requirement of the spatial discretisation methods.
@@ -165,6 +175,7 @@
         The solid sphere is modelised by a isothermal wall boundary condition.
         This is a representative choice as well, as the heat flux going through the wall is one of the main interest of such computation.
         Moreover, as it depends on the derivatives of the flow variables, it is usually harder to get a correct value for the heat transfer.
+        A better convergence will lead to better derivatives, which will lead to better physical results for such case users.
 
 
         \paragraph{}
@@ -183,6 +194,16 @@
         Indeed CEDRE do not try to be a pure aerodynamic solver but a multiphysics one, equipped to solve high energy problems.
         Reentry phenomena are therefore in the scope of our solver.
         Any improvements coming from our method on such cases would benefit a lot of CEDRE users on their applications.
+
+
+      \subsubsection{Analysis of the results}
+
+        \paragraph{}
+        We first look at the different fields from the two computations.
+        Once again they are similar and we will use the residuals to compare them, but we can check we are indeed computing the features of interest.
+        On figure \PS{TODO}, we see the shock, and that is falls as expected in the refined region.
+        We see on figure \PS{TODO} the mass fraction of the various species downstream of the shock, which means we are actively computing the chemical features of the flow, as expected.
+
 
 
 
