@@ -228,15 +228,26 @@
 
         \paragraph{}
         The advantage of the new method appears when we look at the residuals: we see in figure \PS{TODO} that the new method gives a better convergence.
-        The difference between the traditional method and the new one is that the traditional method uses the Jacobian matrix of the first-order spatial discretisation method, whereas the new one approximates the true Jacobian matrix using the approximation \ref{eq:matrix_free}.
+        The difference between the traditional method and the new one is that the traditional method uses the Jacobian matrix of the first-order spatial discretisation method, whereas the new one approximates the true Jacobian matrix using the approximation (\ref{eq:matrix_free}).
         We decided to test this.
-        If we use the approximation \ref{eq:matrix_free}, but using the first order evaluation of $f$, then we should get the same Jacobian matrix as the one used by the traditional method.
+        If we use the approximation (\ref{eq:matrix_free}), but using the first order evaluation of $f$, then we should get the same Jacobian matrix as the one used by the traditional method.
         We look at the residual norms from this method, which we can call the first-order JFNK method, and we see in figure \PS{TODO} that it is indistinguishable from the residual norms from the traditional method.
         It first validates the development of the matrix-free approximation.
         It also confirms that the traditional method uses the Jacobian matrix of the first-order spatial discretisation method.
         Finally, it validates the choice of $\varepsilon$ and the matrix-free approximation, as it is able to give the same result as when we use the Jacobian matrix.
         When we use the new method, using the true function $f$ with a second-order, we see that we can get a much smaller residual norm.
         It confirms that using a better Jacobian matrix helps the overall convergence when solving steady problems.
+
+
+    \paragraph{}
+    In a previous part we suggested that the poor quality of the Jacobian matrix used in our solver was an obstacle to achieve good convergence.
+    We then proposed an improvement: the Jacobian Free Newton--Krylov method using the matrix-free approximation (\ref{eq:matrix_free}).
+    We compared this new method with the traditional one on two simple yet representative application of our solver.
+    This comparaison showed that indeed, using a better Jacobian matrix lead to lower residual norm.
+    The new method can be usefull when looking at quantities that require precise convergence, for instance the derivatives of the flow variables.
+    However, the main drawback of this new method is its computational cost.
+    This cost is not inherent to the method, but comes from our solver properties as was discussed previously.
+    The recommended usage is then to start a computation using the inexpensive traditional method, and then achieve better convergence using the more precise yet more expensive new method.
 
 
   \section{Utilisation de la formulation sans matrice sur un nouveau modèle de fluide}
