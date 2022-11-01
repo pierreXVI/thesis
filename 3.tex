@@ -147,6 +147,7 @@
       \paragraph{}
       The second application we selected to compare the Jacobian Free Newton--Krylov with the traditional one is the computation of the flow around a hypersonic solid sphere.
       Because of the high-energy of the surrounding flow, the air molecules can separate and even form a plasma \PS{check traduction}.
+      The hypersonic reactive sphere is a well known case, for both experimental \cite{Lobb1964} and numerical studies \cite{DobrovGimadievKarpenkoEtAl2022}.
       This is a simple yet representative test case of CEDRE applications.
       It then makes a lot of sense to analyse our new method on it.
 
@@ -176,7 +177,7 @@
         This is a representative choice as well, as the heat flux going through the wall is one of the main interest of such computation.
         Moreover, as it depends on the derivatives of the flow variables, it is usually harder to get a correct value for the heat transfer.
         A better convergence will lead to better derivatives, which will lead to better physical results for such case users.
-
+        No turbulence model is used, as the flow is mostly laminar.
 
         \paragraph{}
         The main feature of this test case is that it simulates a hypersonic flow.
@@ -203,9 +204,31 @@
         Once again they are similar and we will use the residuals to compare them, but we can check we are indeed computing the features of interest.
         On figure \PS{TODO}, we see the shock, and that is falls as expected in the refined region.
         We see on figure \PS{TODO} the mass fraction of the various species downstream of the shock, which means we are actively computing the chemical features of the flow, as expected.
+        \PS{Comparaison distance corps shock avec \cite{Lobb1964} ?}
 
+        \paragraph{}
+        Once agin, we will not see any difference between the two results if we look at the \PS{standard} quantities.
+        We might see them if we look at quantities that depend on the derivatives of the flow variables, and that is why we will look at the \PS{heat transfer coefficient} at the wall.
+        The results are displayed in figure \PS{TODO}.
+        \PS{A VERIFIER MAIS DE MEMOIRE :}
+        Unfortunately there is not much difference to be seen between the two methods: they both produce the same heat transfer coefficient.
+        We also see an issue: the heat flux should be maximum at the stagnation point, but we see in figure \PS{TODO} that it is not, and the slope of the heat transfer coefficient is not null at the stagnation point in both of our simulations.
+        This shows an inacurracy of the solver.
+        However, as we will show next, the time integration is able to find the correct converged steady solution.
+        Therefore this inacurracy comes from the spatial discretisation method.
+        The results are not acurate from a physical analysis perspective, but for us the methods both work fine: they find the expected steady solution, albeit it is not the expected physical one.
 
-
+        \paragraph{}
+        The advantage of the new method appears when we look at the residuals: we see in figure \PS{TODO} that the new method gives a better convergence.
+        The difference between the traditional method and the new one is that the traditional method uses the Jacobian matrix of the first order spatial discretisation method, wheras the new one approximates the true Jacobian matrix using the approximation \ref{eq:matrix_free}.
+        We decided to test this.
+        If we use the approximation \ref{eq:matrix_free}, but using the first order evaluation of $f$, then we should get the same Jacobian matrix as the one used by the traditional method.
+        We look at the residual norms from this method, that we will call the first order JFNK method, and we see in figure \PS{TODO} that is is undistinguishable from the residual norms from the traditional method.
+        It first validates the developpement of the matrix-free approximation.
+        It also confirms that the traditional method uses the Jacobian matrix of the first order spatial discretisation method.
+        Finally, it validates the choice of $\varepsilon$ and the matrix-free approximation, as it is able to give the same result as when we use the Jacobian matrix.
+        When we use the new method, using the true function $f$ with a second-order, we see that we are able to get a much smaller residual norm.
+        It confirms that using a better Jacobian matrix helps the overall convergence when solving steady problems.
 
 
   \section{Utilisation de la formulation sans matrice sur un nouveau modèle de fluide}
