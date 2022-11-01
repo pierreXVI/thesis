@@ -292,39 +292,40 @@
       \paragraph{}
       To account for the desequilibrium, the Navier--Stokes equations are modified into the following, in conservative form.
       \begin{equation}
-        \left\{\begin{aligned}
+        \left\{\begin{alignedat}{7}
           &\partial_t\left(  \rho_s  \right) &&+ \nabla\cdot\left(  \rho_s \vec{u}  \right) &&=
-            \nabla\cdot\left( \rho D_s \nabla y_s\right) + \dot \omega_s \\[10pt]
+            \nabla\cdot\bigl( && \rho D_s \nabla y_s\bigr) + \dot \omega_s \\[10pt]
           %
           &\partial_t\left(  \rho \vec{u}  \right) &&+ \nabla\cdot\left(  \rho \vec{u} \otimes \vec{u}  +  \left(p + p_e\right) \mat{\operatorname{Id}}  \right) &&=
-            \nabla\cdot\left(
+            \nabla\cdot\biggl( &&
               \mu \left(\nabla \vec{u} + \nabla \vec{u}^T\right)
               - \frac{2}{3} \mu \left(\nabla \cdot \vec{u} \right) \mat{\operatorname{Id}}
-            \right) \\[10pt]
+            \biggr) \\[10pt]
           %
           &\partial_t\left(  \rho_m e_{v,m}  \right) &&+ \nabla\cdot\left(  \rho_m e_{v,m} \vec{u}  \right) &&=
-            \nabla\cdot\left(
+            \nabla\cdot\bigl( &&
               \lambda_{v,m} \nabla T_{v,m}
               + \rho e_{v,m} D_m \nabla y_m
-            \right)
-            + S^{v-t}_m + S^{v-v}_m + S^{v-e}_m + \dot \omega_m e_{v,m} \\[10pt]
+            \bigr) \\
+            &&&&&&& \qquad\qquad + S^{v-t}_m + S^{v-v}_m + S^{v-e}_m + \dot \omega_m e_{v,m} \\[10pt]
           %
           &\partial_t\left(  \rho_e e_e  \right) &&+ \nabla\cdot\left(  \left(\rho_e e_e + p_e\right) \vec{u}  \right) &&=
-            \nabla\cdot\left(
+            \nabla\cdot\bigl( &&
               \lambda_e \nabla T_e
               + \rho h_e D_e \nabla y_e
-            \right)
-            + \vec{u} \cdot \nabla p_e + S^{e-t} + S^{e-r} + S^{e-v} + \dot \omega_e e_e \\[10pt]
+            \bigr)
+            + \vec{u} \cdot \nabla p_e \\
+            &&&&&&& \qquad\qquad + S^{e-t} + S^{e-r} + S^{e-v} + \dot \omega_e e_e \\[10pt]
           %
           &\partial_t\left(  \rho E  \right) &&+ \nabla\cdot\left(  \left(\rho E + p + p_e\right) \vec{u}  \right) &&=
-            \nabla\cdot\left(
-              \lambda_{eq} \nabla T
+            \nabla\cdot\Biggl(
+              &&\lambda_{eq} \nabla T
               + \sum_m \lambda_m \nabla T_m
-              + \lambda_e \nabla T_e
-              + \mu \left(\nabla \vec{u} + \nabla \vec{u}^T\right) \vec{u} - \frac{2}{3} \mu \left(\nabla \cdot \vec{u}\right) \vec{u}
+              + \lambda_e \nabla T_e \\
+              &&&&&&& + \mu \left(\nabla \vec{u} + \nabla \vec{u}^T\right) \vec{u} - \frac{2}{3} \mu \left(\nabla \cdot \vec{u}\right) \vec{u}
               + \rho \sum_s h_s D_s \nabla y_s
-            \right)
-        \end{aligned}\right.
+            \Biggr)
+        \end{alignedat}\right.
       \end{equation}
 
 
