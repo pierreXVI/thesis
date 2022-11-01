@@ -1005,7 +1005,7 @@
       The flexible preconditioning also does not need the Jacobian matrix for the same reason, contrary to other types of preconditioners such as ILU preconditioners.
 
       \paragraph{}
-      Overall, using Newton's method to solve the nonlinear problem and a Krylov subspace method to solve the linear problem while using a matrix-free method is known as the Jacobian Free Newton--Krylov method, or JFNK.
+      Overall, using Newton's method to solve the nonlinear problem and a Krylov subspace method to solve the linear problem while using a matrix-free method is known as the Jacobian-Free Newton--Krylov method, or JFNK.
       This methods and its variants are as of today still discussed \cite{AnWenFeng2011, Turpault2003} and used on actual computational fluid dynamics solvers \cite{LiuZhangZhongEtAl2015, FrancoCamierAndrejEtAl2020}.
       We are interested in the JFNK method as we hope it will give a better representation of the Jacobian matrix than the low-order one already in use in our solver.
       We hope that a better Jacobian matrix will lead to a better convergence, in particular when some models are ignored in the classic Jacobian matrix, such as turbulence models.

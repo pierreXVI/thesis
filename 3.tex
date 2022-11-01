@@ -10,7 +10,7 @@
   \section{Comparaison entre la matrice jacobienne explicite et la formulation sans matrice}
 
     \paragraph{}
-    From our analysis and implementation, the main addition to the solver is the Jacobian Free Newton--Krylov method, and in particular the matrix-free approach.
+    From our analysis and implementation, the main addition to the solver is the Jacobian-Free Newton--Krylov method, and in particular the matrix-free approach.
     In this part, we will then compare two methods: the traditional method and the new one that uses the matrix-free approach.
     As we are interested in implicit time integration, we will use the implicit Euler method, for reasons previously discussed.
     The traditional method linearises the equation that the implicit Euler method produces, approximates the Jacobian matrix using the Jacobian matrix of the corresponding first-order scheme, and then solves the linear system with the Krylov subspace method GMRES.
@@ -131,7 +131,7 @@
         Figure \ref{fig:rae_residuals} shows the residual norms from our two computations.
         The gain from using the JFNK method appears clearly.
         The final residual norm is much smaller for each and every conservative component.
-        This means that the Jacobian free Newton--Krylov method is able to reach a better convergence level than the traditional method.
+        This means that the Jacobian-Free Newton--Krylov method is able to reach a better convergence level than the traditional method.
         In other words, the better Jacobian matrix approximation from our new method leads to a better convergence than the older poor approximation.
         \PS{Que dire de plus ?}
 
@@ -144,7 +144,7 @@
     \subsection{Hypersonic reactive sphere}
 
       \paragraph{}
-      The second application we selected to compare the Jacobian Free Newton--Krylov with the traditional one is the computation of the flow around a hypersonic solid sphere.
+      The second application we selected to compare the Jacobian-Free Newton--Krylov with the traditional one is the computation of the flow around a hypersonic solid sphere.
       Because of the high energy of the surrounding flow, the air molecules can separate and even form a plasma \PS{check traduction}.
       The hypersonic reactive sphere is a well-known case, for both experimental \cite{Lobb1964} and numerical studies \cite{DobrovGimadievKarpenkoEtAl2022}.
       This is a simple yet representative test case of CEDRE applications.
@@ -241,7 +241,7 @@
 
     \paragraph{}
     In a previous part we suggested that the poor quality of the Jacobian matrix used in our solver was an obstacle to achieve good convergence.
-    We then proposed an improvement: the Jacobian Free Newton--Krylov method using the matrix-free approximation (\ref{eq:matrix_free}).
+    We then proposed an improvement: the Jacobian-Free Newton--Krylov method using the matrix-free approximation (\ref{eq:matrix_free}).
     We compared this new method with the traditional one on two simple yet representative application of our solver.
     This comparaison showed that indeed, using a better Jacobian matrix lead to lower residual norm.
     The new method can be usefull when looking at quantities that require precise convergence, for instance the derivatives of the flow variables.
@@ -251,7 +251,98 @@
 
 
   \section{Utilisation de la formulation sans matrice sur un nouveau modèle de fluide}
+
+    \paragraph{}
+    In the precious section we compared the new Jacobian-Free Newton--Krylov method to the traditional method that uses the first-order Jacobian matrix.
+    This first-order matrix is easily computed for the usual Navier--Stokes equations.
+    But as CEDRE in under constant developement, new models are added in order to handle more precisely various multiphysic phenomena.
+    For example, a new model was recently added to better handle multiphasic flows \PS{ref Clément}.
+    Adding a new model amount to writing the function $\operatorname{F}$ from equation (\ref{eq:pde}), or equivalently $\operatorname{G}$ from equation (\ref{eq:ode}) \PS{vérifier labels}.
+    Usually, the development of this function is straightforward as it is given explicitely from the equations.
+    However, the developpement of the Jacobian matrix is much more difficult.
+    This is why the new models do not allow to compute a Jacobian matrix, and therefore to use implicit methods.
+    The Jacobian-Free Newton--Krylov method is then a nice way to use implicit methods as it does not require the Jacobian matrix.
+    Because the matrix-free approximation is written in a generic fashion, it can be used on any fluid model.
+    In the following, we will use the JFNK method on a new fluid model that does not have an available Jacobian matrix, and therefore can not use traditional implicit methods.
+
+
     \subsection{Modèle Multi-températures}
+
+      \paragraph{}
+      The new model we will use is called the \emph{Multi-TEmperature model}, or MTE.
+      Its difference with the traditional Navier--Stokes model is that is allows for a non thermal equilibrium of some flow \PS{components}.
+      A particle have multiple degrees of freedom: translation, rotation and vibration.
+      In more traditional models, it is assume that all modes are at equilibrium, and they are grouped in what we call energy.
+      We can define a time constant for each energy mode that correspond to the number of collisions that are required to get to the equilibrium.
+      A few collisions are required for translation modes, and about ten for rotation modes.
+      This gives a small time constant of order $10^{-9}\si{seconds}$.
+      For vibration modes however, up to \num{20000} collisions are required.
+      The corresponding time constant is significantly larger, and there may be regions where there can be a desequilibrium between vibrational energy and transition and rotation energy.
+      \PS{Vérifier anglais: transition/al, rotation/al, ...}
+      The energy of such components can no longer be discribed with a single temperature.
+      As electrons are much lighter, they move more than the other heavier flow components.
+      Their transitional energy and the transitional energy of other components can not be described with the same temperature.
+      With the new Multi-TEmperature model, the flow components may be divided into three classes:
+      \begin{itemize}
+        \item the \emph{heavy} ones that are at the equilibrium
+        \item the \emph{light} ones that are at \PS{vibrational desiquilibrium}
+        \item the electrons that are handeled separatly.
+      \end{itemize}
+
+      \paragraph{}
+      To account for the desequilibrium, the Navier--Stokes equations are modified into the following, in conservative form.
+      \begin{equation}
+        \left\{\begin{aligned}
+          &\partial_t\left(  \rho_s  \right) &&+ \nabla\cdot\left(  \rho_s \vec{u}  \right) &&=
+            \nabla\cdot\left( \rho D_s \nabla y_s\right) + \dot \omega_s \\[10pt]
+          %
+          &\partial_t\left(  \rho \vec{u}  \right) &&+ \nabla\cdot\left(  \rho \vec{u} \otimes \vec{u}  +  \left(p + p_e\right) \mat{\operatorname{Id}}  \right) &&=
+            \nabla\cdot\left(
+              \mu \left(\nabla \vec{u} + \nabla \vec{u}^T\right)
+              - \frac{2}{3} \mu \left(\nabla \cdot \vec{u} \right) \mat{\operatorname{Id}}
+            \right) \\[10pt]
+          %
+          &\partial_t\left(  \rho_m e_{v,m}  \right) &&+ \nabla\cdot\left(  \rho_m e_{v,m} \vec{u}  \right) &&=
+            \nabla\cdot\left(
+              \lambda_{v,m} \nabla T_{v,m}
+              + \rho e_{v,m} D_m \nabla y_m
+            \right)
+            + S^{v-t}_m + S^{v-v}_m + S^{v-e}_m + \dot \omega_m e_{v,m} \\[10pt]
+          %
+          &\partial_t\left(  \rho_e e_e  \right) &&+ \nabla\cdot\left(  \left(\rho_e e_e + p_e\right) \vec{u}  \right) &&=
+            \nabla\cdot\left(
+              \lambda_e \nabla T_e
+              + \rho h_e D_e \nabla y_e
+            \right)
+            + \vec{u} \cdot \nabla p_e + S^{e-t} + S^{e-r} + S^{e-v} + \dot \omega_e e_e \\[10pt]
+          %
+          &\partial_t\left(  \rho E  \right) &&+ \nabla\cdot\left(  \left(\rho E + p + p_e\right) \vec{u}  \right) &&=
+            \nabla\cdot\left(
+              \lambda_{eq} \nabla T
+              + \sum_m \lambda_m \nabla T_m
+              + \lambda_e \nabla T_e
+              + \mu \left(\nabla \vec{u} + \nabla \vec{u}^T\right) \vec{u} - \frac{2}{3} \mu \left(\nabla \cdot \vec{u}\right) \vec{u}
+              + \rho \sum_s h_s D_s \nabla y_s
+            \right)
+        \end{aligned}\right.
+      \end{equation}
+
+
+
+
+
+
+
+
+
+
+      \paragraph{}
+      Intérêt du modèle MTE
+
+      \paragraph{}
+      Concrètement sur la sphère de Lobb
+
+
     \subsection{Sphère hypersonique}
       \subsubsection{Modèle réactif complet}
       \subsubsection{Modèle réactif simplifié}
