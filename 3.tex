@@ -202,10 +202,10 @@
       \subsubsection{Analysis of the results}
 
         \paragraph{}
-        Once again, a first computaiton is done using the more robust traditional method.
+        Once again, a first computation is done using the more robust traditional method.
         Indeed, the flow in the first cell against the sphere and the symmetry axis is initialised with a Mach number of 15 going straight into the wall.
         The matrix-free approximation struggles with such stiff initialisations, which is why we must start the computation with another method, just until the shock has started to detach from the wall.
-        Practically this amount to just a few iteration, compared to the number required to achieve convergence.
+        Practically this amount to just a few iterations, compared to the number required to achieve convergence.
 
         \paragraph{}
         We first look at the different fields from the two computations.
@@ -230,7 +230,7 @@
         The advantage of the new method appears when we look at the residuals: we see in figure \PS{TODO} that the new method gives a better convergence.
         The difference between the traditional method and the new one is that the traditional method uses the Jacobian matrix of the first-order spatial discretisation method, whereas the new one approximates the true Jacobian matrix using the approximation (\ref{eq:matrix_free}).
         We decided to test this.
-        If we use the approximation (\ref{eq:matrix_free}), but using the first order evaluation of $f$, then we should get the same Jacobian matrix as the one used by the traditional method.
+        If we use the approximation (\ref{eq:matrix_free}), but using the first-order evaluation of $f$, then we should get the same Jacobian matrix as the one used by the traditional method.
         We look at the residual norms from this method, which we can call the first-order JFNK method, and we see in figure \PS{TODO} that it is indistinguishable from the residual norms from the traditional method.
         It first validates the development of the matrix-free approximation.
         It also confirms that the traditional method uses the Jacobian matrix of the first-order spatial discretisation method.
@@ -240,43 +240,43 @@
 
 
     \paragraph{}
-    In a previous part we suggested that the poor quality of the Jacobian matrix used in our solver was an obstacle to achieve good convergence.
+    In a previous part, we suggested that the poor quality of the Jacobian matrix used in our solver was an obstacle to achieving good convergence.
     We then proposed an improvement: the Jacobian-Free Newton--Krylov method using the matrix-free approximation (\ref{eq:matrix_free}).
-    We compared this new method with the traditional one on two simple yet representative application of our solver.
-    This comparaison showed that indeed, using a better Jacobian matrix lead to lower residual norm.
-    The new method can be usefull when looking at quantities that require precise convergence, for instance the derivatives of the flow variables.
+    We compared this new method with the traditional one on two simple yet representative applications of our solver.
+    This comparison showed that indeed, using a better Jacobian matrix leads to a lower residual norm.
+    The new method can be useful when looking at quantities that require precise convergence, for instance, the derivatives of the flow variables.
     However, the main drawback of this new method is its computational cost.
-    This cost is not inherent to the method, but comes from our solver properties as was discussed previously.
+    This cost is not inherent to the method but comes from our solver properties as was discussed previously.
     The recommended usage is then to start a computation using the inexpensive traditional method, and then achieve better convergence using the more precise yet more expensive new method.
 
 
   \section{Utilisation de la formulation sans matrice sur un nouveau modèle de fluide}
 
     \paragraph{}
-    In the precious section we compared the new Jacobian-Free Newton--Krylov method to the traditional method that uses the first-order Jacobian matrix.
+    In the previous section, we compared the new Jacobian-Free Newton--Krylov method to the traditional method that uses the first-order Jacobian matrix.
     This first-order matrix is easily computed for the usual Navier--Stokes equations.
-    But as CEDRE in under constant developement, new models are added in order to handle more precisely various multiphysic phenomena.
+    But as CEDRE is under constant development, new models are added in order to handle more finely various multiphysics phenomena.
     For example, a new model was recently added to better handle multiphasic flows \PS{ref Clément}.
     Adding a new model amount to writing the function $\operatorname{F}$ from equation (\ref{eq:pde}), or equivalently $\operatorname{G}$ from equation (\ref{eq:ode}) \PS{vérifier labels}.
     Usually, the development of this function is straightforward as it is given explicitly from the equations.
     However, the development of the Jacobian matrix is much more difficult.
-    This is why the new models do not allow to compute a Jacobian matrix, and therefore to use implicit methods.
+    This is why the new models can not compute Jacobian matrices, and therefore can not use implicit methods.
     The Jacobian-Free Newton--Krylov method is then a nice way to use implicit methods as it does not require the Jacobian matrix.
     Because the matrix-free approximation is written in a generic fashion, it can be used on any fluid model.
-    In the following, we will use the JFNK method on a new fluid model that does not have an available Jacobian matrix, and therefore can not use traditional implicit methods.
+    In the following, we will use the JFNK method on a new fluid model that does not have an available Jacobian matrix and therefore can not use traditional implicit methods.
 
 
     \subsection{Multi-TEmperature model}
 
       \paragraph{}
       The new model we will use is called the \emph{Multi-TEmperature model}, or MTE.
-      Its difference with the traditional Navier--Stokes model is that is allows for a non thermal equilibrium of some flow \PS{components}.
-      A particle have multiple degrees of freedom: translation, rotation and vibration.
-      In more traditional models, it is assume that all modes are at equilibrium, and they are grouped in what we call energy.
-      We can define a time constant for each energy mode that correspond to the number of collisions that are required to get to the equilibrium.
+      Its difference from the traditional Navier--Stokes model is that it allows for a thermodynamic non-equilibrium of some flow components.
+      A particle has multiple degrees of freedom: translation, rotation and vibration.
+      In more traditional models, it is assumed that all modes are at equilibrium, and they are grouped in what we call energy.
+      We can define a time constant for each energy mode that corresponds to the number of collisions that are required to get to the equilibrium.
       A few collisions are required for translation modes, and about ten for rotation modes.
       This gives a small time constant of order $10^{-9}\si{seconds}$.
-      For vibration modes however, up to \num{20000} collisions are required.
+      For vibration modes, however, up to \num{20000} collisions are required.
       The corresponding time constant is significantly larger, and there may be regions where there can be a disequilibrium between vibrational energy on one side and transition and rotation energy on the other.
       \PS{Vérifier anglais: transition/al, rotation/al, ...}
       The energy of such components can no longer be described with a single temperature.
@@ -332,17 +332,17 @@
       It increases the number of conservative variables.
       The variables $y$ correspond to the mass fraction of the different flow components.
       The source terms $\omega$ correspond to \PS{production et destruction chimique}.
-      The source termes $S$ correspond to the energy transfers between the different energy modes.
+      The source terms $S$ correspond to the energy transfers between the different energy modes.
       The details of those terms can be complex and are not discussed here as it is not the subject of this thesis, but can be found in \cite{Soubrie2006}.
-      A noticeable feature of this model is the presence of a nonconservative term in the conservation equation of the electrons energy: $\vec{u} \cdot \nabla p_e$.
-      This is a known issue of this model, as Finite Volume method handles best conservative terms.
+      A noticeable feature of this model is the presence of a nonconservative term in the conservation equation of the electrons' energy: $\vec{u} \cdot \nabla p_e$.
+      This is a known issue of this model, as the Finite Volume method handles better conservative terms.
       Some work tried to transform this equation into a conservative one by using the electronic entropy instead of energy\cite{CoquelMarmignon1995}, but it appears that using this nonconservative formulation is necessary to get physically accurate results \PS{SOURCE JM LAMET}.
 
       \paragraph{}
       The Multi-TEmperature model allows for non-equilibrium between the vibrational mode of the flow components, the electronic energy and the rest of the energetic modes.
       This is interesting on reentry problems, as there is indeed some non-equilibrium downstream of the strong shocks that appear on such problems.
       Taking the non-equilibrium into account can change the flow downstream of the shock, the thermal exchanges or other physical features.
-      Computing the electronic density can also be useful when studying \PS{signature electromagnetique} or handling particules electric charges.
+      Computing the electronic density can also be useful when studying \PS{signature electromagnetique} or handling particles' electric charges.
       Generally speaking, the Multi-TEmperature model gives more precise results than the standard Navier--Stokes model on fast flow with low relative density where there may be some thermodynamic non-equilibrium, such as reentry problems or \PS{forte détente} problems.
 
 
@@ -352,10 +352,10 @@
       The hypersonic sphere test case is a perfect fit for the Multi-TEmperature model.
       There is some thermodynamic non-equilibrium in the region downstream of the shock, because of its intensity.
       Unfortunately, the Jacobian matrix for the new MTE model is not currently available.
-      This limits the MTE model users to explicit time integration methods, and therefore to small time steps for stability reasons.
+      This limits the MTE model users to explicit time integration methods, and therefore small time steps for stability reasons.
       As they deemed explicit time integration too slow, they wanted to use the newly implemented Jacobian-Free Newton--Krylov method for their simulations.
       We will show in the following another interest of the matrix-free approximation: it allows for implicit time integration methods despite having no Jacobian matrix.
-      The goal here is to be able to get a steady solution of the problem as fast as possible for the user.
+      The goal here is to be able to get a steady solution to the problem as fast as possible for the user.
       Initially, the MTE model users were using a second-order Runge--Kutta method: the Midpoint method.
       We will compare the JFNK method to this reference method, and we will look in particular at how much time is required from the user to get to a physically satisfying result.
 
@@ -376,20 +376,20 @@
         Finally, to get a finer result, we end the simulation using the second-order spatial discretisation method.
         We use local time stepping based on the CFL number \PS{Donner le CFL et est-ce qu'on peut pas faire mieux ?}.
         We can not use preconditioners that use the matrix, so the only one available is the diagonal preconditioner based on the cell volumes.
-        It is not ideal as it is extremely simple, and some physics based preconditioner would be preferable \cite{KnollKeyes2004} but none were available to us at the time.
+        It is not ideal as it is extremely simple, and some physics-based preconditioner would be preferable \cite{KnollKeyes2004} but none were available to us at the time.
         The spatial discretisation method used is the Multislope method, as it appears more robust than the $k$-exact method with the Multi-TEmperature model.
 
         \paragraph{}
-        The goal of this thesis is not the physical analysis of this test case so it will be left out, but according to the MTE model users the results are in accordance with the literature. \PS{Ca va ?}
+        The goal of this thesis is not the physical analysis of this test case so it will be left out, but according to the MTE model users, the results are in agreement with the literature. \PS{Ca va ?}
         We show in figure \PS{TODO} the various temperatures along the symmetry axis.
-        This justify the use of the Multi-Temperature model: the region downstream of the shock is indeed in a thermodynamic non-equilibrium state.
+        This justifies the use of the Multi-Temperature model: the region downstream of the shock is indeed in a thermodynamic non-equilibrium state.
         \PS{Hypothétique : Comparaison AET MTE}
 
         \paragraph{}
         We will also look at the residuals for this analysis.
         But this time, we will not be using the number of iterations as the $x$-axis as it will be unfair to the explicit method.
         Indeed the cost of one iteration is a lot smaller for the explicit method than for the implicit JFNK one.
-        What matters to us and to an user is not the number of iterations.
+        What matters to us and a typical user is not the number of iterations.
         As we will run our computations each time in the same parallel environment, with a fixed number of CPU cores, what matters is the time spent waiting for the result.
         The $x$-axis will then be the elapsed real time, or wall-clock time: the actual time it took to get at the current residual.
         \PS{Ou CPU time, ça fait plus scientifique ?}
