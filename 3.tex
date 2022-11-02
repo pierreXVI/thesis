@@ -179,7 +179,7 @@
         No turbulence model is used, as the flow is mostly laminar.
 
         \paragraph{}
-        \PS{KEX vs MTP}
+        \PS{KEX vs MTP, carbuncle}
 
         \paragraph{}
         The main feature of this test case is that it simulates a hypersonic flow.
@@ -258,8 +258,8 @@
     But as CEDRE in under constant developement, new models are added in order to handle more precisely various multiphysic phenomena.
     For example, a new model was recently added to better handle multiphasic flows \PS{ref Clément}.
     Adding a new model amount to writing the function $\operatorname{F}$ from equation (\ref{eq:pde}), or equivalently $\operatorname{G}$ from equation (\ref{eq:ode}) \PS{vérifier labels}.
-    Usually, the development of this function is straightforward as it is given explicitely from the equations.
-    However, the developpement of the Jacobian matrix is much more difficult.
+    Usually, the development of this function is straightforward as it is given explicitly from the equations.
+    However, the development of the Jacobian matrix is much more difficult.
     This is why the new models do not allow to compute a Jacobian matrix, and therefore to use implicit methods.
     The Jacobian-Free Newton--Krylov method is then a nice way to use implicit methods as it does not require the Jacobian matrix.
     Because the matrix-free approximation is written in a generic fashion, it can be used on any fluid model.
@@ -284,13 +284,13 @@
       Their transitional energy and the transitional energy of other components can not be described with the same temperature.
       With the new Multi-TEmperature model, the flow components may be divided into three classes:
       \begin{itemize}
-        \item the \emph{heavy} ones that are at the equilibrium
-        \item the \emph{light} ones that are at \PS{vibrational disequilibrium}
-        \item the electrons that are handled separately.
+        \item the ones that always are at the equilibrium
+        \item the ones that may be at \PS{vibrational disequilibrium}
+        \item the electrons that are handled separately from the other heavy component.
       \end{itemize}
 
       \paragraph{}
-      To account for the disequilibrium, the Navier--Stokes equations are modified into the following, in conservative form.
+      To account for the disequilibrium, the Navier--Stokes equations (\ref{eq:ns}) are modified into the following, in conservative form.
       \begin{equation}
         \left\{\begin{alignedat}{5}
           &\partial_t\left(  \rho_s  \right) &&+ \nabla\cdot\left(  \rho_s \vec{u}  \right) &&=
@@ -327,28 +327,75 @@
             \Biggr)
         \end{alignedat}\right.
       \end{equation}
+      What we see first is that the equations of this physical model are more complex compared to the standard Navier--Stokes equations.
       We notice there are multiple energies corresponding to the multiple temperatures: $e_e$ the energy of the electronic gas, $e_{v, m}$ the vibrational energy for each flow component that may be at disequilibrium, and $E$ the rest of the energy.
       It increases the number of conservative variables.
-      The variables $y$ correspond to the mass density of the different flow components.
+      The variables $y$ correspond to the mass fraction of the different flow components.
       The source terms $\omega$ correspond to \PS{production et destruction chimique}.
       The source termes $S$ correspond to the energy transfers between the different energy modes.
       The details of those terms can be complex and are not discussed here as it is not the subject of this thesis, but can be found in \cite{Soubrie2006}.
       A noticeable feature of this model is the presence of a nonconservative term in the conservation equation of the electrons energy: $\vec{u} \cdot \nabla p_e$.
       This is a known issue of this model, as Finite Volume method handles best conservative terms.
-      Some work tried to transform this equation into a conservative one, by using the electronic entropy instead of energy, but it appears that using this nonconservative formulation is necessary to get physically accurate results \PS{SOURCE JM LAMET}.
+      Some work tried to transform this equation into a conservative one by using the electronic entropy instead of energy\cite{CoquelMarmignon1995}, but it appears that using this nonconservative formulation is necessary to get physically accurate results \PS{SOURCE JM LAMET}.
 
       \paragraph{}
       The Multi-TEmperature model allows for non-equilibrium between the vibrational mode of the flow components, the electronic energy and the rest of the energetic modes.
-      This is interesting on reentry problems, as there is indeed a non-equilibrium behind the strong shocks that appears on such problems.
-      Taking the non-equilibrium into account can change the flow behind the shock, the thermal exchanges or other physical features.
-      Computing the electronic density can also be useful when studying \PS{signature electromagnetique}.
-      Generally speaking, the Multi-TEmperature model gives more precise results than the standard Navier--Stokes model on reentry problems or \PS{forte détente} problems, where there may be some thermodynamic non-equilibrium.
+      This is interesting on reentry problems, as there is indeed some non-equilibrium downstream of the strong shocks that appear on such problems.
+      Taking the non-equilibrium into account can change the flow downstream of the shock, the thermal exchanges or other physical features.
+      Computing the electronic density can also be useful when studying \PS{signature electromagnetique} or handling particules electric charges.
+      Generally speaking, the Multi-TEmperature model gives more precise results than the standard Navier--Stokes model on fast flow with low relative density where there may be some thermodynamic non-equilibrium, such as reentry problems or \PS{forte détente} problems.
+
+
+    \subsection{Hypersonic reactive sphere}
 
       \paragraph{}
       The hypersonic sphere test case is a perfect fit for the Multi-TEmperature model.
+      There is some thermodynamic non-equilibrium in the region downstream of the shock, because of its intensity.
+      Unfortunately, the Jacobian matrix for the new MTE model is not currently available.
+      This limits the MTE model users to explicit time integration methods, and therefore to small time steps for stability reasons.
+      As they deemed explicit time integration too slow, they wanted to use the newly implemented Jacobian-Free Newton--Krylov method for their simulations.
+      We will show in the following another interest of the matrix-free approximation: it allows for implicit time integration methods despite having no Jacobian matrix.
+      The goal here is to be able to get a steady solution of the problem as fast as possible for the user.
+      Initially, the MTE model users were using a second-order Runge--Kutta method: the Midpoint method.
+      We will compare the JFNK method to this reference method, and we will look in particular at how much time is required from the user to get to a physically satisfying result.
 
 
-
-    \subsection{Sphère hypersonique}
       \subsubsection{Modèle réactif complet}
+
+        \paragraph{}
+        For the first step of our analysis, we will use the most complete physical model.
+        We use the same 11 flow components as before: \ce{N_2}, \ce{O_2}, \ce{N}, \ce{O} and \ce{NO}, the corresponding cations \ce{N_2^+}, \ce{O_2^+}, \ce{N^+}, \ce{O^+} and \ce{NO^+} and the electrons \ce{e^-}.
+        We of course use the Multi-TEmperature model, and we consider that \ce{N_2} and \ce{O_2} may be at \PS{vibrational disequilibrium}.
+        \PS{Pourquoi que ces deux ?}
+        This amount to having four temperatures to describe the flow: $T_e$ for the electrons, $T_{v, \ce{N_2}}$ and $T_{v, \ce{O_2}}$ for the vibration modes of \ce{N_2} and \ce{O_2}, and $T$ for the rest of the energy.
+
+        \paragraph{}
+        As before, the Jacobian-Free Newton--Krylov method needs some help at the beginning.
+        This is why we start the computation with some iterations of the Midpoint method.
+        Then, we continue the computation with the JFNK method using the first-order Finite Volume method, to quickly get a good enough approximation of the expected solution.
+        Finally, to get a finer result, we end the simulation using the second-order spatial discretisation method.
+        We use local time stepping based on the CFL number \PS{Donner le CFL et est-ce qu'on peut pas faire mieux ?}.
+        We can not use preconditioners that use the matrix, so the only one available is the diagonal preconditioner based on the cell volumes.
+        It is not ideal as it is extremely simple, and some physics based preconditioner would be preferable \cite{KnollKeyes2004} but none were available to us at the time.
+        The spatial discretisation method used is the Multislope method, as it appears more robust than the $k$-exact method with the Multi-TEmperature model.
+
+        \paragraph{}
+        The goal of this thesis is not the physical analysis of this test case so it will be left out, but according to the MTE model users the results are in accordance with the literature. \PS{Ca va ?}
+        We show in figure \PS{TODO} the various temperatures along the symmetry axis.
+        This justify the use of the Multi-Temperature model: the region downstream of the shock is indeed in a thermodynamic non-equilibrium state.
+        \PS{Hypothétique : Comparaison AET MTE}
+
+        \paragraph{}
+        We will also look at the residuals for this analysis.
+        But this time, we will not be using the number of iterations as the $x$-axis as it will be unfair to the explicit method.
+        Indeed the cost of one iteration is a lot smaller for the explicit method than for the implicit JFNK one.
+        What matters to us and to an user is not the number of iterations.
+        As we will run our computations each time in the same parallel environment, with a fixed number of CPU cores, what matters is the time spent waiting for the result.
+        The $x$-axis will then be the elapsed real time, or wall-clock time: the actual time it took to get at the current residual.
+        \PS{Ou CPU time, ça fait plus scientifique ?}
+  
+
       \subsubsection{Modèle réactif simplifié}
+
+        \paragraph{}
+        En particulier les électrons mettent le bordel: comment calculer $T_e$ là ou il n'y en a pas, ...
