@@ -40,9 +40,37 @@ def rae_mesh():
     print("Please set the OrientationAxis manually in view1")
     view1.OrientationAxesInteractivity = 1
     plotter.draw(0, True)
-
     pvs.SaveScreenshot("rae_mesh.png", layout)
 
 
+def rae_field():
+    filename = "/scratchm/pseize/RAE_2822/MF/RUN_1/ENSIGHT/archive_CHARME.volu.ins.case"
+    plotter = pvlib.Plotter()
+    reader, view, _ = plotter.load_data(filename, ['P', 'Mach'], render_view=True, rvs=(1200, 600))
+    display = pvs.Show(reader, view, ColorArrayName=['CELLS', 'P'])
+    color_bar = pvs.GetScalarBar(pvs.GetColorTransferFunction('P'), view)
+    color_bar.WindowLocation = 'Lower Center'
+    color_bar.Title = '$P$'
+    color_bar.ComponentTitle = ''
+    color_bar.Orientation = 'Horizontal'
+    color_bar.TitleFontSize = 20
+    color_bar.LabelFontSize = 15
+    color_bar.ScalarBarLength = 0.6
+    color_bar.RangeLabelFormat = '%.0f'
+    view.CameraPosition = [0.5, 0, 1]
+    view.CameraFocalPoint = [0.5, 0, 0]
+    view.CameraParallelScale = 1
+    plotter.scale_display(display)
+
+    c2p = pvs.CellDatatoPointData(reader, ProcessAllArrays=0, CellDataArraytoprocess=['Mach'])
+    ctr = pvs.Contour(c2p, ContourBy=['POINTS', 'Mach'], Isosurfaces=[1])
+    pvs.Show(ctr, view, Representation='Wireframe', LineWidth=3, ColorArrayName=['CELLS', None])
+
+    # plotter.draw(0, block=True)
+    pvs.SaveScreenshot("rae_field.png", view)
+
+
 if __name__ == '__main__':
-    rae_mesh()
+    # rae_mesh()
+    rae_field()
+    pass

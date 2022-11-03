@@ -56,7 +56,7 @@
         \begin{figure}
           \centering
           \includegraphics[width=\textwidth]{figures/rae_mesh.png}
-          \caption{Mesh for the RAE 2822 test case. Close up on the expected shock location and the wall on the leading edge.}
+          \caption{Mesh for the RAE 2822 test case. Close up on the leading edge and on the expected shock location.}
           \label{fig:rae_mesh}
         \end{figure}
 
@@ -72,7 +72,12 @@
 
       \subsubsection{Analysis of the results}
 
-        \PS{Figure champ (mach)}
+        \begin{figure}
+          \centering
+          \includegraphics[width=\textwidth]{figures/rae_field.png}
+          \caption{Pressure around the RAE 2822 airfoil and sonic $\operatorname{Ma} = 1$ contour.}
+          \label{fig:rae_field}
+        \end{figure}
 
         \PS{Figure CP comparative}
 
@@ -393,7 +398,7 @@
         As we will run our computations each time in the same parallel environment, with a fixed number of CPU cores, what matters is the time spent waiting for the result.
         The $x$-axis will then be the elapsed real time, or wall-clock time: the actual time it took to get at the current residual.
         \PS{Ou CPU time, ça fait plus scientifique ?}
-  
+
 
       \subsubsection{Modèle réactif simplifié}
 
