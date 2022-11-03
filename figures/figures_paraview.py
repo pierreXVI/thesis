@@ -40,7 +40,7 @@ def rae_mesh():
     print("Please set the OrientationAxis manually in view1")
     view1.OrientationAxesInteractivity = 1
     plotter.draw(0, True)
-    pvs.SaveScreenshot("rae_mesh.png", layout)
+    # pvs.SaveScreenshot("rae_mesh.png", layout)
 
 
 def rae_field():
@@ -50,7 +50,7 @@ def rae_field():
     display = pvs.Show(reader, view, ColorArrayName=['CELLS', 'P'])
     color_bar = pvs.GetScalarBar(pvs.GetColorTransferFunction('P'), view)
     color_bar.WindowLocation = 'Lower Center'
-    color_bar.Title = '$P$'
+    color_bar.Title = r'$P \quad \left( \operatorname{Pa} \right)$'
     color_bar.ComponentTitle = ''
     color_bar.Orientation = 'Horizontal'
     color_bar.TitleFontSize = 20
@@ -66,8 +66,17 @@ def rae_field():
     ctr = pvs.Contour(c2p, ContourBy=['POINTS', 'Mach'], Isosurfaces=[1])
     pvs.Show(ctr, view, Representation='Wireframe', LineWidth=3, ColorArrayName=['CELLS', None])
 
-    # plotter.draw(0, block=True)
-    pvs.SaveScreenshot("rae_field.png", view)
+    plotter.draw(0, block=True)
+    # pvs.SaveScreenshot("rae_field.png", view)
+
+
+def rae_cp():
+    plotter = pvlib.CpPlotter()
+    plotter.register_plot("/scratchm/pseize/RAE_2822/BASE/RUN_1/ENSIGHT/archive_CHARME.surf.ins.case",
+                          p_inf=26500, gamma=1.4, mach=0.75, block_name=['Intrados', 'Extrados'], label='Base')
+    plotter.register_plot("/scratchm/pseize/RAE_2822/MF/RUN_1/ENSIGHT/archive_CHARME.surf.ins.case", marker=1,
+                          p_inf=26500, gamma=1.4, mach=0.75, block_name=['Intrados', 'Extrados'], label='MF')
+    plotter.draw(duration=0, block=True)
 
 
 if __name__ == '__main__':
