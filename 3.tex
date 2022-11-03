@@ -72,13 +72,6 @@
 
       \subsubsection{Analysis of the results}
 
-        \begin{figure}
-          \centering
-          \includegraphics[width=\textwidth]{figures/rae_field.png}
-          \caption{Pressure around the RAE 2822 airfoil and sonic $\operatorname{Ma} = 1$ contour.}
-          \label{fig:rae_field}
-        \end{figure}
-
         \PS{Figure CP comparative}
 
         \PS{Qu'est-ce qu'on peut regarder pour avoir une différence, flux de chaleur ?}
@@ -92,6 +85,20 @@
 
         \begin{figure}
           \centering
+          \includegraphics[width=\textwidth]{figures/rae_field.png}
+          \caption{Pressure around the RAE 2822 airfoil and sonic $\operatorname{Ma} = 1$ contour.}
+          \label{fig:rae_field}
+        \end{figure}
+
+        \begin{figure}
+          \centering
+          \includegraphics[width=0.7\textwidth]{figures/rae_cp.png}
+          \caption{Pressure coefficient around the airfoil for the traditional method (blue) and the JFNK method (orange).}
+          \label{fig:rae_cp}
+        \end{figure}
+
+        \begin{figure}
+          \centering
           \includegraphics[width=\textwidth]{figures/rae_coefficients.png}
           \caption{\PS{TODO: Aerodynamic coefficients (lift and drag) for the profile throughout the computation.}}
           \label{fig:rae_coefficients}
@@ -99,11 +106,11 @@
 
         \paragraph{}
         We can first look at a global image of the flow.
-        This is done in figure \PS{TODO} where we can look at the pressure field near the airfoil.
+        This is done in figure \ref{fig:rae_field} where we can look at the pressure field near the airfoil.
         In particular, as expected, we see the shock on the upper part.
         The two computations give similar results: they are indistinguishable by just looking at the pressure field.
         This is to be expected as the traditional method gives already satisfying results on such applications.
-        We can also look at the pressure coefficient around the airfoil in figure \PS{TODO}.
+        We can also look at the pressure coefficient around the airfoil in figure \ref{fig:rae_cp}.
         Once again, the two curves are indistinguishable.
         Finally, we can look at the aerodynamic coefficients, the drag and lift coefficients, throughout the simulation in figure \ref{fig:rae_coefficients}.
         This time, we see an improvement from our method: the coefficients are much more stable, which means the convergence is better with our method.
