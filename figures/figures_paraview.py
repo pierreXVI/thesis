@@ -75,6 +75,8 @@ def rae_cp():
                               title=r'$C_p = \frac{{ P - P_\infty }}'
                                     r'{{ \frac{{1}}{{2}} P_\infty \gamma \operatorname{{Ma}}^2 }} $')
     plotter.view.ChartTitleFontSize = 24
+    plotter.view.LeftAxisLabelFontSize = 16
+    plotter.view.BottomAxisLabelFontSize = 16
     plotter.view.LegendFontSize = 24
     plotter.register_plot("/scratchm/pseize/RAE_2822/BASE/RUN_1/ENSIGHT/archive_CHARME.surf.ins.case",
                           p_inf=26500, gamma=1.4, mach=0.75, block_name=['Intrados', 'Extrados'], label='Base')
