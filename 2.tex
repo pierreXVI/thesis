@@ -141,7 +141,6 @@
     \subsection{Strategy for the choice of \texorpdfstring{$\varepsilon$}{epsilon}}
       \PS{Bouger cette partie ?}
 
-
       \paragraph{}
       When we introduced the approximation (\ref{eq:matrix_free}) we saw a new parameter $\varepsilon$.
       It is easy to check that the truncation error on this approximation decreases linearly with regard to $\varepsilon$.
@@ -338,19 +337,22 @@
 
   \paragraph{}
   This chapter explained in a simplified manner some implementation detail of our solver.
-  It is important to remind oneself that CEDRE is an industrial sized software system, compared to smaller solvers developped for academic purposes.
+  It is important to remind oneself that CEDRE is an industrial sized software system, compared to smaller solvers developed for academic purposes.
   The scale of the solver was a limiting factor during this thesis.
   We often wanted to try some new scientific idea, but were faced with many troubles that are inherent to the solver size.
+  At some point at the early stage of this thesis, for example, we wanted to improve the quality of the linear solve by using advanced solvers and preconditioners, with the help of the PETSc library \cite{petsc-web-page, petsc-user-ref, petsc-efficient}.
+  Using the library in CEDRE ended up being impractical, or at least would have taken too much time that we could not afford, and so we had to change direction.
+  In the end, a solver of this size is not an ideal sandbox to try methods that art too innovative.
   A good amount of experience is required to master the various models and methods, an amount I did not have at the beginning of this thesis.
   For example, the spatial discretisation methods come with a lot of parameters: the kind of method, the slope limiter, the Riemann solver, and many more that are specific to CEDRE.
   The same goes for the time integration with for instance the local time stepping or the linear system normalisation.
   A single parameter may be deterministic in the success of a computation.
-  Moreover, because of the large number of developers that are working on the solver, and the fact that many developements are small tweaks from occasional developers such as interns and PhD students, fixing bugs took a decent amount of time.
+  This forces us to allocate a quite large amount of time to every computation.
+  Moreover, because of the large number of developers that are working on the solver, and the fact that many developments are small tweaks from occasional developers such as interns and PhD students, fixing bugs also took a decent amount of time.
   Overall, this explain why we decided to implement the solutions previously discussed.
   They are already well known from the literature, and feels like a natural step up from the already existing methods of CEDRE.
+  Is is good to mention that many difficulties arise from the solver, that are inherent to it, mostly due to its overall size.
   We would probably have taken a different route if we had work with a different solver.
-  At some point at the early stage of this thesis, for example, we wanted to improve the quality of the linear solve by using advanced solvers and preconditioners, with the help of the PETSc library \cite{petsc-web-page, petsc-user-ref, petsc-efficient}.
-
 
 
   \paragraph{}
