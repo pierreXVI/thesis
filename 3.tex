@@ -210,12 +210,17 @@
         We argued previously that our solver is quite complex and that it makes it hard to do correct computations for non-experimented users.
         This hypersonic reactive sphere is a perfect example of this statement.
         Even if this case looks simplistic, it should not be taken lightly.
-        While using unfit spatial discretisation methods, we ended up with a well known problem of such simulation called a carbuncle \cite{MacCormack2013}.
+        While using unfit spatial discretisation methods, we ended up with a well known problem of such simulation called carbuncle \cite{MacCormack2013}.
         This phenomena does not come from the physics but is solely due to the numerical methods.
         It in shown in figure \ref{fig:sphere_carbuncle}.
         Simply put, it creates a recirculation bubble downstream of the shock, near the stagnation point.
         This bubble tends to push the shock farther from the sphere, and modify greatly the heat flux at this location.
         The choice of the Riemann solver ended up being the key element to get rid of this undesirable effect: there is no recirculation with the AUSM+ scheme.
+        There are other pitfalls regarding this test case in CEDRE.
+        For exemple, the user can choose whether to interpolate the mass fraction $y_i$ for the species at the cell interfaces for the MUSCL scheme, or the \PS{mass concentration} $\rho y_i$.
+        Choosing the default option lead to nonconverging residuals no matter the time integration method.
+        Indeed, this default option is recommended when running simulations with multiple phases, with significant variations in the density.
+        Because CEDRE is made to solve a large variety of problems, it has a lot of methods that come with a lot of parameters, so even a simple simulation such as this one require a lot of knowledge if a good convergence is required.
 
         \paragraph{}
         This test case is a typical application of CEDRE, as opposed to the previous one which focuses more on the aerodynamic properties.
@@ -255,13 +260,18 @@
         The advantage of the new method appears when we look at the residuals: we see in figure \PS{TODO} that the new method gives a better convergence.
         The difference between the traditional method and the new one is that the traditional method uses the Jacobian matrix of the first-order spatial discretisation method, whereas the new one approximates the true Jacobian matrix using the approximation (\ref{eq:matrix_free}).
         We decided to test this.
-        If we use the approximation (\ref{eq:matrix_free}), but using the first-order evaluation of $f$, then we should get the same Jacobian matrix as the one used by the traditional method.
+        Because this simulation does not use complex models, the poor approxiation used in the traditional model should give the Jacobian matrix of the first-order scheme.
+        If we use the approximation (\ref{eq:matrix_free}), but using the first-order evaluation of $f$, then we should also get the same Jacobian matrix.
         We look at the residual norms from this method, which we can call the first-order JFNK method, and we see in figure \PS{TODO} that it is indistinguishable from the residual norms from the traditional method.
-        It first validates the development of the matrix-free approximation.
+        It first validates the development of the matrix-free approximation, and that the unbridle method should then use the actual second-order Jacobian matrix.
         It also confirms that the traditional method uses the Jacobian matrix of the first-order spatial discretisation method.
         Finally, it validates the choice of $\varepsilon$ and the matrix-free approximation, as it is able to give the same result as when we use the Jacobian matrix.
+
+        \paragraph{}
         When we use the new method, using the true function $f$ with a second-order, we see that we can get a much smaller residual norm.
-        It confirms that using a better Jacobian matrix helps the overall convergence when solving steady problems.
+        The only difference between the two methods is that the traditional one uses the Jacobian matrix of the first-order spatial discretisation method, but the JFNK method takes into account the MUSCL reconstruction when using the Jacobian matrix.
+        Because it uses a better Jacobian matrix in the linear solve, it gives a better solution to the nonlinear solve, which gives in turn a better time integration.
+        It confirms that using a better Jacobian matrix helps the overall convergence when solving steady problems and validates the choice of the Jacobian-Free Newton--Krylov method.
 
 
     \paragraph{}
