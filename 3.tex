@@ -210,17 +210,17 @@
         We argued previously that our solver is quite complex and that it makes it hard to do correct computations for non-experimented users.
         This hypersonic reactive sphere is a perfect example of this statement.
         Even if this case looks simplistic, it should not be taken lightly.
-        While using unfit spatial discretisation methods, we ended up with a well-known problem of such simulation called carbuncle \cite{MacCormack2013}.
+        While using unfit spatial discretisation methods, we ended up with a well-known problem of a such simulation called carbuncle \cite{MacCormack2013}.
         This phenomenon does not come from physics but is solely due to numerical methods.
         It is shown in figure \ref{fig:sphere_carbuncle}.
         Simply put, it creates a recirculation bubble downstream of the shock, near the stagnation point.
         This bubble tends to push the shock farther from the sphere, and modify greatly the heat flux at this location.
         The choice of the Riemann solver ended up being the key element to get rid of this undesirable effect: there is no recirculation with the AUSM+ scheme.
         There are other pitfalls regarding this test case in CEDRE.
-        For exemple, the user can choose whether to interpolate the mass fraction $y_i$ for the species at the cell interfaces for the MUSCL scheme, or the \PS{mass concentration} $\rho y_i$.
-        Choosing the default option lead to nonconverging residuals no matter the time integration method.
+        For example, the user can choose whether to interpolate the mass fraction $y_i$ for the species at the cell interfaces for the MUSCL scheme or the \PS{mass concentration} $\rho y_i$.
+        Choosing the default option leads to nonconverging residuals no matter the time integration method.
         Indeed, this default option is recommended when running simulations with multiple phases, with significant variations in the density.
-        Because CEDRE is made to solve a large variety of problems, it has a lot of methods that come with a lot of parameters, so even a simple simulation such as this one require a lot of knowledge if a good convergence is required.
+        Because CEDRE is made to solve a large variety of problems, it has a lot of methods that come with a lot of parameters, so even a simple simulation such as this one requires a lot of knowledge if a good convergence is required.
 
         \paragraph{}
         This test case is a typical application of CEDRE, as opposed to the previous one which focuses more on the aerodynamic properties.
@@ -260,8 +260,8 @@
         The advantage of the new method appears when we look at the residuals: we see in figure \PS{TODO} that the new method gives a better convergence.
         The difference between the traditional method and the new one is that the traditional method uses the Jacobian matrix of the first-order spatial discretisation method, whereas the new one approximates the true Jacobian matrix using the approximation (\ref{eq:matrix_free}).
         We decided to test this.
-        Because this simulation does not use complex models, the poor approxiation used in the traditional model should give the Jacobian matrix of the first-order scheme.
-        If we use the approximation (\ref{eq:matrix_free}), but using the first-order evaluation of $f$, then we should also get the same Jacobian matrix.
+        Because this simulation does not use complex models, the poor approximation used in the traditional model should give the Jacobian matrix of the first-order scheme.
+        If we use the approximation (\ref{eq:matrix_free}) but use the first-order evaluation of $f$, then we should also get the same Jacobian matrix.
         We look at the residual norms from this method, which we can call the first-order JFNK method, and we see in figure \PS{TODO} that it is indistinguishable from the residual norms from the traditional method.
         It first validates the development of the matrix-free approximation, and that the unbridle method should then use the actual second-order Jacobian matrix.
         It also confirms that the traditional method uses the Jacobian matrix of the first-order spatial discretisation method.
@@ -431,13 +431,13 @@
 
         \paragraph{}
         Figure \PS{TODO} shows the residual norms for the two computations.
-        The leftmost black curve correspond to the initialisation: a few iterations of the explicit time integration method.
+        The leftmost black curve corresponds to the initialisation: a few iterations of the explicit time integration method.
         From then we can continue the computation with the Midpoint method on one side and the Jacobian-Free Newton--Krylov method on the other.
         We see that the residual norm obtained with the JFNK method is lower than its explicit counterpart.
         Indeed, the explicit method is limited to small time steps because of the shock and the stiff reactive model.
         \PS{C'est sûr ça ? Parce que l'explicite n'a même pas l'air de bouger ...}
         The implicit method however is not.
-        The fact that implicit method can use larger time steps is not new, but with this specific model it was not possible to use implicit methods until we added the matrix-free approximation.
+        The fact that the implicit method can use larger time steps is not new, but with this specific model, it was not possible to use implicit methods until we added the matrix-free approximation.
         The JFNK method even ends up being cheaper in terms of CPU time.
         This means that for a user, it is faster to use the newly implemented Jacobian-Free Newton--Krylov method than to use explicit methods.
         Our method gives a better alternative to users working on problems with the Multi-TEmperature model.
@@ -446,25 +446,25 @@
       \subsubsection{Simplified reactive model}
 
         \paragraph{}
-        The equation concerning electrons in the Multi-TEmperature model bring a lot of issues.
+        The equations concerning electrons in the Multi-TEmperature model bring a lot of issues.
         It is because the quantity of free electrons is usually relatively small when compared to other flow components.
         It can lead to numerical instabilities or cause other problems.
-        For example, as the equations hold true everywhere in the numerical domain, they hold true in particular in areas without free electrons, upstream of the shock in our hypersonic sphere for example.
+        As the equations hold everywhere in the numerical domain, they hold in particular in areas without free electrons, upstream of the shock in our hypersonic sphere for example.
         The question one must ask is then how to compute quantities such as the electronic temperature $T_e$ where there are no free electrons.
-        We will not go into such implementation details as it goes beyond the scope of this work, but the point is that having electrons is quite troublesome for the numerical methods.
+        We will not go into such implementation details as it goes beyond the scope of this work, but the point is that having electrons is quite troublesome for numerical methods.
         According to users that work on such reentry applications, it is not always meaningful to compute the fluid ionisation.
         We explained why it might be crucial for some simulations, but when we do not look at the electrons, their effect on other quantities is almost negligible.
         Those users said that \PS{"ça craint de dire "il a dit que" ?"} it is acceptable, meaningful and still useful to do the same simulation but ignoring electrons.
         It is done by considering only the chemical components \ce{N_2}, \ce{O_2}, \ce{N}, \ce{O} and \ce{NO}.
 
         \paragraph{}
-        We decided to do the same comparaison as before but this time with the simplified reactive model.
+        We decided to do the same comparison as before but this time with the simplified reactive model.
         We once again start the computation with a few iterations of the Midpoint method and use that as a common initialisation.
         Then, we compare the explicit method with the Jacobian-Free Newton--Krylov method.
         We show the corresponding residual norms in figure \PS{TODO}, while still using the CPU time as the $x$-axis.
-        The result is similar to the previous one, except it is even more in favor of the JFNK method.
+        The result is similar to the previous one, except it is even more in favour of the JFNK method.
         The implicit method reaches much lower residual norms than the explicit one.
         With the full reactive model, the limiting factor for the implicit method came from the stiffness due to the electrons.
         Without them, the convergence is significantly faster.
         The time step for the explicit method however is under the same limitations with both reactive models.
-        The gain in CPU time is then huge, in favor of the JFNK method.
+        The gain in CPU time is then huge, in favour of the JFNK method.
