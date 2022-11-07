@@ -443,7 +443,28 @@
         Our method gives a better alternative to users working on problems with the Multi-TEmperature model.
 
 
-      \subsubsection{Modèle réactif simplifié}
+      \subsubsection{Simplified reactive model}
 
         \paragraph{}
-        En particulier les électrons mettent le bordel: comment calculer $T_e$ là ou il n'y en a pas, ...
+        The equation concerning electrons in the Multi-TEmperature model bring a lot of issues.
+        It is because the quantity of free electrons is usually relatively small when compared to other flow components.
+        It can lead to numerical instabilities or cause other problems.
+        For example, as the equations hold true everywhere in the numerical domain, they hold true in particular in areas without free electrons, upstream of the shock in our hypersonic sphere for example.
+        The question one must ask is then how to compute quantities such as the electronic temperature $T_e$ where there are no free electrons.
+        We will not go into such implementation details as it goes beyond the scope of this work, but the point is that having electrons is quite troublesome for the numerical methods.
+        According to users that work on such reentry applications, it is not always meaningful to compute the fluid ionisation.
+        We explained why it might be crucial for some simulations, but when we do not look at the electrons, their effect on other quantities is almost negligible.
+        Those users said that \PS{"ça craint de dire "il a dit que" ?"} it is acceptable, meaningful and still useful to do the same simulation but ignoring electrons.
+        It is done by considering only the chemical components \ce{N_2}, \ce{O_2}, \ce{N}, \ce{O} and \ce{NO}.
+
+        \paragraph{}
+        We decided to do the same comparaison as before but this time with the simplified reactive model.
+        We once again start the computation with a few iterations of the Midpoint method and use that as a common initialisation.
+        Then, we compare the explicit method with the Jacobian-Free Newton--Krylov method.
+        We show the corresponding residual norms in figure \PS{TODO}, while still using the CPU time as the $x$-axis.
+        The result is similar to the previous one, except it is even more in favor of the JFNK method.
+        The implicit method reaches much lower residual norms than the explicit one.
+        With the full reactive model, the limiting factor for the implicit method came from the stiffness due to the electrons.
+        Without them, the convergence is significantly faster.
+        The time step for the explicit method however is under the same limitations with both reactive models.
+        The gain in CPU time is then huge, in favor of the JFNK method.
