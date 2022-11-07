@@ -335,19 +335,19 @@
       We still apply once the left preconditioning to the right-hand side before the solve, but we now need to apply it after each matrix vector approximation.
 
 
-    \subsection{Local time stepping}
+    \subsection{Local time-stepping}
 
       \paragraph{}
       We said earlier that local time stepping is used in CEDRE to accelerate the convergence on steady problems.
-      What it does is that each cell of the mesh moves forward in time with its own time step, independently to other cells.
+      What it does is that each cell of the mesh moves forward in time with its own time step, independently of other cells.
       This local time step is expressed as a fraction of the global time step.
-      There are several options a user can choose from to set the time stepping strategy.
-      It can use CFL number based option, and compute the corresponding local time step so that the CFL number local the cell is not too large.
+      There are several options a user can choose from to set the time-stepping strategy.
+      It can use CFL number based option and compute the corresponding local time step so that the CFL number local to the cell is not too large.
       The preferred and default option is based on the explicit increment and some reference values.
-      It first estimate what the solution increment will be by using the explicit increment and possibly the reference values, depending on the choice of method, and compute a local time step so that the increment local to the cell is not too large.
+      It first estimates what the solution increment will be by using the explicit increment and possibly the reference values, depending on the choice of method, and compute a local time step so that the increment local to the cell is not too large.
       This local time stepping strategy adds various parameters that need to be tuned, in the form of scalar coefficients, whether or not to apply the local time stepping to the boundaries, whether to use conservative or primitive variables, etc.
-      In the end, what local time stepping methods do is artificially modify the volume of the cells: increasing a cell volume amount to increasing its inertia, and therefore to scale the time step down.
-      The volumes of the cells appears in the linear system matrix, in the form of a diagonal "mass" matrix.
+      In the end, what local time-stepping methods do is artificially modify the volume of the cells: increasing a cell volume corresponds to increasing its inertia, and therefore scaling the time step down.
+      The volumes of the cells appear in the linear system matrix, in the form of a diagonal "mass" matrix.
       By using the scaled mass matrix, the matrix-free approximation does account for local time stepping.
       With this last feature, we ensured that the matrix-free approximation is compatible with the already existing methods.
 
