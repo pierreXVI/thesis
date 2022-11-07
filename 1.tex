@@ -147,7 +147,7 @@
       The standard Finite Volume method represents quantities with the averaged value in each cell.
       This corresponds to a first-order discretisation method.
       Simply put, it means that it can represent quantities exactly as 0-order polynomials locally to each cell.
-      There are ways to achieve a higher order representation such as with the MUSCL approach \PS{(ref nécessaire ?)}.
+      There are ways to achieve a higher order representation such as with the MUSCL approach \cite{VanLeer1979}.
       It consists in handling the surface flux evaluation on one hand, which is what we did in the Riemann problem part, and deciding what left and right quantities to feed to this flux computation on the other hand.
       In our solver, there are two ways to construct high-order states to give to the flux computation method.
       They are described in the following parts.
@@ -204,9 +204,6 @@
     The resulting transient states do not make sense from a physical point of view, as the equation solved is not the initial one, but it converges to the same steady solution.
     Therefore, it is alright to change the equation as long as it gives the same steady solution.
     Finally, this way of finding a converged steady solution is what is called a \emph{Pseudo-Transient Continuation} method \cite{KelleyKeyes1996}.
-
-    \paragraph{}
-    \PS{Local time stepping}
 
     \paragraph{}
     After deciding on an initial value, the equation we now want to solve is:
