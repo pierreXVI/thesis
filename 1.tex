@@ -1021,6 +1021,8 @@
       This methods and its variants are as of today still discussed \cite{AnWenFeng2011, Turpault2003} and used on actual computational fluid dynamics solvers \cite{LiuZhangZhongEtAl2015, FrancoCamierAndrejEtAl2020}.
       We are interested in the JFNK method as we hope it will give a better representation of the Jacobian matrix than the low-order one already in use in our solver.
       We hope that a better Jacobian matrix will lead to a better convergence, in particular when some models are ignored in the classic Jacobian matrix, such as turbulence models.
+
+      \paragraph{}
       Furthermore, CEDRE works with multiple distinct solvers.
       When a computation uses multiple solvers, two, for example, the function $f$ from equation (\ref{eq:nonlinear}) is in fact $\left(f_1, f_2\right)$ and $x$ is $\left(x_1, x_2\right)$.
       The Jacobian matrix is then:
@@ -1034,3 +1036,11 @@
       Instead, in CEDRE, each solver iterates independently to the others, with some exchanges between iterations.
       Using the matrix-free approximation and the JFNK method, those cross-solver terms are taken into account.
       This choice is then perfectly aligned with the direction our solver is aiming: towards a better implicit cross-solver mechanism.
+
+      \paragraph{}
+      Some specific situations are known to be troublesome for the JFNK method, such as shocks, reaction fronts of discontinuities arising from high order advection schemes \cite{KnollKeyes2004}.
+      Unfortunately those features are precisely at the center of our solver.
+      We are hopping that the difficulties of the method will be overbalanced by its advantages: getting a better convergence, allowing a fully coupled implicit solve and allowing implicit integration method for new models.
+      It means that we do not expect the method to enhance the robustness of the solver, but we hope that because it uses a better Jacobian matrix than the one already in use it will help the convergence.
+      And once again, the second advantage is that the matrix-free method would allow us to do coupled implicit time integration.
+      We will come back on the third advantage later in the applications part.
