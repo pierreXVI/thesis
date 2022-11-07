@@ -424,15 +424,23 @@
         We will also look at the residuals for this analysis.
         But this time, we will not be using the number of iterations as the $x$-axis as it will be unfair to the explicit method.
         Indeed the cost of one iteration is a lot smaller for the explicit method than for the implicit JFNK one.
-        What matters to us and a typical user is not the number of iterations.
-        As we will run our computations each time in the same parallel environment, with a fixed number of CPU cores, what matters is the time spent waiting for the result.
-        The $x$-axis will then be the elapsed real time, or wall-clock time: the actual time it took to get at the current residual.
-        \PS{Ou CPU time, ça fait plus scientifique ?}
+        What matters to us and a typical user is not the number of iterations but the time spent waiting for the result.
+        It is called the elapsed real time or wall-clock time.
+        As we will run our computations each time in the same parallel environment, with a fixed number of CPU cores, the elapsed time is proportional to the CPU time.
+        The $x$-axis will then be the CPU time: the actual time it took to get at the current residual.
 
         \paragraph{}
         Figure \PS{TODO} shows the residual norms for the two computations.
         The leftmost black curve correspond to the initialisation: a few iterations of the explicit time integration method.
-
+        From then we can continue the computation with the Midpoint method on one side and the Jacobian-Free Newton--Krylov method on the other.
+        We see that the residual norm obtained with the JFNK method is lower than its explicit counterpart.
+        Indeed, the explicit method is limited to small time steps because of the shock and the stiff reactive model.
+        \PS{C'est sûr ça ? Parce que l'explicite n'a même pas l'air de bouger ...}
+        The implicit method however is not.
+        The fact that implicit method can use larger time steps is not new, but with this specific model it was not possible to use implicit methods until we added the matrix-free approximation.
+        The JFNK method even ends up being cheaper in terms of CPU time.
+        This means that for a user, it is faster to use the newly implemented Jacobian-Free Newton--Krylov method than to use explicit methods.
+        Our method gives a better alternative to users working on problems with the Multi-TEmperature model.
 
 
       \subsubsection{Modèle réactif simplifié}
