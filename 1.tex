@@ -75,16 +75,16 @@
   \section{Brief introduction to the spatial integration schemes}
 
     \paragraph{}
-    A \emph{spatial discretisation method} is the choice of how to represent a quantity over a discretised domain, and how to compute the spatial derivative of this quantity from this representation.
-    Indeed, before solving equation (\ref{eq:pde}) we need to decide how to transform the continuous model into a discretised one.
+    A \emph{spatial discretisation method} is what tells us how to represent a quantity over a discretised domain, and how to compute the spatial derivative of this quantity from this representation.
+    Indeed, before solving equation (\ref{eq:pde}) we must decide how to transform the continuous model into a discretised one.
     We also have to look at how the spatial derivatives arising from equation (\ref{eq:pde}) translate in the discretised model.
 
     \subsection{The Finite Volume method}
 
       \paragraph{}
       The spatial discretisation method used in the solver CHARME is called the Finite Volume method \cite{EymardGallouetHerbin2000, Leterrier2003}.
-      This method is particularly well fitted for conservatives equations such as equation (\ref{eq:pde_conservative}).
-      A such equation has the property that the quantity $\xi$ is conserved: without source terms, the variation of the total quantity on $\xi$ over the domain $\mathcal{D}$ is equal to the flux $f\left(\xi\right)$ coming through the boundary $\partial\mathcal{D}$.
+      This method is particularly well fitted for conservative equations such as equation (\ref{eq:pde_conservative}).
+      A such equation has the property that the quantity $\xi$ is conserved: without source terms, the variation of the total quantity $\xi$ over the domain $\mathcal{D}$ is equal to the flux $f\left(\xi\right)$ coming through the boundary $\partial\mathcal{D}$.
       In the case of the Navier--Stokes equations (\ref{eq:ns}), the density, the momentum and the energy are conserved throughout time, apart from what comes in and out of the domain.
       In a close domain where nothing comes in or out, they are indeed conserved.
       The main interest of the Finite Volume method is that this property stays true through the spatial discretisation step.
@@ -159,8 +159,7 @@
         \paragraph{}
         The first method used to reconstruct high-order quantities is called the \emph{$k$-exact} method.
         The idea is to construct iteratively an order $k$ representation of the quantity using the neighbouring order $k-1$ representation \cite{HaiderCroisilleCourbet2009}.
-        Usually, as do most of the solver users, this method is used to achieve a second-order reconstruction.
-        But it can also achieve higher order reconstructions \cite{HaiderCroisilleCourbet2011, HaiderCourbetCroisille2018, PontBrennerCinellaEtAl2017}.
+        This method is often employed to achieve a second-order reconstruction, as choose most users, but it can also achieve higher-order reconstructions \cite{HaiderCroisilleCourbet2011, HaiderCourbetCroisille2018, PontBrennerCinellaEtAl2017}.
         At each step, while increasing the order of the representation, it is important not to create a local maximum or minimum.
         This might happen close to discontinuities in the solution, or near rapidly varying spots \PS{reformuler}.
         It is indeed common, when interpolating, to create local overshoot or undershoot.
@@ -202,10 +201,12 @@
     We will solve the equation numerically, which means we will iteratively compute the next solution after a given time step, knowing the current one.
     It is also possible to modify the equation, as we are interested in the final state, not in the transient one.
     It is possible for example to use local time stepping, which consists in having each cell of the mesh move forward in time with its own time step.
-    \PS{C'est fou j'ai pas la moindre ref du pas de temps local de CEDRE, Lionel il n'y a rien sur le Upoint ?}
     The resulting transient states do not make sense from a physical point of view, as the equation solved is not the initial one, but it converges to the same steady solution.
     Therefore, it is alright to change the equation as long as it gives the same steady solution.
     Finally, this way of finding a converged steady solution is what is called a \emph{Pseudo-Transient Continuation} method \cite{KelleyKeyes1996}.
+
+    \paragraph{}
+    \PS{Local time stepping}
 
     \paragraph{}
     After deciding on an initial value, the equation we now want to solve is:
@@ -241,7 +242,7 @@
         \begin{equation}
           \Xi_1 - \Xi\left(t_0 + \Delta t\right) = O\left(\Delta t^{p+1}\right) \ .
         \end{equation}
-        This means a $p$ order method can recover exactly a solution that is a polynomial function of time of order less or equal to $p$.
+        This means a $p$ order method can recover exactly a solution that is a polynomial function of time with an order less or equal to $p$.
 
         \paragraph{Note:}
         The order of a time integration method reflects its "local" behaviour, meaning on a single given time step, provided it is small enough.
@@ -253,7 +254,7 @@
         We notice a difference between the two definitions: the error order of magnitude is $p+1$ for the temporal method and $p$ for the spatial one.
         This is due to the fact that the error we look at in the spatial case is global: it sums the error over the whole domain.
         It would correspond to counting the error on each step for the temporal integration.
-        To convince oneself, we could say that when solving the differential equation \PS{on/in} an interval $\left[0, T\right]$ with a fixed $T$, the global error of a $p$ order method would \PS{be of, in, behave like ?} $O\left(\Delta t^p\right)$ as it amount to summing $T/\Delta t$ local errors of $O\left(\Delta t^{p+1}\right)$.
+        To convince oneself, we could say that when solving the differential equation \PS{on/in} an interval $\left[0, T\right]$ with a fixed $T$, the global error of a $p$ order method would \PS{be of, in, behave like ?} $O\left(\Delta t^p\right)$ as it amounts to summing $T/\Delta t$ local errors of $O\left(\Delta t^{p+1}\right)$.
         We then get the coherency with the definition of the order for spatial discretisation methods.
         If this trick can help understand the difference between the two definitions, this is indeed just a mental trick and not a rigorous mathematical proof.
         To get this proof, more hypotheses on the method are required \cite{Iserles2008}.
@@ -313,13 +314,13 @@
         \end{equation}
         the relationship between the current solution and the next one.
         For most time integration methods, $g$ is an analytic function.
-        By decomposing the initial value on a basis of eignevectors of $J$, $v_1, \dots, v_N$, associated to the eigenvalues $\alpha_1, \dots, \alpha_N$, we write: $y_0 = \sum_{i=1}^N \lambda_i v_i$.
+        By decomposing the initial value on a basis of eigenvectors of $J$, $v_1, \dots, v_N$, associated with the eigenvalues $\alpha_1, \dots, \alpha_N$, we write: $y_0 = \sum_{i=1}^N \lambda_i v_i$.
         Because $g$ is an analytic function, we then have:
         \begin{equation}
           y_n = \sum_{i=1}^N \lambda_i g\left(\Delta t \alpha_i\right)^n v_i \ .
         \end{equation}
 
-        It is now straightforward to deduce a stability condition for the single step method: if for any $i$ we have $\left|g\left(\Delta t\alpha_i\right)\right| < 1$, then $y_n$ converges to 0.
+        It is now straightforward to deduce a stability condition for the single-step method: if for any $i$ we have $\left|g\left(\Delta t\alpha_i\right)\right| < 1$, then $y_n$ converges to 0.
         This is how we can define the stability region of a time integration method:
         \begin{equation}
           \left\{ \, z \in \mathbb{C} \; \mid \; \left| g\left(z\right) \right| < 1 \, \right\} \ .
@@ -335,7 +336,7 @@
 
         \paragraph{Multi step methods}
         Some methods do not fall into the previous framework.
-        The multi step methods, in particular, cannot be written under the form of equation (\ref{eq:single_step}).
+        The multi-step methods, in particular, cannot be written under the form of equation (\ref{eq:single_step}).
         These methods use not only $y_n$ to find $y_{n+1}$, but the $k$ previous steps.
         Applied to equation (\ref{eq:dahlquist}), they can be written in the form:
         \begin{equation}
@@ -347,7 +348,7 @@
         \end{equation}
         which leads us to identifying the polynomial $g_{\Delta t J}\left(\mu\right) = \mu^k - \sum_{i=0}^{k-1}g_i\left(\Delta t J\right)\mu^i$.
         If each root of this polynomial is of modulus less than 1, the solution converges to 0.
-        This is how we can define the stability region for multi step methods \cite{HairerWanner1996}:
+        This is how we can define the stability region for multi-step methods \cite{HairerWanner1996}:
         \begin{equation}
           \left\{ \, z \in \mathbb{C} \; \mid \; \parbox{25em}{all roots of $X^k - \sum_{i=0}^{k-1}g_i\left(z\right)X^i$ are of modulus less or equal to 1, strictly less to 1 for roots with multiplicity}
            \, \right \} \ .
@@ -401,7 +402,7 @@
         \begin{equation}
           \int_{t_n}^{t{n,i}} \operatorname{G}\left(\Xi\left(t\right)\right) \mathrm{d}t \approx \sum_{j = 1}^{i-1} a_{ij} \operatorname{G}\left(\Xi\left(t_{n,j}\right)\right) \ .
         \end{equation}
-        Once each intermediate step in known, we finally integrate between $t_n$ and $t_{n+1}$ equation (\ref{eq:init_value_ode}) and approximate the integral using the intermediate steps.
+        Once each intermediate step is known, we finally integrate between $t_n$ and $t_{n+1}$ equation (\ref{eq:init_value_ode}) and approximate the integral using the intermediate steps.
 
         \paragraph{}
         To sum up, a Runge--Kutta method iterates in the following way:
@@ -491,10 +492,10 @@
         \paragraph{}
         The idea is to apply a Lagrange interpolation of the function $\operatorname{G}$ from equation (\ref{eq:init_value_ode}) in the $k$ last computed points, and then replace $\operatorname{G}$ with the interpolation polynomial when integrating from $t_n$ to $t_{n+1}$.
         Contrary to the Runge--Kutta methods, as we reuse previous information, a single $\operatorname{G}$ evaluation is required at each step.
-        The cost of one iteration of the Adams--Bashforth method is then really cheap \PS{(reformuler)}.
-        The stability analysis for such methods is a bit more complex \cite{HairerNorsettWanner1993, HairerWanner1996}, and so we show the result that we obtained numerically on figure \ref{fig:ab_stab} without \PS{faire le calcul : deriving the calculus ?}.
+        Because of that, the cost of one iteration of the Adams--Bashforth method is quite inexpensive.
+        The stability analysis for such methods is a bit more complex \cite{HairerNorsettWanner1993, HairerWanner1996}, and so we show the result that we obtained numerically on figure \ref{fig:ab_stab} without \PS{faire le calcul}.
         The conclusion is even worse than with Runge--Kutta methods, as the stability region decreases as the order increases.
-        The Adams--Bashforth can reach a high order of accuracy while staying computationally inexpensive, but they lack drastically in stability, and that is why they are often not used in computational fluid dynamics computations.
+        The Adams--Bashforth can reach a high order of accuracy while staying computationally inexpensive, but they drastically lack stability, and that is why they are often not used in computational fluid dynamics computations.
         More generally, an explicit multi-step method cannot be A-stable \cite{Dahlquist1963}.
 
         \begin{figure}
@@ -560,12 +561,23 @@
         Then, each step is given as an implicit problem using the already known steps and the next one.
         The difference is that instead of solving a full implicit system, we just need to solve each implicit step successively.
         This help drastically reduces the cost of the method.
-        Furthermore, if all quadrature coefficient $a_{ii}$ are equals, as we invert at each step the matrix $\operatorname{Id} + a_{ii} \Delta t \frac{\mathrm{d} \operatorname{G}}{\mathrm{d} \Xi}\left(\Xi_n\right)$, this can help the linear solve.
+        Furthermore, if all quadrature coefficient $a_{ii}$ are all equals, as we invert at each step the matrix $\operatorname{Id} + a_{ii} \Delta t \frac{\mathrm{d} \operatorname{G}}{\mathrm{d} \Xi}\left(\Xi_n\right)$, this can help the linear solve.
         This variant is called Singly Diagonally Implicit Runge--Kutta methods (SDIRK) \cite{HairerWanner1996}.
 
         \paragraph{Rosenbrock methods}
-        Rosenbrock methods are also called linearly implicit Runge--Kutta methods.
-        \PS{TODO ?}
+        Rosenbrock methods are also called linearly implicit Runge--Kutta methods \cite{Rosenbrock1963}.
+        They correspond to the following scheme:
+        \begin{equation}
+          \left\{\begin{aligned}
+            \Xi_{n+1} &= \Xi_n - \Delta t \sum_{i = 1}^k b_i \operatorname{G}_{n,i} \\
+            \textrm{with}\quad \operatorname{G}_{n,i} &= \operatorname{G}\left(\Xi_n - \Delta t \sum_{j = 1}^{i-1} a_{ij} \operatorname{G}_{n,j}\right) + \frac{\mathrm{d} \operatorname{G}}{\mathrm{d} \Xi}\left(\Xi_n\right) \sum_{j = 1}^{i} \gamma_{ij} \operatorname{G}_{n,j}
+          \end{aligned}\right. \ .
+        \end{equation}
+        They are derived from Diagonally Implicit Runge--Kutta methods, by constructing the intermediate slopes $\operatorname{G}_{n,j}$ instead of the intermediate states $\Xi_{n,j}$, and by linearising to make the Jacobian matrix appear.
+        It also introduces the additional parameters $\gamma_{ij}$ to add more flexibility to the method.
+        If one takes all the $\gamma{ii}$ equals to one another, then the matrix to invert at each step of the Rosenbrock method is the same.
+        This can help reduce the cost of the method by doing a single matrix inversion, or by using block Krylov subspace methods \cite{Gutknecht2006}.
+        Overall, even if they can achieve high-order and A-stability, Rosenbrock methods are still computationally expensive.
 
 
       \subsubsection{Backward differentiation formula}
@@ -607,7 +619,7 @@
       As we said earlier, we want to solve an ordinary differential equation in order to recover the steady solution, reached after a long time.
       Then, explicit methods that constrain the time step are not well fitted.
       Even if they cost more, in an algorithmic way, implicit methods are indeed the best choice for our stiff equations.
-      It is often better to do a single expensive iteration over a large time step with an implicit method, than making a lot of inexpensive iterations over small time steps with an explicit method.
+      It is often better to do a single expensive iteration over a large time step with an implicit method, than make a lot of inexpensive iterations over small time steps with an explicit method.
       This is finally why we will continue working with the A-stable implicit Euler method.
       This method is already used in our solver as the base implicit method, for the same reasons we want to use it.
       Furthermore, it is at the base of all other implicit methods, as they can be seen as small variations of the implicit Euler methods.
@@ -640,7 +652,7 @@
       		f\left(x\right) = 0 \ .
       	\end{equation}
         Newton's method starts from an initial guess $x_0$.
-        We usually take $x_0 = 0$ as it equivalent to take $\Xi_n$ as an initial guess for $\Xi_{n+1}$.
+        We usually take $x_0 = 0$ as it is equivalent to taking $\Xi_n$ as an initial guess for $\Xi_{n+1}$.
         The method will then iterate to approximate the solution of equation (\ref{eq:nonlinear}).
 
         \paragraph{}
@@ -803,7 +815,7 @@
         \kappa\left( A \right) = \norm{A} \norm{A^{-1}}
       \end{equation}
       and so it depends on the chosen norm.
-      A problem is said to be well conditioned when $\kappa = O\left(1\right)$, and ill-conditioned when $\kappa \gg 1$.
+      A problem is said to be well-conditioned when $\kappa = O\left(1\right)$, and ill-conditioned when $\kappa \gg 1$.
       For the Euclidean norm $\norm[2]{\cdot}$, we have
   		\begin{equation}\label{eq:conditioning}
   			\kappa\left( A \right) = \frac{\sigma_{\max}}{\sigma_{\min}}
@@ -858,8 +870,8 @@
          \end{aligned}
        \end{equation}
        The vector $b$ is a vector of ones.
-       The spectrum of $A$ is displayed on figure \ref{fig:preconditioning} in blue.
-       It is spread out around the origin \PS{(ça se dit en anglais ?)}
+       The spectrum of $A$ is displayed in figure \ref{fig:preconditioning} in blue.
+       It is spread out around the origin.
        When we apply the Jacobi preconditioning, meaning the preconditioning matrix is the invert of the diagonal part, the spectrum is gathered around 1.
        This helps a lot GMRES, as can be seen in figure \ref{fig:preconditioning}: it struggles to reduce the residual norm on the standard problem but does it easily on the preconditioned problem.
        This is only a dummy example, but it helps visualise the importance of preconditioning.
@@ -934,11 +946,11 @@
       \paragraph{}
       If we can solve precisely linear problems, but the problem is not the one the nonlinear solver wants, it may hurt the nonlinear solver convergence.
       We then need to be able to get the right linear problem from the nonlinear one.
-      At this point, we know how to evaluate the function $f$ from equation (\ref{eq:nonlinear}), that is often expressed as a linear combination of previous states and $\operatorname{G}$ evaluations, where $\operatorname{G}$ is the function introduced in equation (\ref{eq:init_value_ode}), the function from our starting ordinary differential equation.
+      At this point, we know how to evaluate the function $f$ from equation (\ref{eq:nonlinear}), which is often expressed as a linear combination of previous states and $\operatorname{G}$ evaluations, where $\operatorname{G}$ is the function introduced in equation (\ref{eq:init_value_ode}), the function from our starting ordinary differential equation.
       On the other hand, computing its derivative with regard to $x$ is a different story.
       As this derivative is the matrix we use when solving the linear problem, it is crucial to have a good representation of it.
       This derivative $f'\left(x\right)$ uses the Jacobian matrix of the function $\operatorname{G}$.
-      As the function $\operatorname{G}$ comes from the spatial discretisation method applied to the original partial differential equations (\ref{eq:pde}), it is complex, not in the sense of imaginary numbers but of complicated.
+      As the function $\operatorname{G}$ comes from the spatial discretisation method applied to the original partial differential equations (\ref{eq:pde}), it is complex, not in the sense of imaginary numbers but in the sense that it is complicated.
       The underlying algorithm is hard to fully understand and write, and the numerical evaluation is usually expensive.
       Furthermore, our software keeps evolving, and models are constantly added and modified.
       It would require constant work to maintain the Jacobian matrix computation.
@@ -977,7 +989,7 @@
       \begin{equation}
         f'\left(x\right) v \approx \frac{f\left(x + \varepsilon v\right) - f\left(x - \varepsilon v\right)}{2\varepsilon}
       \end{equation}
-      that gives an smaller error in \PS{article} $o\left(\varepsilon^2\right)$, but it requires two $f$ evaluations, so it is twice as expensive as the first order approximation.
+      that gives a smaller error in \PS{article (in, of, ...)} $o\left(\varepsilon^2\right)$, but it requires two $f$ evaluations, so it is twice as expensive as the first-order approximation.
       Therefore, we will use the first-order approximation.
 
       \paragraph{}
@@ -1010,7 +1022,7 @@
       We are interested in the JFNK method as we hope it will give a better representation of the Jacobian matrix than the low-order one already in use in our solver.
       We hope that a better Jacobian matrix will lead to a better convergence, in particular when some models are ignored in the classic Jacobian matrix, such as turbulence models.
       Furthermore, CEDRE works with multiple distinct solvers.
-      When a computation uses multiple solvers, two for example, the function $f$ from equation (\ref{eq:nonlinear}) is in fact $\left(f_1, f_2\right)$ and $x$ is $\left(x_1, x_2\right)$.
+      When a computation uses multiple solvers, two, for example, the function $f$ from equation (\ref{eq:nonlinear}) is in fact $\left(f_1, f_2\right)$ and $x$ is $\left(x_1, x_2\right)$.
       The Jacobian matrix is then:
       \begingroup
       \renewcommand*{\arraystretch}{1.5}
@@ -1018,7 +1030,7 @@
         f'\left(x\right) = \begin{pmatrix} \frac{\partial f_1}{\partial x_1} & \frac{\partial f_1}{\partial x_2} \\ \frac{\partial f_2}{\partial x_1} & \frac{\partial f_2}{\partial x_2} \end{pmatrix}\ .
       \end{equation}
       \endgroup
-      The cross-term Jacobian matrix, $\frac{\partial f_i}{\partial x_j}$ with $i \ne j$, are usually hard to compute, both analytically and computationally \PS{c'est vrai ?}, and are the main obstacle to a fully implicit solver.
+      The cross-term Jacobian matrices, $\frac{\partial f_i}{\partial x_j}$ with $i \ne j$, are usually hard to compute, both analytically and computationally, and are the main obstacle to a fully implicit solver.
       Instead, in CEDRE, each solver iterates independently to the others, with some exchanges between iterations.
       Using the matrix-free approximation and the JFNK method, those cross-solver terms are taken into account.
       This choice is then perfectly aligned with the direction our solver is aiming: towards a better implicit cross-solver mechanism.

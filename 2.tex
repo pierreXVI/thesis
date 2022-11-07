@@ -23,7 +23,7 @@
     \end{itemize}
     Combining different solvers, CEDRE is able to simulate multiphysics phenomena numerically.
     Using those solvers, CEDRE applications go from aerodynamics to aeroacoustics, aerothermodynamics, combustion, icing, etc.
-    The solver is coupled either through boundary conditions for example in a thermal interaction at a fluid-structure contact, or inside the computational domain for example in the case of mass and energy transfer between dispersed phases and the main flow.
+    The solver is coupled either through boundary conditions for example in a thermal interaction at a fluid-structure contact or inside the computational domain for example in the case of mass and energy transfer between dispersed phases and the main flow.
     The coupling can either be one-way or two-way, depending on the user's choice.
     Each solver is integrated in time separately, and the coupling consists of some data exchange between iterations: it is an explicit coupling.
 
@@ -47,7 +47,7 @@
 
     \paragraph{}
     In this thesis, we focused on the most used solver: CHARME.
-    Indeed, not only is it the most used, but other solvers use it as a base on many applications.
+    Indeed, not only is it the most used, but other solvers use it as a base for many applications.
     For example, when simulating ice accretion around a wing profile, a standard methodology with CEDRE is to first get the base aerodynamic flow with CHARME and then compute the ice particles with SPIREE or SPARTE.
     Working with the solver CHARME was the way to benefit the most from our work.
     Even if during this thesis we only worked on CHARME, we always kept in mind that the finality was multiphysics simulations using multiple solvers.
@@ -115,7 +115,7 @@
     ... ! Additional data
   end type type_gmvec_ctx
 \end{minted}
-      This way, when the client solver creates an instance \mintinline{fortran}{sys} of \mintinline{fortran}{type_sys}, it can choose how to evaluate matrix vector products by setting the procedure pointer \mintinline{fortran}{sys%gmvec_ctx%gmvec}.
+      This way, when the client solver creates an instance \mintinline{fortran}{sys} of \mintinline{fortran}{type_sys}, it can choose how to evaluate matrix-vector products by setting the procedure pointer \mintinline{fortran}{sys%gmvec_ctx%gmvec}.
       It can for example point to the already existing routine to use the classical matrix-vector product, but it also can use a custom routine that implements the approximation (\ref{eq:matrix_free}).
       Furthermore, the client solver can use polymorphism and create an extended type of \mintinline{fortran}{type_gmvec_ctx} in order to store additional data in the context.
       This is what is done by the solver CHARME, as it does need additional data to approximate the Jacobian matrix-vector product.
@@ -126,7 +126,7 @@
       The computational cost of the matrix-vector approximation is approximately the cost of one function evaluation.
       It requires some additional operations, such as vector subtractions, and vector scaling, but those operations are way less expensive.
       Using a matrix-free algorithm is clearly less expensive in terms of memory, as we do not need to store the matrix at all.
-      Some even claim that it can lead to a less expensive method in terms of time \PS{et les refs ?}.
+      Some even claim that it can lead to a less expensive method in terms of time \cite{AnWenFeng2011}.
       This happens when the alternative, which is computing the Jacobian matrix, is an expensive task.
       In CHARME, the Jacobian matrix that is traditionally used is inexpensive to compute, with a cost similar to a function evaluation.
       The issue is that the function evaluation itself is expensive in our solver.
@@ -159,7 +159,7 @@
       using the same $x$ and $v$ as in equation (\ref{eq:matrix_free}).
       Here $\varepsilon_0$ is the estimated relative error in function evaluation.
       A reason this choice is so popular is that apart from this $\varepsilon_0$ value, it does not require any user input.
-      Furthermore, $\varepsilon_0$ if often simply set to machine epsilon $\varepsilon_\textrm{mach}$.
+      Furthermore, $\varepsilon_0$ is often simply set to machine epsilon $\varepsilon_\textrm{mach}$.
 
       \paragraph{}
       To analyse this strategy in the choice of $\varepsilon$, we do the following numerical experiment.
@@ -179,7 +179,7 @@
       \end{figure}
 
       \paragraph{}
-      The experiment result can be seen on figure \ref{fig:epsilon_burgers_10}.
+      The experiment result can be seen in figure \ref{fig:epsilon_burgers_10}.
       The relative error in the approximation is shown as a function of $\varepsilon$ with small grey crosses.
       On the right part of the figure, the error decreases linearly with regard to $\varepsilon$.
       This corresponds to a truncation error-dominated region.
@@ -222,7 +222,7 @@
       In particular, the ideal trade-off between the two error types did not move a lot.
       We see that as expected, the value of $\varepsilon_\textrm{wp}$ decreases: this translate as the fact that the blue dot moved to the left.
       When looking at the error as a function of the dimension $N$, we can even recover the $-1/4$ expected slope.
-      In the right figure we see in fact a $1/4$ slope but the error is inversely proportional to the value of $\varepsilon$ so if the error \PS{varies in} $N^{1/4}$, then $\varepsilon_\textrm{wp}$ \PS{varies in} $N^{-1/4}$.
+      In the right figure, we see in fact a $1/4$ slope but the error is inversely proportional to the value of $\varepsilon$ so if the error \PS{varie en} $N^{1/4}$, then $\varepsilon_\textrm{wp}$ \PS{varies in} $N^{-1/4}$.
       Because of the shape of the error as a function of $\varepsilon$, if $\varepsilon_\textrm{wp}$ changes with $N$ it will eventually end up increasing the error.
       This is an undesired feature.
       Our new choice $\varepsilon_{\textrm{wp}, N}$ on the other hand does not change a lot when $N$ increases.
@@ -261,7 +261,7 @@
       In the first one, their starting positions were a bit different.
       This is largely due to the randomness of this analysis: the one used to construct the $x$ and $v$ vectors.
       In fact, it would be unwise to draw a conclusion from the position of the points in figures \ref{fig:epsilon_burgers} and \ref{fig:epsilon_euler}.
-      Changing the choice of vectors, or the function $f$, or even the randomness in the vectors is enough to modify their position.
+      Changing the choice of vectors, of the function $f$, or even the randomness in the vectors is enough to modify their position.
       For example, we can not conclude anything from the fact that $\varepsilon_\textrm{wp}$ is almost at the bottom of the error curve in figure \ref{fig:epsilon_burgers}.
       It may as well be a bit more on the side.
       What we can use from this analysis, however, is the tendencies that choices of $\varepsilon$ show.
@@ -337,9 +337,9 @@
 
   \paragraph{}
   This chapter explained in a simplified manner some implementation detail of our solver.
-  It is important to remind oneself that CEDRE is an industrial sized software system, compared to smaller solvers developed for academic purposes.
-  The scale of the solver was a limiting factor during this thesis.
-  We often wanted to try some new scientific idea, but were faced with many troubles that are inherent to the solver size.
+  It is important to remind oneself that CEDRE is an industrial-sized software system, compared to smaller solvers developed for academic purposes.
+  The scale of the solver was a limiting factor in this thesis.
+  We often wanted to try some new scientific idea but were faced with many troubles that are inherent to the solver size.
   At some point at the early stage of this thesis, for example, we wanted to improve the quality of the linear solve by using advanced solvers and preconditioners, with the help of the PETSc library \cite{petsc-web-page, petsc-user-ref, petsc-efficient}.
   Using the library in CEDRE ended up being impractical, or at least would have taken too much time that we could not afford, and so we had to change direction.
   In the end, a solver of this size is not an ideal sandbox to try methods that art too innovative.
@@ -349,10 +349,10 @@
   A single parameter may be deterministic in the success of a computation.
   This forces us to allocate a quite large amount of time to every computation.
   Moreover, because of the large number of developers that are working on the solver, and the fact that many developments are small tweaks from occasional developers such as interns and PhD students, fixing bugs also took a decent amount of time.
-  Overall, this explain why we decided to implement the solutions previously discussed.
-  They are already well known from the literature, and feels like a natural step up from the already existing methods of CEDRE.
-  Is is good to mention that many difficulties arise from the solver, that are inherent to it, mostly due to its overall size.
-  We would probably have taken a different route if we had work with a different solver.
+  Overall, this explains why we decided to implement the solutions previously discussed.
+  They are already well known from the literature and feel like a natural step up from the already existing methods of CEDRE.
+  It is good to mention that many difficulties arise from the solver, and are inherent to it, mostly due to its overall size.
+  We would probably have taken a different route if we had worked with a different solver.
 
 
   \paragraph{}

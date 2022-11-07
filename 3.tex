@@ -210,9 +210,9 @@
         We argued previously that our solver is quite complex and that it makes it hard to do correct computations for non-experimented users.
         This hypersonic reactive sphere is a perfect example of this statement.
         Even if this case looks simplistic, it should not be taken lightly.
-        While using unfit spatial discretisation methods, we ended up with a well known problem of such simulation called carbuncle \cite{MacCormack2013}.
-        This phenomena does not come from the physics but is solely due to the numerical methods.
-        It in shown in figure \ref{fig:sphere_carbuncle}.
+        While using unfit spatial discretisation methods, we ended up with a well-known problem of such simulation called carbuncle \cite{MacCormack2013}.
+        This phenomenon does not come from physics but is solely due to numerical methods.
+        It is shown in figure \ref{fig:sphere_carbuncle}.
         Simply put, it creates a recirculation bubble downstream of the shock, near the stagnation point.
         This bubble tends to push the shock farther from the sphere, and modify greatly the heat flux at this location.
         The choice of the Riemann solver ended up being the key element to get rid of this undesirable effect: there is no recirculation with the AUSM+ scheme.
