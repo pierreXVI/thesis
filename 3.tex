@@ -66,7 +66,7 @@
         For this case, we decided to use the famous Spalart--Allmaras turbulence model.
         It is well known for being one of the simplest turbulence models, which is fine for us as we want to set up a simple first test case.
         The spatial discretisation method is a second-order Finite Volume method, using the HLLC Riemann solver and Multislope method with a Van--Leer slope limiter.
-        We also use local time stepping to speed up the convergence.
+        We also use local time-stepping to speed up the convergence.
 
         \PS{Note pour moi même: est-ce que je refais JFNK ordre 1 pour montrer qu'on retrouve la méthode classique ? Sauf que vu qu'il y a la turbulence j'en suis pas certain, mais ça montrerai que c'est bien sur deux points de vue (tout les modèles + discrétisation spatiale) donc oui fais le }
 
@@ -409,7 +409,7 @@
         This is why we start the computation with some iterations of the Midpoint method.
         Then, we continue the computation with the JFNK method using the first-order Finite Volume method, to quickly get a good enough approximation of the expected solution.
         Finally, to get a finer result, we end the simulation using the second-order spatial discretisation method.
-        We use local time stepping based on the CFL number \PS{Donner le CFL et est-ce qu'on peut pas faire mieux ?}.
+        We use local time-stepping based on the CFL number \PS{Donner le CFL et est-ce qu'on peut pas faire mieux ?}.
         We can not use preconditioners that use the matrix, so the only one available is the diagonal preconditioner based on the cell volumes.
         It is not ideal as it is extremely simple, and some physics-based preconditioner would be preferable \cite{KnollKeyes2004} but none were available to us at the time.
         The spatial discretisation method used is the Multislope method, as it appears more robust than the $k$-exact method with the Multi-TEmperature model.
@@ -432,7 +432,7 @@
         \paragraph{}
         Figure \PS{TODO} shows the residual norms for the two computations.
         The leftmost black curve correspond to the initialisation: a few iterations of the explicit time integration method.
-        
+
 
 
       \subsubsection{Modèle réactif simplifié}

@@ -200,7 +200,7 @@
     The idea is now to solve the temporal evolution of $\Xi$ to get the solution after a long time when it approaches the steady solution.
     We will solve the equation numerically, which means we will iteratively compute the next solution after a given time step, knowing the current one.
     It is also possible to modify the equation, as we are interested in the final state, not in the transient one.
-    It is possible for example to use local time stepping, which consists in having each cell of the mesh move forward in time with its own time step.
+    It is possible for example to use local time-stepping, which consists in having each cell of the mesh move forward in time with its own time step.
     The resulting transient states do not make sense from a physical point of view, as the equation solved is not the initial one, but it converges to the same steady solution.
     Therefore, it is alright to change the equation as long as it gives the same steady solution.
     Finally, this way of finding a converged steady solution is what is called a \emph{Pseudo-Transient Continuation} method \cite{KelleyKeyes1996}.
