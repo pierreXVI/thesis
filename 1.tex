@@ -82,7 +82,7 @@
     \subsection{The Finite Volume method}
 
       \paragraph{}
-      The spatial discretisation method used in the solver CHARME is called the Finite Volume method \cite{EymardGallouetHerbin2000, Leterrier2003}.
+      The spatial discretisation method used in the fluid solver CHARME is called the Finite Volume method \cite{EymardGallouetHerbin2000, Leterrier2003}.
       This method is particularly well fitted for conservative equations such as equation (\ref{eq:pde_conservative}).
       A such equation has the property that the quantity $\xi$ is conserved: without source terms, the variation of the total quantity $\xi$ over the domain $\mathcal{D}$ is equal to the flux $f\left(\xi\right)$ coming through the boundary $\partial\mathcal{D}$.
       In the case of the Navier--Stokes equations (\ref{eq:ns}), the density, the momentum and the energy are conserved throughout time, apart from what comes in and out of the domain.
@@ -182,6 +182,9 @@
       The Finite Volume method averages the partial differential equation over each cell of the mesh, which transforms the flux divergence into a \PS{bilan surfacique de flux}.
       A reconstruction method, the $k$-exact method or the Multislope method, is then used to get a higher-order representation of the solution so that the surface flux can be computed at each face.
       Slope limiters are used to prevent the formation of local extrema, which can be harmful to the computation.
+      The choices made for the spatial discretisation methods are motivated by the fact that CEDRE and in particular the fluid solver CHARME aim to work with \PS{general unstructured meshes}.
+      It restricts the choices of algorithms, as handling general unstructured meshes can prove difficult for simple spatial discretisation methods.
+      It means that the methods must be more robust, which often means less precise.
 
 
   \section{Introduction to the time integration methods}

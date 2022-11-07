@@ -35,8 +35,13 @@
       \item BIBCEDRE contains tools for geometrical operations, linear algebra methods, mesh handling, parallel communications and other general functionalities
       \item THERMOLIB is used to compute the different thermophysical properties such as heat capacities, chemical reaction rates, etc. \PS{Lionel je dis pas de bêtise sur les coefficients de réaction chimique ?}
     \end{itemize}
+    Those libraries are the main engines of the solver.
+    When we do a computation with CHARME, it is in fact ASSEMBLAGE that tells CHARME when to initialise itself, to do a step of the time integration method, etc.
+    When CHARME needs to compute the ordinary differential equation function, it is BIBCEDRE that does the MUSCL reconstruction \PS{c'est bien ça ?} so that the Riemann solver can compute the interface flux.
+    When CHARME needs to compute the primitive variables such as the pressure and temperature from the conservative variables, it is THERMOLIB that solves a nonlinear problem with Newton's method to compute the result.
 
     \paragraph{}
+    Now that we defined the existing framework for the software system CEDRE, we can develop new functionalities.
     Despite allowing some flexibility in the programming language, most of CEDRE is written in Fortran.
     We decided to keep working with Fortran to help with the integration of our work.
     As CEDRE is used by industrial clients, and as they rely on their own supercomputers, we need to limit ourselves to Fortran 2003 standards, so as to ensure compatibility.
