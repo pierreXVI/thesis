@@ -291,8 +291,8 @@
     In the previous section, we compared the new Jacobian-Free Newton--Krylov method to the traditional method that uses the first-order Jacobian matrix.
     This first-order matrix is easily computed for the usual Navier--Stokes equations.
     But as CEDRE is under constant development, new models are added in order to handle more finely various multiphysics phenomena.
-    For example, a new model was recently added to better handle multiphasic flows \PS{ref Clément}.
-    Adding a new model amount to writing the function $\operatorname{F}$ from equation (\ref{eq:pde}), or equivalently $\operatorname{G}$ from equation (\ref{eq:ode}) \PS{vérifier labels}.
+    For example, a new model was recently added to better handle multiphasic flows \cite{Cordesse2020}.
+    Adding a new model amount to writing the function $\operatorname{F}$ from equation (\ref{eq:pde}), or equivalently $\operatorname{G}$ from equation (\ref{eq:ode}).
     Usually, the development of this function is straightforward as it is given explicitly from the equations.
     However, the development of the Jacobian matrix is much more difficult.
     This is why the new models can not compute Jacobian matrices, and therefore can not use implicit methods.
@@ -313,7 +313,6 @@
       This gives a small time constant of order $10^{-9}\si{seconds}$.
       For vibration modes, however, up to \num{20000} collisions are required.
       The corresponding time constant is significantly larger, and there may be regions where there can be a disequilibrium between vibrational energy on one side and transition and rotation energy on the other.
-      \PS{Vérifier anglais: transition/al, rotation/al, ...}
       The energy of such components can no longer be described with a single temperature.
       As electrons are much lighter, they move more than the other heavier flow components.
       Their transitional energy and the transitional energy of other components can not be described with the same temperature.
@@ -366,19 +365,22 @@
       We notice there are multiple energies corresponding to the multiple temperatures: $e_e$ the energy of the electronic gas, $e_{v, m}$ the vibrational energy for each flow component that may be at disequilibrium, and $E$ the rest of the energy.
       It increases the number of conservative variables.
       The variables $y$ correspond to the mass fraction of the different flow components.
-      The source terms $\omega$ correspond to \PS{production et destruction chimique}.
+      The source terms $\omega$ correspond to chemical production or decay.
       The source terms $S$ correspond to the energy transfers between the different energy modes.
       The details of those terms can be complex and are not discussed here as it is not the subject of this thesis, but can be found in \cite{Soubrie2006}.
       A noticeable feature of this model is the presence of a nonconservative term in the conservation equation of the electrons' energy: $\vec{u} \cdot \nabla p_e$.
       This is a known issue of this model, as the Finite Volume method handles better conservative terms.
-      Some work tried to transform this equation into a conservative one by using the electronic entropy instead of energy\cite{CoquelMarmignon1995}, but it appears that using this nonconservative formulation is necessary to get physically accurate results \PS{SOURCE JM LAMET}.
+      Some work tried to transform this equation into a conservative one by using the electronic entropy instead of energy but by neglecting dissipation terms concerning the electrons \cite{CoquelMarmignon1995}.
+      However, this simplification can lead to inaccuracy in the physical result, and it appears that using the nonconservative formulation is necessary to get physically accurate results \cite{Soubrie2006, KimGuelhanBoyd2012}.
+      Not to go into too much details, such models that account for thermodynamic disequilibrium ate still under discussion as of today \cite{BlancoJosyula2020}.
 
       \paragraph{}
       The Multi-TEmperature model allows for non-equilibrium between the vibrational mode of the flow components, the electronic energy and the rest of the energetic modes.
-      This is interesting on reentry problems, as there is indeed some non-equilibrium downstream of the strong shocks that appear on such problems.
-      Taking the non-equilibrium into account can change the flow downstream of the shock, the thermal exchanges or other physical features.
-      Computing the electronic density can also be useful when studying \PS{signature electromagnetique} or handling particles' electric charges.
-      Generally speaking, the Multi-TEmperature model gives more precise results than the standard Navier--Stokes model on fast flow with low relative density where there may be some thermodynamic non-equilibrium, such as reentry problems or \PS{forte détente} problems.
+      Taking this non-equilibrium into account helps to compute more precisely physical quantities such as the electronic density, which can be useful for magnetohydrodynamics applications.
+      It gives a better prediction of shock layer radiation with a better representation of the population of energy states which helps the simulation of radiation cooling or the computation of wall heat fluxes.
+      This model is most interesting on reentry problems, as there is indeed some non-equilibrium downstream of the strong shocks that appear on such problems.
+      Taking the non-equilibrium into account can change the flow downstream of the shock and on the solid wall, and give more precise temperatures and chemical compositions.
+      Generally speaking, the Multi-TEmperature model gives more precise results than the standard Navier--Stokes model on fast flow with low relative density where there may be some thermodynamic non-equilibrium, such as reentry problems or strong rarefaction \PS{(forte détente)} problems.
 
 
     \subsection{Hypersonic reactive sphere}
@@ -401,7 +403,8 @@
         For the first step of our analysis, we will use the most complete physical model.
         We use the same 11 flow components as before: \ce{N_2}, \ce{O_2}, \ce{N}, \ce{O} and \ce{NO}, the corresponding cations \ce{N_2^+}, \ce{O_2^+}, \ce{N^+}, \ce{O^+} and \ce{NO^+} and the electrons \ce{e^-}.
         We of course use the Multi-TEmperature model, and we consider that \ce{N_2} and \ce{O_2} may be at \PS{vibrational disequilibrium}.
-        \PS{Pourquoi que ces deux ?}
+        Other components may in fact also be at disequilibrium and we could take them into account but the computational cost increase is not worth it.
+        As they are less present, and they quickly get to the equilibrium relatively to \ce{N_2} and \ce{O_2}, accounting for their disequilibrium would not be significant in the results \cite{Park2006}.
         This amount to having four temperatures to describe the flow: $T_e$ for the electrons, $T_{v, \ce{N_2}}$ and $T_{v, \ce{O_2}}$ for the vibration modes of \ce{N_2} and \ce{O_2}, and $T$ for the rest of the energy.
 
         \paragraph{}
