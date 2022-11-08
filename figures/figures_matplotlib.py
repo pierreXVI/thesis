@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import scipy.linalg
 import scipy.special
+from postprocess import bibarch
 
 plt.rcParams.update({
     'xtick.labelsize': 15,
@@ -456,10 +457,79 @@ def fig_eps():
         # plt.show()
 
 
+def rae_coefficients():
+    fig = plt.figure(figsize=[16, 9])
+    fig.suptitle(r"Aerodynamic coefficients")
+
+    ax1 = fig.add_subplot(211)
+    ax2 = fig.add_subplot(212, sharex=ax1)
+
+    ax1.grid(True)
+    ax2.grid(True)
+    plotter = bibarch.HistoPlotter(ax1, ('LIMITES', ['Extrados', 'Intrados'], "C_lift"), 'ITER',
+                                   "/scratchm/pseize/RAE_2822")
+    plotter.plot('BASE/INIT', 'k', label='Initialisation')
+    plotter.plot('BASE/RUN_1', label='Traditional method')
+    plotter.plot('MF/RUN_1', label='JFNK method')
+    plotter = bibarch.HistoPlotter(ax2, ('LIMITES', ['Extrados', 'Intrados'], "C_drag"), 'ITER',
+                                   "/scratchm/pseize/RAE_2822")
+    plotter.plot('BASE/INIT', 'k', label='Initialisation')
+    plotter.plot('BASE/RUN_1', label='Traditional method')
+    plotter.plot('MF/RUN_1', label='JFNK method')
+
+    ax1.set_title('')
+    ax2.set_title('')
+    ax1.set_ylabel('Drag coefficient', labelpad=15)
+    ax2.set_ylabel('Lift coefficient', labelpad=15)
+    ax1.set_xlim(3800, 8000)
+    ax1.set_ylim(0.3025197803328823, 0.3025198287464075)
+    ax2.set_ylim(0.009251204600522693, 0.009251211374678542)
+    ax1.tick_params(labelbottom=False)
+    ax1.set_xlabel('')
+    ax2.set_xlabel('Iteration number', labelpad=20)
+    fig.legend(*ax1.get_legend_handles_labels())
+    # plt.show()
+    fig.savefig('rae_coefficients.png')
+
+
+def rae_residuals():
+    fig = plt.figure(figsize=[16, 7])
+    fig.suptitle(r"$\log_{10}$ of the $L_2$ residual norms", y=0.94)
+
+    ax11 = fig.add_subplot(221)
+    ax12 = fig.add_subplot(222)
+    ax21 = fig.add_subplot(223, sharex=ax11)
+    ax22 = fig.add_subplot(224, sharex=ax12)
+
+    for ax, tag, title in zip((ax11, ax12, ax21, ax22),
+                              ('RhoV_x', 'RhoV_y', 'RhoEtot', 'RhoNuTilde'),
+                              ("$x$ momentum", "$y$ momentum", "Energy", "Turbulent viscosity")):
+        ax.grid(True)
+        plotter = bibarch.HistoPlotter(ax, ('RESIDUS', 'MOYENS', tag), 'ITER', "/scratchm/pseize/RAE_2822")
+        plotter.plot('BASE/INIT', 'k', label='Initialisation')
+        plotter.plot('BASE/RUN_1', label='Traditional method')
+        plotter.plot('MF/RUN_1', label='JFNK method')
+        ax.set_title('')
+        ax.set_ylabel(title, labelpad=15)
+
+    ax11.tick_params(labelbottom=False)
+    ax12.tick_params(labelbottom=False)
+    ax11.set_xlabel('')
+    ax12.set_xlabel('')
+    ax21.set_xlabel('Iteration number', labelpad=20)
+    ax22.set_xlabel('Iteration number', labelpad=20)
+    fig.legend(*ax11.get_legend_handles_labels())
+    plt.subplots_adjust(0.08, 0.15, 0.99, 0.85, 0.30, 0.05)
+    # plt.show()
+    fig.savefig('rae_residuals.png')
+
+
 if __name__ == '__main__':
     # fig_rk()
     # fig_bdf()
     # fig_ab()
     # fig_preconditioning()
     # fig_eps()
+    # rae_coefficients()
+    # rae_residuals()
     pass

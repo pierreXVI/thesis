@@ -22,15 +22,12 @@
 
       \subsubsection{Definition of the test case}
 
-
-        \PS{TODO: sûr de aoa et Re ?}
-
         \paragraph{}
         Our first application is a typical aerodynamics test case.
         It is a 2D simulation of the flow around an RAE 2822 wing profile.
         The only fluid is standard air.
         The Mach number is taken equal to 0.75, the chord is equal to $1\si{\meter}$, the angle of attack is $0\si{\degree}$ and we use the atmospheric conditions at 10km.
-        This gives a Reynolds number of \num{6.3e6}.
+        This gives a laminar Reynolds number of \num{6.5e6}.
 
         \paragraph{}
         We decided to use this first test case for multiple reasons.
@@ -41,16 +38,16 @@
         It means that it is already well mastered by the team.
         Thirdly, even if it is only a standard aerodynamics case it still has some stiff features, such as turbulence modelling and a shock.
         Finally, it is a standard test case for turbulence modelling validation.
-        Therefore there are many references in the literature using this case. \PS{LES DONNER !}
+        Therefore there are many references in the literature using this case.
         Even if this thesis aims at multiphysics, it is often good to start slow, and that is what we are doing with this test case.
 
         \paragraph{}
-        The mesh used for this simulation is an unstructured hybrid mesh made of triangles and quadrangles \PS{c'est bien ça ?}.
+        The mesh used for this simulation is an unstructured hybrid mesh made of triangles and quadrangles.
         Parts of it can be seen in figure \ref{fig:rae_mesh}.
         Cell sizes range from $2.5\si{\meter}$ far from the airfoil and $100\si{\micro\meter}$ at the wall.
         At the wall, there is a C-shaped layer of regular cells.
-        This helps better capture boundary layer effects near the profile and the \PS{pas vraiment lâcher tourbillonnaire}.
-        Also, at those conditions, a shock is expected to develop on the upper part \PS{extrados ?}.
+        This helps better capture boundary layer effects near the profile and the wake.
+        Also, at those conditions, a shock is expected to develop on the upper part .
         Special treatment such as refinement was applied to the mesh at the expected shock location.
 
         \begin{figure}
@@ -62,13 +59,16 @@
 
         \paragraph{}
         The model used is the Reynolds Averaged Navier--Stokes equations, or RANS.
-        Simply put, every scale of the turbulence is modelled \PS{c'est bien ça ?}.
+        Simply put, every scale of the turbulence is modelled.
         For this case, we decided to use the famous Spalart--Allmaras turbulence model.
         It is well known for being one of the simplest turbulence models, which is fine for us as we want to set up a simple first test case.
+        Figure \ref{fig:rae_mesh} shows that the mesh near the wall boundary is not particular fine, and therefore it is not fine enough to compute the boundary layer.
+        It is because this computation uses a turbulence wall modelling.
+        Such models are known to be troublesome with some more complex turbulence models such as the $k-\epsilon$ model but are used with others such as the one we use here.
+        Turbulence wall modelling may be nonconventional in aerodynamic simulations but it is a commonly used feature of our solver, so it is interesting to see how our new method behaves on such case.
         The spatial discretisation method is a second-order Finite Volume method, using the HLLC Riemann solver and Multislope method with a Van--Leer slope limiter.
         We also use local time-stepping to speed up the convergence.
 
-        \PS{Note pour moi même: est-ce que je refais JFNK ordre 1 pour montrer qu'on retrouve la méthode classique ? Sauf que vu qu'il y a la turbulence j'en suis pas certain, mais ça montrerai que c'est bien sur deux points de vue (tout les modèles + discrétisation spatiale) donc oui fais le }
 
       \subsubsection{Analysis of the results}
 
@@ -77,8 +77,8 @@
         \paragraph{}
         We are now going to compare the results from the two different simulations.
         It is first worth noting that before trying the JFNK method, we need to start the computation using the traditional method.
-        We assume that because of the matrix-free approximation, it is less robust at the beginning.
-        Only some iterations are needed, just to start the development of start the no-slip boundary layer.
+        As we explained before, the matrix-free approximation is not ideal to handle discontinuities such as shocks, and a shock is indeed present in this computation.
+        Only some iterations are needed, just to start the development of the no-slip boundary layer and approximately place the shock.
         After that, we can restart the computation with the traditional method on one side and with the new method on the other.
 
         \begin{figure}
@@ -98,7 +98,7 @@
         \begin{figure}
           \centering
           \includegraphics[width=\textwidth]{figures/rae_coefficients.png}
-          \caption{\PS{TODO: Aerodynamic coefficients (lift and drag) for the profile throughout the computation.}}
+          \caption{Aerodynamic coefficients (lift and drag) for the profile throughout the computation.}
           \label{fig:rae_coefficients}
         \end{figure}
 
@@ -112,6 +112,11 @@
         Once again, the two curves are indistinguishable.
         Finally, we can look at the aerodynamic coefficients, the drag and lift coefficients, throughout the simulation in figure \ref{fig:rae_coefficients}.
         This time, we see an improvement from our method: the coefficients are much more stable, which means the convergence is better with our method.
+        The blue curve corresponding to the traditional method struggle to converge, and seems to oscillate periodically.
+        In comparison, the oscillation of the orange curve is dampened: this correspond to convergence.
+        The scale of the oscillation seen in figure \ref{fig:rae_coefficients} is not significant physically speaking, as it it negligible.
+        It shows however an issue with the traditional implicit method of the solver CEDRE: it fails to reach proper convergence but it oscillate around the solution.
+        The new JFNK method however achieve proper convergence.
 
         \paragraph{}
         In order to find out if our method did help the convergence of the solver, we need to look at the residuals.
@@ -133,7 +138,7 @@
         \begin{figure}
           \centering
           \includegraphics[width=\textwidth]{figures/rae_residuals.png}
-          \caption{\PS{TODO: Residual norm for the turbulent viscosity throughout the computation.}}
+          \caption{Residual norms for the two momentum components, energy and turbulent viscosity throughout the computation.}
           \label{fig:rae_residuals}
         \end{figure}
 
@@ -143,7 +148,6 @@
         The final residual norm is much smaller for each and every conservative component.
         This means that the Jacobian-Free Newton--Krylov method is able to reach a better convergence level than the traditional method.
         In other words, the better Jacobian matrix approximation from our new method leads to a better convergence than the older poor approximation.
-        \PS{Que dire de plus ?}
 
         \paragraph{}
         In this first test case, we looked at the residual norms as the fields computed by both methods were almost identical.
