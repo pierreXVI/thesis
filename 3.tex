@@ -159,7 +159,7 @@
 
       \paragraph{}
       The second application we selected to compare the Jacobian-Free Newton--Krylov with the traditional one is the computation of the flow around a hypersonic solid sphere.
-      Because of the high energy of the surrounding flow, the air molecules can separate and even form a plasma \PS{check traduction}.
+      Because of the high energy of the surrounding flow, the air molecules can separate and even form a plasma .
       The hypersonic reactive sphere is a well-known case, for both experimental \cite{Lobb1964} and numerical studies \cite{DobrovGimadievKarpenkoEtAl2022}.
       This is a simple yet representative test case of CEDRE applications.
       It then makes a lot of sense to analyse our new method on it.
@@ -316,14 +316,14 @@
       A few collisions are required for translation modes, and about ten for rotation modes.
       This gives a small time constant of order $10^{-9}\si{seconds}$.
       For vibration modes, however, up to \num{20000} collisions are required.
-      The corresponding time constant is significantly larger, and there may be regions where there can be a disequilibrium between vibrational energy on one side and transition and rotation energy on the other.
+      The corresponding time constant is significantly larger, and there may be regions where there can be a disequilibrium between vibrational energy on one side and translation and rotation energy on the other.
       The energy of such components can no longer be described with a single temperature.
       As electrons are much lighter, they move more than the other heavier flow components.
       Their transitional energy and the transitional energy of other components can not be described with the same temperature.
       With the new Multi-TEmperature model, the flow components may be divided into three classes:
       \begin{itemize}
         \item the ones that always are at the equilibrium
-        \item the ones that may be at \PS{vibrational disequilibrium}
+        \item the ones that may be at vibrational disequilibrium
         \item the electrons that are handled separately from the other heavy component.
       \end{itemize}
 
@@ -366,25 +366,26 @@
         \end{alignedat}\right.
       \end{equation}
       What we see first is that the equations of this physical model are more complex compared to the standard Navier--Stokes equations.
-      We notice there are multiple energies corresponding to the multiple temperatures: $e_e$ the energy of the electronic gas, $e_{v, m}$ the vibrational energy for each flow component that may be at disequilibrium, and $E$ the rest of the energy.
+      We notice there are multiple energies corresponding to the multiple temperatures: $e_e$ the energy of the electronic gas, $e_{v, m}$ the vibrational energy for each flow component that may be at disequilibrium, and $E$ the total energy.
       It increases the number of conservative variables.
       The variables $y$ correspond to the mass fraction of the different flow components.
       The source terms $\omega$ correspond to chemical production or decay.
       The source terms $S$ correspond to the energy transfers between the different energy modes.
       The details of those terms can be complex and are not discussed here as it is not the subject of this thesis, but can be found in \cite{Soubrie2006}.
       A noticeable feature of this model is the presence of a nonconservative term in the conservation equation of the electrons' energy: $\vec{u} \cdot \nabla p_e$.
+      This term is due to the effet of the electric field.
       This is a known issue of this model, as the Finite Volume method handles better conservative terms.
       Some work tried to transform this equation into a conservative one by using the electronic entropy instead of energy but by neglecting dissipation terms concerning the electrons \cite{CoquelMarmignon1995}.
       However, this simplification can lead to inaccuracy in the physical result, and it appears that using the nonconservative formulation is necessary to get physically accurate results \cite{Soubrie2006, KimGuelhanBoyd2012}.
-      Not to go into too much details, such models that account for thermodynamic disequilibrium ate still under discussion as of today \cite{BlancoJosyula2020}.
+      Not to go into too much details, such models that account for thermodynamic disequilibrium are still under discussion as of today \cite{BlancoJosyula2020}.
 
       \paragraph{}
-      The Multi-TEmperature model allows for non-equilibrium between the vibrational mode of the flow components, the electronic energy and the rest of the energetic modes.
-      Taking this non-equilibrium into account helps to compute more precisely physical quantities such as the electronic density, which can be useful for magnetohydrodynamics applications.
+      The Multi-TEmperature model allows for non-equilibrium between the vibrational mode of the flow components, the electronic energy and the total energy.
+      Taking this non-equilibrium into account helps to compute more precisely physical quantities such as the electronic density, which can be useful for magnetohydrodynamics applications for example.
       It gives a better prediction of shock layer radiation with a better representation of the population of energy states which helps the simulation of radiation cooling or the computation of wall heat fluxes.
       This model is most interesting on reentry problems, as there is indeed some non-equilibrium downstream of the strong shocks that appear on such problems.
       Taking the non-equilibrium into account can change the flow downstream of the shock and on the solid wall, and give more precise temperatures and chemical compositions.
-      Generally speaking, the Multi-TEmperature model gives more precise results than the standard Navier--Stokes model on fast flow with low relative density where there may be some thermodynamic non-equilibrium, such as reentry problems or strong rarefaction \PS{(forte détente)} problems.
+      Generally speaking, the Multi-TEmperature model gives more precise results than the standard Navier--Stokes model on fast flow with low relative density where there may be some thermodynamic non-equilibrium, such as reentry problems or problems with the strong expansion of a plume.
 
 
     \subsection{Hypersonic reactive sphere}
@@ -406,17 +407,17 @@
         \paragraph{}
         For the first step of our analysis, we will use the most complete physical model.
         We use the same 11 flow components as before: \ce{N_2}, \ce{O_2}, \ce{N}, \ce{O} and \ce{NO}, the corresponding cations \ce{N_2^+}, \ce{O_2^+}, \ce{N^+}, \ce{O^+} and \ce{NO^+} and the electrons \ce{e^-}.
-        We of course use the Multi-TEmperature model, and we consider that \ce{N_2} and \ce{O_2} may be at \PS{vibrational disequilibrium}.
+        We of course use the Multi-TEmperature model, and we consider that \ce{N_2} and \ce{O_2} may be at vibrational disequilibrium.
         Other components may in fact also be at disequilibrium and we could take them into account but the computational cost increase is not worth it.
         As they are less present, and they quickly get to the equilibrium relatively to \ce{N_2} and \ce{O_2}, accounting for their disequilibrium would not be significant in the results \cite{Park2006}.
-        This amount to having four temperatures to describe the flow: $T_e$ for the electrons, $T_{v, \ce{N_2}}$ and $T_{v, \ce{O_2}}$ for the vibration modes of \ce{N_2} and \ce{O_2}, and $T$ for the rest of the energy.
+        This amount to having four temperatures to describe the flow: $T_e$ for the electrons, $T_{v, \ce{N_2}}$ and $T_{v, \ce{O_2}}$ for the vibration modes of \ce{N_2} and \ce{O_2}, and $T$ for the total energy.
 
         \paragraph{}
         As before, the Jacobian-Free Newton--Krylov method needs some help at the beginning.
         This is why we start the computation with some iterations of the Midpoint method.
         Then, we continue the computation with the JFNK method using the first-order Finite Volume method, to quickly get a good enough approximation of the expected solution.
         Finally, to get a finer result, we end the simulation using the second-order spatial discretisation method.
-        We use local time-stepping based on the CFL number \PS{Donner le CFL et est-ce qu'on peut pas faire mieux ?}.
+        We use local time-stepping based on the CFL number.
         We can not use preconditioners that use the matrix, so the only one available is the diagonal preconditioner based on the cell volumes.
         It is not ideal as it is extremely simple, and some physics-based preconditioner would be preferable \cite{KnollKeyes2004} but none were available to us at the time.
         The spatial discretisation method used is the Multislope method, as it appears more robust than the $k$-exact method with the Multi-TEmperature model.
