@@ -155,6 +155,38 @@
         This validates our method on a first simple case, albeit with turbulence modelling and a shock.
 
 
+    \subsection{Turbulent transonic airfoil with boundary layer resolution}
+    \PS{MAYBE ?}
+
+      \subsubsection{Definition of the test case}
+
+        \paragraph{}
+        The previous case use a mesh that is too coarse to resolve the boundary layer but instead uses a turbulent wall mode.
+        It is representative of CEDRE applications, but not of actual applications is the aerodynamic community.
+        The RAE 2822 airfoil is often used for turbulence model validations, but computations in the field prefer to use a finer mesh to resolve the boundary layer.
+        This is what we present next.
+        The new mesh, shown in figure \ref{fig:rae_mesh_fine} is clearly different.
+        It is a 3D mesh, which is in fact a 2D mesh that was extruded on 6 cells in the $y$ direction.
+        We set a periodicity between the two sides of the domain.
+        The mesh is made of 198144 cells whereas the previous RAE 2822 mesh was only made of 36541 cells.
+        With these additional cells, this mesh is able to be fine on the wall boundary condition as is seen in figure \ref{fig:rae_mesh_fine}.
+        This means that we do not need to use the turbulent wall model we used on the previous test case.
+        We still use the Spalart--Allmaras one equation turbulence model.
+        The scale of the mesh is the same: the chord is still equal to $1\si{\meter}$.
+
+        \begin{figure}
+          \centering
+          \includegraphics[width=\textwidth]{figures/rae_mesh_fine.png}
+          \caption{Finer mesh for the RAE 2822 test case. Close up on the leading and trailing edges.}
+          \label{fig:rae_mesh_fine}
+        \end{figure}
+
+        \paragraph{}
+        The flight conditions are also modified to match some existing experimental conditions: the AGARD-AR-138 experimental database.
+        We take a Mach number equal to 0.729, the angle of attack is $2.31\si{\degree}$ with a Reynolds number of \num{6.5e6}.
+        \PS{TODO}
+
+
     \subsection{Hypersonic reactive sphere}
 
       \paragraph{}
