@@ -10,23 +10,23 @@
 % version 2005/12/01 or later.
 %
 % This work has the LPPL maintenance status `maintained'.
-% 
+%
 % The Current Maintainer of this work is Y. Zwols.
 %
 %
 % Version history
 %  v0.3: - Fixed some errors in the documentation
-%        - Colors specified in \shadowcolor should now be specified using 
-%          color names, not RGB values. The command for specifying colors 
-%          using RGB values has been renamed to \shadowrgb. 
+%        - Colors specified in \shadowcolor should now be specified using
+%          color names, not RGB values. The command for specifying colors
+%          using RGB values has been renamed to \shadowrgb.
 %          (I apologize for the backwards incompatibility).
 %        - The base line of the text is now correct.
-% 
+%
 
 \NeedsTeXFormat{LaTeX2e}[1996/12/01]
-\ProvidesPackage{shadowtext}
+\ProvidesPackage{tlsflyleaf/shadowtext}
   [2012/05/07 v0.3 Shadow Text]
-  
+
 \RequirePackage{color}
 
 \makeatletter
@@ -48,7 +48,7 @@
 \shadowrgb{0.66,0.66,0.66}
 
 \newlength\st@temp@width
-\newlength\st@temp@height 
+\newlength\st@temp@height
 \newlength\st@pic@width
 \newlength\st@pic@height
 
