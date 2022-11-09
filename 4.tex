@@ -1,0 +1,49 @@
+\chapter{Analysis of a new type of time integration methods}
+
+  \paragraph{}
+  In this thesis, we were interested in finding solutions to steady problems.
+  As we explained in the previous part, we use implicit time integration methods to get efficiently solutions of such problems.
+  This is a pretty standard choice: most computational fluid dynamics solvers use implicit time integration methods to solve steady problems.
+  The reason is because they can use larger time steps than their explicit counterparts.
+  Because of this advantage, they are also often used when solving unsteady problems but with large time steps.
+  Indeed, solving an unsteady problem with large time steps is similar to solving a steady problem.
+  Most of what is done towards the steady problem solve can therefore be reused for unsteady problem solves with large time steps.
+
+  \paragraph{}
+  Even if implicit time integration methods are quite standard when solving problems with large time steps, there are other less conventional methods we could choose from.
+  We could step out from the explicit implicit dichotomy, and decide to use IMplicit-EXplicit, or IMEX, methods.
+  They split the function from the ordinary differential equation (\ref{eq:ode}) in two parts: the stiff part than is integrated by an implicit method, because of its stiffness, and the other part that can just be integrated with an explicit method.
+  The Additive Semi-Implicit Runce--Kutta methods, or ASIRK methods, are such methods \cite{Zhong1996}.
+  They are already in use in computational fluid dynamics problems, such as fluid-structure interaction problems \cite{HuangPerssonZahr2019}.
+  Previous work already implemented ASIRK methods in our solver CEDRE for specific multiphysic applications.
+  Some methods are even less common and correspond to a total paradigm shift: the parallel time integration methods \cite{Nievergelt1964, LionsMadayTurinici2001}.
+  Just as we classically split the computational domain over processes and compute the spatial discretisation method in parallel, parallel time integration methods decompose the time integration interval into subintervals.
+  They then solve the ordinary differential equation on each interval concurrently then ensure the continuity between the subintervals.
+  They then iterate with Newton's method to find the solution over the whole time integration interval.
+  As a result, they can approximate accurately the solution at later time without knowing accurately the solution at previous time.
+  Despite being nontraditional, they were successfully used to solve fluid structure interaction problems or Navier--Stokes problems \cite{GanderVandewalle2007}.
+  They were even more recently used to solve simple turbulent flow problems \cite{Lunet2018}.
+  They can even be used in a more convoluted way, with for instance exponential methods \cite{GanderGuettel2013}.
+  Just as parallel time integration is inspired from parallel spatial discretisation, some time integration methods are inspired from spectral discretisation methods.
+  Time spectral methods, that were originally used for fluid dynamic time periodic problems \cite{GopinathJameson2005, GopinathJameson2006}, are now used on non-periodic problems \cite{EkiciDjeddiLiEtAl2020}.
+  But as both time parallel integration methods and time spectral methods are considered modern methods and highly unconventional, they do not seem appropriate for an industrial solver such as ours.
+
+
+  \section{Exponential integration methods}
+
+    \paragraph{}
+    We decided to look at an other class of time integration methods: exponential methods.
+    Despite being known for a long time \cite{Pope1963}, they were not widely used in computational fluid dynamics, because of some difficulties that we will explain later, but still interested some \cite{EdwardsTuckermanFriesnerEtAl1994}.
+    They started to come back in the literature \cite{HochbruckOstermann2005} and are now being use on applications similar to ours \cite{NieZhangZhao2006, BhattKhaliqWade2018}.
+
+    \paragraph{}
+    We start from an ordinary differential equation
+    \begin{equation}\label{eq:ode_2}
+      \frac{\mathrm{d} y}{\mathrm{d} t} = f\left(y\right) \ .
+    \end{equation}
+    This is the same as the ordinary differential equation (\ref{eq:ode}) from the previous part but with different notations.
+    The main idea of exponential integration methods is to start from the ordinary differential equation (\ref{eq:ode_2}) and split the function $f$ in a linear part and a nonlinear part:
+    \begin{equation}
+      \frac{\mathrm{d} y}{\mathrm{d} t} = Ly + N\left(y\right) \ .
+    \end{equation}
+    This decomposition is sometimes natural for some particular equations, but in the more general case it is always possible: it consists in choosing a linear part $L$ then setting the nonlinear part $N\left(y\right) = f(y) - Ly$.
