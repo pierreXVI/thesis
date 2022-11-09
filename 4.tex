@@ -108,6 +108,7 @@
         y_{n+1} = y_n + \Delta t \varphi_1\left(\Delta t L\right) f\left(y_n\right) \ .
       \end{equation}
       We note the difference with the corresponding standard Euler method, for which the $\varphi$ function is replaced with the identity function.
+      If there is no linear part in the decomposition, with $L = 0$, then nothing is treated differently by the exponential method, and we recover the standard explicit Euler method.
 
       \paragraph{}
       In this method, we take the linearisation $L = f'\left(y_n\right)$.
@@ -152,3 +153,16 @@
       \end{equation}
       We now understand the decomposition chosen earlier: if $L = f'\left(y_n\right)$ and therefore $N'\left(y_n\right) = 0$ then $y_{n+1} - y\left(t_n{n+1}\right) = O\left(\Delta t^3\right)$ and the method is of order 2.
       This is a noticeable property of this method: despite being a single step method it has a second order of accuracy.
+
+      \paragraph{}
+      It is much harder to analyse the stability of this method, and more generally of exponential methods.
+      Indeed, the stability analysis is done on the Dahlquist test equation (\ref{eq:dahlquist}).
+      But as this equation is linear, exponential methods can solve them exactly no matter the time step size.
+      We can still write the single step equation (\ref{eq:single_step}) $y_{n+1} = g\left(\Delta tJ\right)y_n$ with $g\left(z\right) = e^z$, and get the corresponding stability region which is the left half complex plane.
+      We could then conclude that the method is A-stable.
+      The issue with exponential methods is that the standard stability analysis is no longer pertinent.
+      We tried to do a better stability analysis for simple exponential methods such as the exponential Euler method, but we did not succeed.
+      Some work in the literature do define some stability notions for exponential methods \cite{DuZhu2004}, but usually take a linear $N$.
+      It goes against the idea that all the linear part of $f$ is in $L$ and $N$ is purely nonlinear.
+      We did not find a stability analysis that was satisfying to us.
+      It will probably come from a more mathematical context than the one we are in so we did not insist on finding such an analysis.
