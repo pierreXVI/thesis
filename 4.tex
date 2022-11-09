@@ -47,3 +47,66 @@
       \frac{\mathrm{d} y}{\mathrm{d} t} = Ly + N\left(y\right) \ .
     \end{equation}
     This decomposition is sometimes natural for some particular equations, but in the more general case it is always possible: it consists in choosing a linear part $L$ then setting the nonlinear part $N\left(y\right) = f(y) - Ly$.
+    There are then an infinite number of decomposition, but we will see later that some are more interesting.
+
+    \paragraph{}
+    To define the time integration step, we start from the current estimate of the solution $y_n$ that we assume exact : $y_n = y\left(t_n\right)$.
+    We note $\Delta t = t_{n+1} - t_n$ as we work here with a fixed $n$.
+    We can integrate equation (\ref{eq:ode_2}) using the variation of constants formula to get:
+    \begin{equation}\label{eq:ode_int}
+      y\left(t_{n+1}\right) = e^{\Delta t L} y_n + \int_{t_n}^{t_{n+1}} e^{\left(t_{n+1} - t\right) L} N\left(y\left(t\right)\right) \mathrm{d}t \ .
+    \end{equation}
+    The exponential integration methods then approximate the integral to compute the next value $y_{n+1}$.
+    What defines the method is how it approximates this integral.
+    As we can see in equation (\ref{eq:ode_int}), the linear part is treated exactly and the nonlinear one is approximated.
+    If there is no nonlinear part, with $N = 0$, then the solution $y_{n+1}$ is exact.
+    If there is no linear part, with $L = 0$, then equation (\ref{eq:ode_int}) transforms into
+    \begin{equation}\label{eq:ode_int_classic}
+      y\left(t_{n+1}\right) = y_n + \int_{t_n}^{t_{n+1}} N\left(y\left(t\right)\right) \mathrm{d}t
+    \end{equation}
+    and the exponential integration method behaves like a standard time integration method.
+    This is the advantage of exponential integration methods: at best they are exact methods, and at worse they are equivalent to traditional methods.
+
+    \paragraph{}
+    Similarly to classic methods, there are explicit \cite{BhattKhaliqWade2018} and implicit \cite{NieZhangZhao2006} exponential integration methods.
+    It depends on whether it uses $y_{n+1}$ or not to compute the integral from equation (\ref{eq:ode_int}).
+
+    \paragraph{}
+    Before continuing, we need to define some functions that are going to be convenient later on.
+    We consider the functions $\varphi_k$, defined by:
+    \begin{equation}
+      \left\{\begin{aligned}
+        \varphi_0 &: z \mapsto e^z \\
+        \forall k \in \mathbb{N}^*, \varphi_{k} &: z \mapsto \int_0^1 e^{\left(1 - \theta\right)z} \frac{\theta^{k-1}}{\left(k-1\right)!} \mathrm{d}\theta
+      \end{aligned}\right.\ .
+    \end{equation}
+    We could also define them using the recurrence relation:
+    \begin{equation}
+      \left\{\begin{aligned}
+        \varphi_0 &: z \mapsto e^z \\
+        \forall k \in \mathbb{N}, \varphi_{k+1} &: z \mapsto \frac{\varphi_k\left(z\right) - \varphi_k\left(0\right)}{z} \ .
+      \end{aligned}\right.
+    \end{equation}
+    Finally, we can also use their analytic formula:
+    \begin{equation}
+      \forall k \in \mathbb{N}, \varphi_{k} : z \mapsto \sum_{i = 0}^\infty \frac{z^i}{\left(i + k\right)!} \ .
+    \end{equation}
+    This analytic formula ensure it is well defined for squared matrices.
+
+
+    \subsection{Exponential Euler method}
+
+      \paragraph{}
+      To better understand exponential integration methods, we take the most basic one: the exponential Euler method.
+      Just as the Euler method assumes that $N\left(y\right)$ is constant and equal to $N\left(y_n\right)$ in equation (\ref{eq:ode_int_classic}), its exponential counterpart makes the same assumption but in equation (\ref{eq:ode_int}).
+      It then gives:
+      \begin{equation}
+        y_{n+1} = e^{\Delta t L} y_n + \varphi_1\left(\Delta t L\right) N\left(y_n\right)
+      \end{equation}
+      using the $\varphi_1$ function defined above, and finally:
+      \begin{equation}
+        y_{n+1} = y_n + \varphi_1\left(\Delta t L\right) f\left(y_n\right) \ .
+      \end{equation}
+
+      \paragraph{}
+      It is worth noting that we might
