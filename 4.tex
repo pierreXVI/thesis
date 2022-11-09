@@ -94,7 +94,9 @@
     This analytic formula ensure it is well defined for squared matrices.
 
 
-    \subsection{Exponential Euler method}
+  \section{Exponential Euler method}
+
+    \section{Definition of the exponential Euler method}
 
       \paragraph{}
       To better understand exponential integration methods, we take the most basic one: the exponential Euler method.
@@ -165,4 +167,40 @@
       Some work in the literature do define some stability notions for exponential methods \cite{DuZhu2004}, but usually take a linear $N$.
       It goes against the idea that all the linear part of $f$ is in $L$ and $N$ is purely nonlinear.
       We did not find a stability analysis that was satisfying to us.
-      It will probably come from a more mathematical context than the one we are in so we did not insist on finding such an analysis.
+      We will probably find such analysis, today of maybe in the future, in research from a more mathematical context than the one we are in, so we did not insist on finding such an analysis.
+
+
+  \section{Exponential Runge--Kutta methods}
+
+    \paragraph{}
+    When we introduced explicit methods, we used more convoluted approximations than the explicit Euler methods for the integral in equation (\ref{eq:ode_int_classic}).
+    This gave the Runge--Kutta methods.
+    We can do the same for the integral in equation (\ref{eq:ode_int}) to get exponential Runge--Kutta methods.
+    The difference with a standard Runge--Kutta method is that the quadrature coefficients are now functions of the matrix $L$:
+    \begin{equation}
+      \left\{\begin{aligned}
+        y_{n+1} &= e^{\Delta tL} y_n + \Delta t \sum_{i = 1}^k b_i\left(\Delta t L\right) N\left(y_{n,i}\right) \\
+        \textrm{with}\quad y_{n,i} &= e^{c_i \Delta t} y_n + \Delta t \sum_{j = 1}^{i-1} a_{ij}\left(\Delta t L\right) f\left(y_{n,j}\right)
+      \end{aligned}\right. \ .
+    \end{equation}
+    The Butcher tableau that we used to represent the Runge--Kutta methods is also used to represent exponential Runge--Kutta methods.
+    For instance, the Butcher tableau of the exponential Euler method, which is a special simple case of exponential Runge--Kutta methods, is shown in table \ref{tab:exp_rk_butcher}.
+
+    \begin{table}
+      \begin{tabular}{P{.15\textwidth}P{.3\textwidth}P{.4\textwidth}}
+        \begin{tabular}{c|c}
+          0 \RKBar $\varphi_1$
+        \end{tabular} &
+        \begin{tabular}{c|cc}
+          0 \\ 1 & $\varphi_1$ \RKBar $\varphi_1 - 2 \varphi_3$ & $2\varphi_3$
+        \end{tabular} &
+        \begin{tabular}{c|cccc}
+          0 \\ $\frac{3}{4}$ & $\frac{3}{4}\varphi_1\left(\frac{3}{4} \cdot\right)$ \RKBar $\varphi_1 - \frac{32}{9} \varphi_3$ & $\frac{32}{9}\varphi_3$
+        \end{tabular} \\
+        Exponential Euler & ExpRB32 & ExpRB42 \\
+      \end{tabular}
+      \caption{\PS{TODO}}\label{tab:exp_rk_butcher}
+    \end{table}
+
+    \paragraph{}
+    Among exponential Runge--Kutta methods, we looked at the ExpRB32 and ExpRB42 methods \PS{citation + distinction RK Rosenbrock}.
