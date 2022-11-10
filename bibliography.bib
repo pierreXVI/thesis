@@ -1660,6 +1660,20 @@ Studies were made at the Naval Ordnance Laboratory of the shock detachment dista
   file    = {:Stability Analysis and Application of the Exponential Time Differencing Schemes - DuZhu.pdf:PDF},
 }
 
+@Article{HochbruckOstermannSchweitzer2009,
+  author   = {Hochbruck, Marlis and Ostermann, Alexander and Schweitzer, Julia},
+  journal  = {SIAM Journal on Numerical Analysis},
+  title    = {Exponential {R}osenbrock-type methods},
+  year     = {2009},
+  number   = {1},
+  pages    = {786--803},
+  volume   = {47},
+  abstract = {We introduce a new class of exponential integrators for the numerical integration of large-scale systems of stiff differential equations. These so-called Rosenbrock-type methods linearize the flow in each time step and make use of the matrix exponential and related functions of the Jacobian. In contrast to standard integrators, the methods are fully explicit and do not require the numerical solution of linear systems. We analyze the convergence properties of these integrators in a semigroup framework of semilinear evolution equations in Banach spaces. In particular, we derive an abstract stability and convergence result for variable step sizes. This analysis further provides the required order conditions and thus allows us to construct pairs of embedded methods. We present a third-order method with two stages, and a fourth-order method with three stages, respectively. The application of the required matrix functions to vectors are computed by Krylov subspace approximations. We briefly discuss these implementation issues, and we give numerical examples that demonstrate the efficiency of the new integrators.},
+  doi      = {10.1137/080717717},
+  eprint   = {https://doi.org/10.1137/080717717},
+  file     = {:Exponential Rosenbrock Type Methods - HochbruckOstermannSchweitzer.pdf:PDF},
+}
+
 @Article{Martel2006,
   author   = {Martel, Matthieu},
   journal  = {Higher-Order and Symbolic Computation},
@@ -1681,6 +1695,36 @@ Studies were made at the Naval Ordnance Laboratory of the shock detachment dista
   pages   = {234--266},
   volume  = {91},
   file    = {:Pseudospectra of Matrices - Trefethen.pdf:PDF},
+}
+
+@Article{HochbruckOstermannSchweitzer2006,
+  author   = {Hochbruck, Marlis and Ostermann, Alexander and Schweitzer, Julia},
+  journal  = {Oberwolfach Rep.},
+  title    = {Explicit integrators of {R}osenbrock-type},
+  year     = {2006},
+  issn     = {1660-8933},
+  month    = apr,
+  number   = {2},
+  pages    = {1107--1110},
+  volume   = {3},
+  doi      = {10.4171/OWR/2006/18},
+  file     = {:Explicit Integrators of Rosenbrock Type - HochbruckOstermannSchweitzer.pdf:PDF},
+  fjournal = {Oberwolfach Reports},
+}
+
+@Article{Luan2017,
+  author   = {Luan, Vu Thai},
+  journal  = {Applied Numerical Mathematics},
+  title    = {Fourth-order two-stage explicit exponential integrators for time-dependent {PDEs}},
+  year     = {2017},
+  issn     = {0168-9274},
+  pages    = {91--103},
+  volume   = {112},
+  abstract = {Among the family of fourth-order time integration schemes, the two-stage Gauss–Legendre method, which is an implicit Runge–Kutta method based on collocation, is the only superconvergent. The computational cost of this implicit scheme for large systems, however, is very high since it requires solving a nonlinear system at every step. Surprisingly, in this work we show that one can construct and prove convergence results for exponential methods of order four which use two stages only. Specifically, we derive two new fourth-order two-stage exponential Rosenbrock schemes for solving large systems of differential equations. Moreover, since the newly schemes are not only superconvergent but also fully explicit, they turn out to be very competitive compared to the two-stage Gauss–Legendre method as well as other fourth-order time integration schemes. Numerical experiments are given to demonstrate the efficiency of the new integrators.},
+  doi      = {10.1016/j.apnum.2016.10.008},
+  file     = {:Fourth Order Two Stage Explicit Exponential Integrators for Time Dependent PDEs - Luan.pdf:PDF},
+  keywords = {Exponential integrators, Exponential Rosenbrock methods, Nonstiff problems, Stiff problems, Superconvergence},
+  url      = {https://www.sciencedirect.com/science/article/pii/S0168927416302021},
 }
 
 @Comment{jabref-meta: databaseType:bibtex;}

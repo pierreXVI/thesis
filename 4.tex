@@ -157,6 +157,7 @@
       \end{equation}
       We now understand the decomposition chosen earlier: if $L = f'\left(y_n\right)$ and therefore $N'\left(y_n\right) = 0$ then $y\left(t_{n+1}\right) - y_{n+1} = O\left(\Delta t^3\right)$ and the method is of order 2.
       This is a noticeable property of this method: despite being a single step method it has a second order of accuracy.
+      A more rigorous analysis can be found in \cite{HochbruckOstermannSchweitzer2009}.
 
       \paragraph{}
       It is much harder to analyse the stability of this method, and more generally of exponential methods.
@@ -188,21 +189,67 @@
     The Butcher tableau that we used to represent the Runge--Kutta methods is also used to represent exponential Runge--Kutta methods.
     For instance, the Butcher tableau of the exponential Rosenbrock--Euler method, which is a special simple case of exponential Runge--Kutta methods, is shown in table \ref{tab:exp_rb_butcher}.
 
+    \paragraph{}
+    Until now, we have not been exact when naming the methods we constructed here.
+    From the literature, exponential Runge--Kutta methods are defined just as we did above, except they use a fixed linearisation: $L = f'\left(y_0\right)$ \cite{HochbruckOstermann2005}.
+    It is because they were developped for semilinear parabolic problems:
+    \begin{equation}
+      \frac{\mathrm{d} y}{\mathrm{d} t} + Ay = g\left(y\right) \ .
+    \end{equation}
+    They are used when the remainder $r$ is small or at least bounded in terms of $A$.
+    This is not the case on our applications, and on many others so that is why another type of exponential methods were introduced: exponential Rosenbrock methods \cite{HochbruckOstermannSchweitzer2006}.
+    They can be seen as a variation of the exponential Runge--Kutta methods where the linearisation is done at each time step.
+    The issue is that a new Jacobian matrix is needed at each iteration, but once again we are used to this with implicit methods.
+
+    \paragraph{}
+    The nomenclature is a bit blurry to us, as the distinction between exponential Runge--Kutta and exponential Rosenbrock methods is not the same than the one between Runge--Kutta methods and Rosenbrock methods.
+    First of all, the exponential Rosenbrock method is not implicit contrary to its standard counterpart.
+    Furthermore, it would make sense to us to name an exponential integration method base on the underlying method used to approximate the integral from equation (\ref{eq:ode_int}), and exponential Rosenbrock methods do not use Rosenbrock methods to do it.
+    The only parallel we found was that Rosenbrock methods do a linearisation at each inner stage, and the exponential Rosenbrock methods do a linearisation at each step of the time integration.
+    It just seems that in the literature, the term \emph{Rosenbrock} indicates that the linearisation is computed at each step instead of once at the beginning, with no apparent link with Rosenbrock methods.
+
+    \paragraph{}
+    Just as the Runge--Kutta methods has order conditions for its quadrature coefficients, the exponential Rosenbrock methods quadrature functions must follow some rules to ensure the expected order.
+    To be consistant, it must have:
+    \begin{equation}
+      \sum_{i = 1}^k b_i = \varphi_1
+    \end{equation}
+    and it must also have
+    \begin{equation}
+       \sum_{j = 1}^{i-1} a_{ij} = z \mapsto c_i \varphi_1\left(c_i z\right), \quad 1 \leq i \leq k
+    \end{equation}
+    to achieve a second order.
+    As we want to use methods with multiple stages, it is reasonable to want them to have an higher order than the single stage exponential Euler method.
+    Using this two conditions, exponential Rosenbrock methods can be written in the form:
+    \begin{equation}
+      \left\{\begin{aligned}
+        y_{n+1} &= y_n  + \Delta t \varphi_1\left(\Delta t L\right) f\left(y_n\right) + \Delta t \sum_{i = 1}^k b_i\left(\Delta t L\right) D_{n,i} \\
+        \textrm{with}\quad y_{n,i} &= y_n  + c_i \Delta t \varphi_1\left(c_i \Delta t L\right) f\left(y_n\right) + \Delta t \sum_{j = 1}^{i-1} a_{ij}\left(\Delta t L\right) D_{n,j}
+      \end{aligned}\right.
+    \end{equation}
+    using $D_{n,i} = N\left(y_{n,i}\right) - N\left(y_n\right)$.
+    This form shows that exponential Rosenbrock methods are variations to the exponential Euler method.
+    The defects $D_{n,i}$ are small in size, so less computational effort can be spend when computing their contribution.
+
+    \paragraph{}
+    Among exponential Rosenbrock methods, we looked at the ExpRB32 method from \cite{HochbruckOstermannSchweitzer2009} and ExpRB42 methods from \cite{Luan2017}.
+    They were developed as adaptive methods, but we will use them without the error estimate as standard methods.
+    They are both 2-stage exponential Rosenbrock methods, and achieve respectively a third and fourth order of accuracy.
+    This shows the quality of exponential Rosenbrock methods.
+    Their Butcher tableau are in table \ref{tab:exp_rb_butcher}.
+
     \begin{table}
-      \begin{tabular}{P{.15\textwidth}P{.3\textwidth}P{.4\textwidth}}
+      \begin{tabular}{M{.25\textwidth}M{.3\textwidth}M{.3\textwidth}c}
         \begin{tabular}{c|c}
-          0 \RKBar $\varphi_1$
+          \multicolumn{1}{c}{} \\ 0 \RKBar $\varphi_1$
         \end{tabular} &
         \begin{tabular}{c|cc}
           0 \\ 1 & $\varphi_1$ \RKBar $\varphi_1 - 2 \varphi_3$ & $2\varphi_3$
         \end{tabular} &
         \begin{tabular}{c|cccc}
           0 \\ $\frac{3}{4}$ & $\frac{3}{4}\varphi_1\left(\frac{3}{4} \cdot\right)$ \RKBar $\varphi_1 - \frac{32}{9} \varphi_3$ & $\frac{32}{9}\varphi_3$
-        \end{tabular} \\
+        \end{tabular} & \\[20pt]
         Exponential Rosenbrock--Euler & ExpRB32 & ExpRB42 \\
       \end{tabular}
-      \caption{\PS{TODO}}\label{tab:exp_rb_butcher}
+      \caption{Butcher tableau for some exponential Rosenbrock integration methods}\label{tab:exp_rb_butcher}
     \end{table}
-
-    \paragraph{}
-    Among exponential Runge--Kutta methods, we looked at the ExpRB32 and ExpRB42 methods \PS{citation + distinction RK Rosenbrock}.
