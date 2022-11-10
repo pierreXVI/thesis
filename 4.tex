@@ -43,7 +43,7 @@
     \end{equation}
     This is the same as the ordinary differential equation (\ref{eq:ode}) from the previous part but with different notations.
     The main idea of exponential integration methods is to start from the ordinary differential equation (\ref{eq:ode_2}) and split the function $f$ in a linear part and a nonlinear part:
-    \begin{equation}
+    \begin{equation}\label{eq:edo_split}
       \frac{\mathrm{d} y}{\mathrm{d} t} = Ly + N\left(y\right) \ .
     \end{equation}
     This decomposition is sometimes natural for some particular equations, but in the more general case it is always possible: it consists in choosing a linear part $L$ then setting the nonlinear part $N\left(y\right) = f(y) - Ly$.
@@ -259,7 +259,7 @@
     \end{table}
 
 
-  \section{Evaluating matrix \texorpdfstring{$\varphi$}{phi}-functions}
+  \section{Evaluating matrix functions}
 
     \paragraph{}
     At first glance, exponential methods may seem toot good to be true.
@@ -331,6 +331,11 @@
       Just as Krylov subspace methods for solving linear problems, this method can be restarted to limit the size of the Krylov subspace and therefore control the memory consumption of the algorithm.
       It is even possible to define an error estimate in our approximation to dynamically control the number of iterations needed to reach a given tolerance, albeit it is more convoluted than the residual used for solving linear systems with Krylov subspace methods \cite{EiermannErnst2006}.
 
+      \paragraph{}
+      Since the matrix used to evaluate the quadrature functions of the exponential Rosenbrock methods is always the same, $L$, only one Arnoldi iteration is required for one step of the method.
+      This could lead to a great cost reduction, however we did not try in in our developments.
+      Indeed, our work on exponential integration methods was more to demonstrate the feasibility for our applications, but it would be interesting to use this idea for future performance enhancements.
+
 
     \subsection{Evaluating matrix exponentials}
 
@@ -364,7 +369,47 @@
 
       \paragraph{}
       The exponential time integration methods we introduced do not only use matrix exponential, the $\varphi_0$ function, but may use any $\varphi_k$ function.
+      There is a nice relation that help computing those functions.
+      We first define the \emph{augmented} squared Hessenberg matrix:
+      \begin{equation}
+        \bar{H}_{m + p} = \begin{pmatrix}
+          H_m & c & 0 & \cdots & 0      \\
+              & 0 & 1 & \ddots & \vdots \\
+              &   & 0 & \ddots & 0      \\
+              &   &   & \ddots & 1      \\
+          0   &   &   &        & 0
+        \end{pmatrix}
+      \end{equation}
+      with a vector $c$ of dimension $m$.
+      Then, the following relation holds \cite{Sidje1998}:
+      \begingroup
+      \renewcommand*{\arraystretch}{1.5}
+      \begin{equation}
+        \exp\left(\tau \bar{H}_{m + p}\right) = \begin{pmatrix}
+          \exp\left(\tau H_m\right) & \tau \varphi_1\left(\tau H_m\right) c & \tau^2 \varphi_2\left(\tau H_m\right) c & \cdots & \tau^p \varphi_p\left(\tau H_m\right) c \\
+                                    & 1                                     & \frac{\tau}{1!}                         & \ddots & \frac{\tau^{p-1}}{\left(p - 1\right)!}  \\
+                                    &                                       & 1                                       & \ddots & \vdots                                  \\
+                                    &                                       &                                         & \ddots & \frac{\tau}{1!}                         \\
+          0                         &                                       &                                         &        & 1
+        \end{pmatrix} \ .
+      \end{equation}
+      \endgroup
+      The additional cost of using this augmented matrix is negligible in comparison with the cost of the rest of the methods.
+      Furthermore, the methods we introduced before only need to augment with $p \leq 3$.
+      By adjusting the scalar coefficient $\tau$ and reading the result in the appropriate column, we can finally compute the quadrature coefficients of our exponential Rosenbrock methods.
 
 
+  \section{First developments in CEDRE}
 
-    % \cite{Higham2009, HighamAlMohy2010}
+    \paragraph{}
+    We first tried exponential methods in the solver CEDRE.
+    The development was fast as it reuses lot of existing parts from the implicit time integration: principally the Krylov subspace methods tools.
+    The matrix used in the decomposition (\ref{eq:edo_split}) can either be the traditional low order Jacobian matrix, or can use the matrix-free approximation (\ref{eq:matrix_free}).
+    It shows that this work about exponential integration methods is compatible with our work about the Jacobian matrix, presented before.
+    The Arnoldi decomposition (\ref{eq:arnoldi}) is computed by the same routines as the ones used for the GMRES algorithm.
+    We then had to develop the Scaling and Squaring algorithm, with the computation of the Padé approximant to be able to use exponential Rosenbrock methods.
+    Now that everything was accessible, we started with the exponential Rosenbrock--Euler method, as it is the simple one.
+
+    \paragraph{}
+    To test the method, we decided to use a simple academic test case.
+    It is a 2D isentropic vortex that is convected in a periodic box.
