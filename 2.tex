@@ -150,8 +150,8 @@
       When we introduced the approximation (\ref{eq:matrix_free}) we saw a new parameter $\varepsilon$.
       It is easy to check that the truncation error on this approximation decreases linearly with regard to $\varepsilon$.
       It is natural to take a small value for $\varepsilon$.
-      But unfortunately, we work with floating-point arithmetic, so dividing by a small $\varepsilon$ introduces a roundoff error.
-      This parameter needs to balance truncation and roundoff error.
+      But unfortunately, we work with floating-point arithmetic, so dividing by a small $\varepsilon$ introduces roundoff errors \cite{Martel2006}.
+      This parameter needs to balance truncation and roundoff errors.
       We need to decide on a strategy for the choice of epsilon.
       We could take for example $\varepsilon = \sqrt{\varepsilon_\textrm{mach}}$ where $\varepsilon_\textrm{mach}$ is the machine epsilon: around $10^{-6}$ for single precision and $10^{-15}$ for double precision.
       This choice is often discarded as it is deemed too simplistic.

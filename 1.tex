@@ -834,7 +834,7 @@
       In other words, there are ill-conditioned matrices for which GMRES converges quickly and well-conditioned matrices for which GMRES will be slow.
       In particular, we can find a matrix with the best condition number possible, meaning 1, on which GMRES will make no progress until the last iteration.
       This is because of the nonnormality of the matrix \cite{GreenbaumStrakos1994, GreenbaumPtakStrakos1996}.
-      To handle it in the analysis of the convergence, one must not look at the spectrum but the pseudospectrum \cite{Trefethen1999}.
+      To handle it in the analysis of the convergence, one must not look at the spectrum but the pseudospectrum \cite{Trefethen1991, Trefethen1999}.
       This analysis is quite complex and is mostly done in an analytical context, not an industrial one.
       Using Krylov subspace methods with nonnormal matrices and the study of their convergence is no simple task \cite{LiesenTichy2004, Huhtanen2005}.
       As the matrices we encounter in our computational fluid dynamics problems are \PS{quelconques}, meaning \PS{à priori non-normales}, we decided not to study finely the spectrum of the operator.
