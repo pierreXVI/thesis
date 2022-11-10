@@ -259,7 +259,7 @@
     \end{table}
 
 
-  \section{Evaluating matrix exponential}
+  \section{Evaluating matrix \texorpdfstring{$\varphi$}{phi}-functions}
 
     \paragraph{}
     At first glance, exponential methods may seem toot good to be true.
@@ -281,49 +281,90 @@
     Exponential Runge--Kutta reuse the same matrix throughout the computation but it is not a good idea in our applications since the nonlinear part can change.
     Exponential Rosenbrock methods were introduced for this reason but they require the computation of a new Jacobian matrix at each iteration.
 
-    \paragraph{}
-    The solution for both issues is the same: Krylov subspace methods.
-    The Cayley--Hamilton theorem ensure that the exponential of a matrix is an polynomial of degree less or equal to $N$ where $N$ is the dimension of the matrix.
-    Instead of looking for the matrix exponential as an infinite serie, we can look for an $N$-order polynomial.
-    Moreover, exponential methods do not need to evaluate the exponential or the $\varphi$ functions of the matrix, but their effect when applied to a vector.
-    For instance, the exponential Rosenbrock--Euler method from equation (\ref{eq:expeuler}) does not need to compute $\varphi_1\left(\Delta t L\right)$ but $\varphi_1\left(\Delta t L\right)f\left(y_n\right)$.
-    It means we do not need to evaluate the function $g$ on the matrix $A$, but to compute its effect on the vector $b$.
-    The idea, originally developed to approximate eigenvalues of a large sparse matrix, is to use a Krylov subspace method to approximate $g\left(A\right)b$ \cite{Sidje1998}.
-    In fact, it is similar to using a Krylov subspace method to solve the linear system $Ax = b$: it means taking $g = z \mapsto z^{-1}$.
-    The Krylov subspace method produces with the Arnoldi iteration the relation, at the $m$-th iteration:
-    \begin{equation}\label{eq:arnoldi}
-      AV_m = V_{m+1} \tilde{H}_m = V_m H_m + h_{m+1, m} v_{m+1} e_m^T \ .
-    \end{equation}
-    The columns of $V_m$, $v_1, \dots, v_m$, form an orthonormal basis of the Krylov subspace:
-    \begin{equation}
-      \krylov[A, b]{m} = \operatorname{Vect}\left( b, Ab, \dots, A^{m-1}b \right)
-    \end{equation}
-    with $v_1 = b / \norm[2]{b}$.
-    The matrix $\tilde{H}_m$ is a Hessenberg matrix and $H_m$ is the square matrix equal to $\tilde{H}_m$ without its last line:
-    \begin{equation}
-      \tilde{H}_m = \begin{pmatrix}
-        h_{1,1} & h_{1,2} & \cdots    & h_{1,m} \\
-        h_{2,1} & h_{2,2} & \cdots    & h_{2,m} \\
-        \vdots  & \ddots  & \ddots    & \vdots  \\
-        0       & \cdots  & h_{m,m-1} & h_{m,m} \\
-        0       & \cdots  & 0         & h_{m+1,m}
-      \end{pmatrix} , \quad H_m = \begin{pmatrix}
-        h_{1,1} & h_{1,2} & \cdots    & h_{1,m} \\
-        h_{2,1} & h_{2,2} & \cdots    & h_{2,m} \\
-        \vdots  & \ddots  & \ddots    & \vdots  \\
-        0       & \cdots  & h_{m,m-1} & h_{m,m}
-      \end{pmatrix}
-    \end{equation}
-    The vector $v_{m+1}$ is the last column vector of $V_{m+1}$, added to the column vectors of $V_m$ to get an orthonormal basis of $\krylov[A, b]{m+1}$, and $e_m$ is the $m$-th canonical vector $\left(0, \dots, 0, 1\right)^T$.
-    Since $H_m$ represent the compression of $A$ on $\krylov[A, b]{m}$ with respect to basis $V_m$ and $b = \norm[2]{b} V_m e_1$ with $e_1 = \left(1, 0, \dots, 0\right)$, we make the approximation \cite{EiermannErnst2006}:
-    \begin{equation}
-      g\left(A\right)b \approx \norm[2]{b} V_m g\left(H_m\right) e_1 \ .
-    \end{equation}
 
-    \paragraph{}
-    With this approximation, we can evaluate the function $g$ by applying it to a smaller matrix.
-    We reduced the original function evaluation to the much smaller Krylov subspace.
-    Since the method does not need to know the matrix but only to be able to apply it as a linear operator, we can use the matrix free approximation (\ref{eq:matrix_free}) to approximate the Jacobian matrix $L = f'\left(y_n\right)$.
-    This way, having to compute a new Jacobian matrix at each iteration of the exponential Rosenbrock method is not an issue.
-    Just as Krylov subspace methods for solving linear problems, this method can be restarted to limit the size of the Krylov subspace and therefore control the memory consumption of the algorithm.
+    \subsection{Evaluating matrix functions with Krylov subspace methods}
 
+      \paragraph{}
+      The solution for both issues is the same: Krylov subspace methods.
+      The Cayley--Hamilton theorem ensure that the exponential of a matrix is an polynomial of degree less or equal to $N$ where $N$ is the dimension of the matrix.
+      Instead of looking for the matrix exponential as an infinite serie, we can look for an $N$-order polynomial.
+      Moreover, exponential methods do not need to evaluate the exponential or the $\varphi$ functions of the matrix, but their effect when applied to a vector.
+      For instance, the exponential Rosenbrock--Euler method from equation (\ref{eq:expeuler}) does not need to compute $\varphi_1\left(\Delta t L\right)$ but $\varphi_1\left(\Delta t L\right)f\left(y_n\right)$.
+      It means we do not need to evaluate the function $g$ on the matrix $A$, but to compute its effect on the vector $b$.
+      The idea, originally developed to approximate eigenvalues of a large sparse matrix, is to use a Krylov subspace method to approximate $g\left(A\right)b$ \cite{Saad1992, Sidje1998}.
+      In fact, it is similar to using a Krylov subspace method to solve the linear system $Ax = b$: it means taking $g = z \mapsto z^{-1}$.
+      The Krylov subspace method produces with the Arnoldi iteration the relation, at the $m$-th iteration:
+      \begin{equation}\label{eq:arnoldi}
+        AV_m = V_{m+1} \tilde{H}_m = V_m H_m + h_{m+1, m} v_{m+1} e_m^T \ .
+      \end{equation}
+      The columns of $V_m$, $v_1, \dots, v_m$, form an orthonormal basis of the Krylov subspace:
+      \begin{equation}
+        \krylov[A, b]{m} = \operatorname{Vect}\left( b, Ab, \dots, A^{m-1}b \right)
+      \end{equation}
+      with $v_1 = b / \norm[2]{b}$.
+      The matrix $\tilde{H}_m$ is a Hessenberg matrix and $H_m$ is the square matrix equal to $\tilde{H}_m$ without its last line:
+      \begin{equation}
+        \tilde{H}_m = \begin{pmatrix}
+          h_{1,1} & h_{1,2} & \cdots    & h_{1,m} \\
+          h_{2,1} & h_{2,2} & \cdots    & h_{2,m} \\
+          \vdots  & \ddots  & \ddots    & \vdots  \\
+          0       & \cdots  & h_{m,m-1} & h_{m,m} \\
+          0       & \cdots  & 0         & h_{m+1,m}
+        \end{pmatrix} , \quad H_m = \begin{pmatrix}
+          h_{1,1} & h_{1,2} & \cdots    & h_{1,m} \\
+          h_{2,1} & h_{2,2} & \cdots    & h_{2,m} \\
+          \vdots  & \ddots  & \ddots    & \vdots  \\
+          0       & \cdots  & h_{m,m-1} & h_{m,m}
+        \end{pmatrix}
+      \end{equation}
+      The vector $v_{m+1}$ is the last column vector of $V_{m+1}$, added to the column vectors of $V_m$ to get an orthonormal basis of $\krylov[A, b]{m+1}$, and $e_m$ is the $m$-th canonical vector $\left(0, \dots, 0, 1\right)^T$.
+      Since $H_m$ represent the compression of $A$ on $\krylov[A, b]{m}$ with respect to basis $V_m$ and $b = \norm[2]{b} V_m e_1$ with $e_1 = \left(1, 0, \dots, 0\right)$, we make the approximation \cite{EiermannErnst2006}:
+      \begin{equation}
+        g\left(A\right)b \approx \norm[2]{b} V_m g\left(H_m\right) e_1 \ .
+      \end{equation}
+
+      \paragraph{}
+      With this approximation, we can evaluate the function $g$ by applying it to a smaller matrix.
+      We reduced the original function evaluation to the much smaller Krylov subspace.
+      Since the method does not need to know the matrix but only to be able to apply it as a linear operator, we can use the matrix free approximation (\ref{eq:matrix_free}) to approximate the Jacobian matrix $L = f'\left(y_n\right)$.
+      This way, having to compute a new Jacobian matrix at each iteration of the exponential Rosenbrock method is not an issue.
+      Just as Krylov subspace methods for solving linear problems, this method can be restarted to limit the size of the Krylov subspace and therefore control the memory consumption of the algorithm.
+      It is even possible to define an error estimate in our approximation to dynamically control the number of iterations needed to reach a given tolerance, albeit it is more convoluted than the residual used for solving linear systems with Krylov subspace methods \cite{EiermannErnst2006}.
+
+
+    \subsection{Evaluating matrix exponentials}
+
+      \paragraph{}
+      With the Krylov subspace method we just described, we now need to compute the exponential of the smaller Hessenberg matrix $H_m$.
+      We now look at how to compute the exponential of relatively small dense matrices.
+      Many methods use special properties of the matrices but our matrices do not share the same properties.
+      Instead of using a truncated Taylor serie, using the Padé approximant seems to be the best option \cite{HighamAlMohy2010}.
+      The exponential function is approximated by the $\left[k/m\right]$ Padé approximant:
+      \begin{equation}
+        e^z \approx r_{k,m}\left(z\right) = \frac{p_{k,m}\left(z\right)}{q_{k,m}\left(z\right)} \quad\textrm{with} \left\{\begin{aligned}
+          \quad p_{k,m} &= \sum_{i = 0}^k \frac{\left(k + m - i\right)! k!}{\left(k + m\right)! \left(k - i\right)!} \frac{z^i}{i!} \\
+          \quad q_{k,m} &= \sum_{i = 0}^m \frac{\left(k + m - i\right)! m!}{\left(k + m\right)! \left(m - i\right)!} \frac{\left(-z\right)^i}{i!}
+        \end{aligned}\right. \ .
+      \end{equation}
+      It is best to use a diagonal approximants, with $k = m$, as they are more accurate.
+
+      \paragraph{}
+      The final method used to compute the exponential of a dense matrix is the Scaling and Squaring method \cite{Higham2009}.
+      It computes an optimal parameter $s$ and takes:
+      \begin{equation}
+        e^z \approx r_{m,m}\left(z/2^s\right)^{2^s} \ .
+      \end{equation}
+      The goal is to choose $s$ such as the error on the computation of the exponential is bounded, with minimal cost.
+      It then decides on an optimal order $m$ for the Padé approximant.
+      The matrix is scaled by $2^s$, the Padé approximant is used to compute the exponential, and the result is then squared back to the original scale.
+      It is what gives its name to the method.
+
+
+    \subsection{Evaluating the \texorpdfstring{$\varphi$}{phi}-functions}
+
+      \paragraph{}
+      The exponential time integration methods we introduced do not only use matrix exponential, the $\varphi_0$ function, but may use any $\varphi_k$ function.
+
+
+
+    % \cite{Higham2009, HighamAlMohy2010}
