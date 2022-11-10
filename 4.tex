@@ -34,7 +34,7 @@
     \paragraph{}
     We decided to look at an other class of time integration methods: exponential methods.
     Despite being known for a long time \cite{Pope1963}, they were not widely used in computational fluid dynamics, because of some difficulties that we will explain later, but still interested some \cite{EdwardsTuckermanFriesnerEtAl1994}.
-    They started to come back in the literature \cite{HochbruckOstermann2005} and are now being use on applications similar to ours \cite{NieZhangZhao2006, BhattKhaliqWade2018}.
+    They started to come back in the literature \cite{HochbruckOstermann2005, HochbruckOstermann2010} and are now being use on applications similar to ours \cite{NieZhangZhao2006, BhattKhaliqWade2018}.
 
     \paragraph{}
     We start from an ordinary differential equation
@@ -94,9 +94,9 @@
     This analytic formula ensure it is well defined for squared matrices.
 
 
-  \section{Exponential Euler method}
+  \section{Exponential Rosenbrock--Euler method}
 
-    \section{Definition of the exponential Euler method}
+    \subsection{Definition of the exponential Rosenbrock--Euler method}
 
       \paragraph{}
       To better understand exponential integration methods, we take the most basic one: the exponential Euler method.
@@ -114,6 +114,8 @@
 
       \paragraph{}
       In this method, we take the linearisation $L = f'\left(y_n\right)$.
+      Because of this choice, the method is called the exponential Rosenbrock--Euler method.
+      We will discuss the nomenclature below.
       This choice feels natural and minimise the error of the method as is shown in the following.
       This choice is frequent among exponential integration methods, despite some methods using a fixed linearisation $L = f'\left(y_0\right)$.
       The difference is that a new Jacobian matrix is required at each iteration of the time integration method, but it is something we are used to deal with our traditional methods.
@@ -121,7 +123,7 @@
       However, because we took $L = f'\left(y_n\right)$, $N'\left(y\right) = 0$ and after a linearisation the two variants are equivalent.
 
 
-    \subsection{Analysis of the exponential Euler method}
+    \subsection{Analysis of the exponential Rosenbrock--Euler method}
 
       \paragraph{}
       From the definition on the method and equation (\ref{eq:ode_int}), we have that the error made after one step is:
@@ -153,7 +155,7 @@
           &= \Delta t^2\varphi_2\left(\Delta t L\right) N'\left(y_n\right)f\left(y_n\right) + O\left(\Delta t^3\right) \ .
         \end{aligned}
       \end{equation}
-      We now understand the decomposition chosen earlier: if $L = f'\left(y_n\right)$ and therefore $N'\left(y_n\right) = 0$ then $y_{n+1} - y\left(t_n{n+1}\right) = O\left(\Delta t^3\right)$ and the method is of order 2.
+      We now understand the decomposition chosen earlier: if $L = f'\left(y_n\right)$ and therefore $N'\left(y_n\right) = 0$ then $y\left(t_{n+1}\right) - y_{n+1} = O\left(\Delta t^3\right)$ and the method is of order 2.
       This is a noticeable property of this method: despite being a single step method it has a second order of accuracy.
 
       \paragraph{}
@@ -163,14 +165,14 @@
       We can still write the single step equation (\ref{eq:single_step}) $y_{n+1} = g\left(\Delta tJ\right)y_n$ with $g\left(z\right) = e^z$, and get the corresponding stability region which is the left half complex plane.
       We could then conclude that the method is A-stable.
       The issue with exponential methods is that the standard stability analysis is no longer pertinent.
-      We tried to do a better stability analysis for simple exponential methods such as the exponential Euler method, but we did not succeed.
+      We tried to do a better stability analysis for simple exponential methods such as the exponential Rosenbrock--Euler method, but we did not succeed.
       Some work in the literature do define some stability notions for exponential methods \cite{DuZhu2004}, but usually take a linear $N$.
       It goes against the idea that all the linear part of $f$ is in $L$ and $N$ is purely nonlinear.
       We did not find a stability analysis that was satisfying to us.
       We will probably find such analysis, today of maybe in the future, in research from a more mathematical context than the one we are in, so we did not insist on finding such an analysis.
 
 
-  \section{Exponential Runge--Kutta methods}
+  \section{Exponential Runge--Kutta and Rosenbrock methods}
 
     \paragraph{}
     When we introduced explicit methods, we used more convoluted approximations than the explicit Euler methods for the integral in equation (\ref{eq:ode_int_classic}).
@@ -179,12 +181,12 @@
     The difference with a standard Runge--Kutta method is that the quadrature coefficients are now functions of the matrix $L$:
     \begin{equation}
       \left\{\begin{aligned}
-        y_{n+1} &= e^{\Delta tL} y_n + \Delta t \sum_{i = 1}^k b_i\left(\Delta t L\right) N\left(y_{n,i}\right) \\
-        \textrm{with}\quad y_{n,i} &= e^{c_i \Delta t} y_n + \Delta t \sum_{j = 1}^{i-1} a_{ij}\left(\Delta t L\right) f\left(y_{n,j}\right)
+        y_{n+1} &= e^{\Delta t L} y_n + \Delta t \sum_{i = 1}^k b_i\left(\Delta t L\right) N\left(y_{n,i}\right) \\
+        \textrm{with}\quad y_{n,i} &= e^{c_i \Delta t L} y_n + \Delta t \sum_{j = 1}^{i-1} a_{ij}\left(\Delta t L\right) N\left(y_{n,j}\right)
       \end{aligned}\right. \ .
     \end{equation}
     The Butcher tableau that we used to represent the Runge--Kutta methods is also used to represent exponential Runge--Kutta methods.
-    For instance, the Butcher tableau of the exponential Euler method, which is a special simple case of exponential Runge--Kutta methods, is shown in table \ref{tab:exp_rk_butcher}.
+    For instance, the Butcher tableau of the exponential Rosenbrock--Euler method, which is a special simple case of exponential Runge--Kutta methods, is shown in table \ref{tab:exp_rb_butcher}.
 
     \begin{table}
       \begin{tabular}{P{.15\textwidth}P{.3\textwidth}P{.4\textwidth}}
@@ -197,9 +199,9 @@
         \begin{tabular}{c|cccc}
           0 \\ $\frac{3}{4}$ & $\frac{3}{4}\varphi_1\left(\frac{3}{4} \cdot\right)$ \RKBar $\varphi_1 - \frac{32}{9} \varphi_3$ & $\frac{32}{9}\varphi_3$
         \end{tabular} \\
-        Exponential Euler & ExpRB32 & ExpRB42 \\
+        Exponential Rosenbrock--Euler & ExpRB32 & ExpRB42 \\
       \end{tabular}
-      \caption{\PS{TODO}}\label{tab:exp_rk_butcher}
+      \caption{\PS{TODO}}\label{tab:exp_rb_butcher}
     \end{table}
 
     \paragraph{}
