@@ -143,10 +143,73 @@ def covo_cedre_mesh():
     pvs.SaveScreenshot("covo_cedre_mesh.png", view)
 
 
+def covo_cedre_fields():
+    plotter = pvlib.COVOPlotter()
+    plotter.register_plot("/visu/pseize/COVO/BASE/RUN_1/_ENSIGHT_/archive_CHARME.volu.ins.case", 'P', contour=50,
+                          time=True, r_gas=1, label='\nBase')
+
+    view1 = plotter.create_view(pvs.CreateRenderView)
+    for k, s in pvs.GetSources().items():
+        if 'Contour' in k[0]:
+            force_time = pvs.ForceTime(s, ForcedTime=0)
+            display = pvs.Show(force_time, view1)
+            display.SetScalarBarVisibility(view1, True)
+            plotter.annotate_time(force_time, view1, True, False)
+            text = pvs.Text(Text='\nInitialisation')
+            pvs.Show(text, view1, 'TextSourceRepresentation', WindowLocation='Upper Center', Interactivity=0)
+        elif 'EnSightReader' in k[0]:
+            pvs.Show(s, view1, ColorArrayName=[])
+        elif 'EnSightReader' in k[0]:
+            pvs.Show(s, view1)
+
+    plotter.register_plot("/visu/pseize/COVO/BASE/RUN_2/_ENSIGHT_/archive_CHARME.volu.ins.case", 'P', contour=50,
+                          time=True, r_gas=1, label='\nBase')
+    plotter.register_plot("/visu/pseize/COVO/EXP/RUN_1/_ENSIGHT_/archive_CHARME.volu.ins.case", 'P', contour=50,
+                          time=True, r_gas=1, label='\nExponential\nRosenbrock-Euler')
+    plotter.register_plot("/visu/pseize/COVO/BASE/RUN_RK4/_ENSIGHT_/archive_CHARME.volu.ins.case", 'P', contour=50,
+                          time=True, r_gas=1, label='\nRK4')
+
+    view2 = plotter.get_views("/visu/pseize/COVO/EXP/RUN_1/_ENSIGHT_/archive_CHARME.volu.ins.case")[0]
+    view3 = plotter.get_views("/visu/pseize/COVO/BASE/RUN_1/_ENSIGHT_/archive_CHARME.volu.ins.case")[0]
+    view4 = plotter.get_views("/visu/pseize/COVO/BASE/RUN_2/_ENSIGHT_/archive_CHARME.volu.ins.case")[0]
+    view5 = plotter.get_views("/visu/pseize/COVO/BASE/RUN_RK4/_ENSIGHT_/archive_CHARME.volu.ins.case")[0]
+
+    layout = pvs.CreateLayout()
+    id_1 = layout.SplitVertical(0, 0.5)
+    id_3 = layout.SplitHorizontal(id_1 + 1, 0.33)
+    id_4 = layout.SplitHorizontal(id_3 + 1, 0.5)
+    id_1 = layout.SplitHorizontal(id_1, 0.5)
+    layout.AssignView(id_1, view1)
+    layout.AssignView(id_1 + 1, view2)
+    layout.AssignView(id_3, view3)
+    layout.AssignView(id_4, view4)
+    layout.AssignView(id_4 + 1, view5)
+    layout.SetSize(1900, 1200)
+
+    for view in (view1, view2, view3, view4, view5):
+        color_bar = pvs.GetScalarBar(pvs.GetColorTransferFunction('P'), view)
+        color_bar.WindowLocation = 'Lower Center'
+        color_bar.Title = r'$P$'
+        color_bar.ComponentTitle = ''
+        color_bar.Orientation = 'Horizontal'
+        color_bar.TitleFontSize = 20
+        color_bar.LabelFontSize = 15
+        color_bar.ScalarBarLength = 0.6
+        color_bar.RangeLabelFormat = '%.3f'
+        view.CameraPosition = [0.5, 0, 1]
+        view.CameraFocalPoint = [0.5, 0, 0]
+        view.CameraParallelScale = 1
+        view.ResetCamera()
+
+    plotter.draw(0, block=False)
+    pvs.SaveScreenshot("covo_cedre_fields.png", layout)
+
+
 if __name__ == '__main__':
     # rae_mesh()
     # rae_field()
     # rae_cp()
     # rae_mesh_fine()
     # covo_cedre_mesh()
+    # covo_cedre_fields()
     pass
