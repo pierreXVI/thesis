@@ -147,7 +147,7 @@
       The standard Finite Volume method represents quantities with the averaged value in each cell.
       This corresponds to a first-order discretisation method.
       Simply put, it means that it can represent quantities exactly as 0-order polynomials locally to each cell.
-      There are ways to achieve a higher order representation such as with the MUSCL approach \cite{VanLeer1979}.
+      There are ways to achieve higher order representation such as with the MUSCL approach \cite{VanLeer1979}.
       It consists in handling the surface flux evaluation on one hand, which is what we did in the Riemann problem part, and deciding what left and right quantities to feed to this flux computation on the other hand.
       In our solver, there are two ways to construct high-order states to give to the flux computation method.
       They are described in the following parts.
@@ -212,7 +212,7 @@
     After deciding on an initial value, the equation we now want to solve is:
     \begin{equation}\label{eq:init_value_ode}
       \left\{\begin{aligned}
-        & \frac{\mathrm{d} \Xi}{\mathrm{d}t} + \operatorname{G}\left(\Xi\left(t\right)\right) = 0 \\
+        & \frac{\mathrm{d} \Xi}{\mathrm{d}t} + \operatorname{G}\left(\Xi\right) = 0 \\
         & \Xi\left(t_0\right) = \Xi_0
       \end{aligned}\right. \ .
     \end{equation}
@@ -570,7 +570,7 @@
         \begin{equation}
           \left\{\begin{aligned}
             \Xi_{n+1} &= \Xi_n - \Delta t \sum_{i = 1}^k b_i \operatorname{G}_{n,i} \\
-            \textrm{with}\quad \operatorname{G}_{n,i} &= \operatorname{G}\left(\Xi_n - \Delta t \sum_{j = 1}^{i-1} a_{ij} \operatorname{G}_{n,j}\right) + \frac{\mathrm{d} \operatorname{G}}{\mathrm{d} \Xi}\left(\Xi_n\right) \sum_{j = 1}^{i} \gamma_{ij} \operatorname{G}_{n,j}
+            \textrm{with}\quad \operatorname{G}_{n,i} &= \operatorname{G}\left(\Xi_n - \Delta t \sum_{j = 1}^{i-1} a_{ij} \operatorname{G}_{n,j}\right) - \frac{\mathrm{d} \operatorname{G}}{\mathrm{d} \Xi}\left(\Xi_n\right) \sum_{j = 1}^{i} \gamma_{ij} \operatorname{G}_{n,j}
           \end{aligned}\right. \ .
         \end{equation}
         They are derived from Diagonally Implicit Runge--Kutta methods, by constructing the intermediate slopes $\operatorname{G}_{n,j}$ instead of the intermediate states $\Xi_{n,j}$, and by linearising to make the Jacobian matrix appear.
