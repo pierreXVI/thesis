@@ -146,7 +146,7 @@ def covo_cedre_mesh():
 def covo_cedre_fields():
     plotter = pvlib.COVOPlotter()
     plotter.register_plot("/visu/pseize/COVO/BASE/RUN_1/_ENSIGHT_/archive_CHARME.volu.ins.case", 'P', contour=50,
-                          time=True, r_gas=1, label='\nBase')
+                          r_gas=1, label='\nBase')
 
     view1 = plotter.create_view(pvs.CreateRenderView)
     for k, s in pvs.GetSources().items():
@@ -154,7 +154,6 @@ def covo_cedre_fields():
             force_time = pvs.ForceTime(s, ForcedTime=0)
             display = pvs.Show(force_time, view1)
             display.SetScalarBarVisibility(view1, True)
-            plotter.annotate_time(force_time, view1, True, False)
             text = pvs.Text(Text='\nInitialisation')
             pvs.Show(text, view1, 'TextSourceRepresentation', WindowLocation='Upper Center', Interactivity=0)
         elif 'EnSightReader' in k[0]:
@@ -163,11 +162,11 @@ def covo_cedre_fields():
             pvs.Show(s, view1)
 
     plotter.register_plot("/visu/pseize/COVO/BASE/RUN_2/_ENSIGHT_/archive_CHARME.volu.ins.case", 'P', contour=50,
-                          time=True, r_gas=1, label='\nBase')
+                          r_gas=1, label='\nBase')
     plotter.register_plot("/visu/pseize/COVO/EXP/RUN_1/_ENSIGHT_/archive_CHARME.volu.ins.case", 'P', contour=50,
-                          time=True, r_gas=1, label='\nExponential\nRosenbrock-Euler')
+                          r_gas=1, label='\nExponential\nRosenbrock-Euler')
     plotter.register_plot("/visu/pseize/COVO/BASE/RUN_RK4/_ENSIGHT_/archive_CHARME.volu.ins.case", 'P', contour=50,
-                          time=True, r_gas=1, label='\nRK4')
+                          r_gas=1, label='\nRK4')
 
     view2 = plotter.get_views("/visu/pseize/COVO/EXP/RUN_1/_ENSIGHT_/archive_CHARME.volu.ins.case")[0]
     view3 = plotter.get_views("/visu/pseize/COVO/BASE/RUN_1/_ENSIGHT_/archive_CHARME.volu.ins.case")[0]
@@ -192,14 +191,18 @@ def covo_cedre_fields():
         color_bar.Title = r'$P$'
         color_bar.ComponentTitle = ''
         color_bar.Orientation = 'Horizontal'
-        color_bar.TitleFontSize = 20
-        color_bar.LabelFontSize = 15
+        color_bar.TitleFontSize = 24
+        color_bar.LabelFontSize = 20
         color_bar.ScalarBarLength = 0.6
         color_bar.RangeLabelFormat = '%.3f'
         view.CameraPosition = [0.5, 0, 1]
         view.CameraFocalPoint = [0.5, 0, 0]
         view.CameraParallelScale = 1
         view.ResetCamera()
+
+    for k, s in pvs.GetRepresentations().items():
+        if 'TextSourceRepresentation' in k[0]:
+            s.FontSize = 24
 
     plotter.draw(0, block=False)
     pvs.SaveScreenshot("covo_cedre_fields.png", layout)
