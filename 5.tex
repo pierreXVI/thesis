@@ -1,0 +1,55 @@
+\chapter{Exponential integration methods in JAGUAR}
+
+  \paragraph{}
+  We want to analyse time exponential integration methods in a framework that gives us access to high-order spatial discretisation methods.
+  It is possible to use high-order Finite Volume methods, but this means to use larger stensils which hurts parallelism.
+  In CEDRE, users often stop at second-order methods, so we need to use an other solver.
+  As the spatial discretisation method does not plays a direct role in the time integration and the work done in this thesis, we can step out from the Finite Volume framework.
+  Furthermore, using a less complex solver will also help us to try and develop new methods more easily than what we already did with CEDRE.
+  This is why we decided to accomplish our analysis of exponential time integration methods with the solver JAGUAR.
+
+
+  \section{JAGUAR: a spectral difference solver}
+
+    \paragraph{}
+    JAGUAR means proJect of an Aerodynamic solver using General Unstructured grids And high ordeR schemes.
+    It is a reactive Navier--Stokes solver originally developed at the European center for research and advanced training in scientific computing: CERFACS.
+    It is made for unstructured grids, and uses a Large Eddy Simulation model to solve turbulence.
+    Its particularity is that is use a spectral spatial discretisation method: the Spectral Difference method.
+
+
+    \subsection{The Spectral Difference method}
+
+      \paragraph{}
+      With the Spectral Difference method, the solution is represented by a polynomial of degree $p$ inside each cell.
+      It means that in the partial differential equation
+      \begin{equation}
+        \frac{\partial u}{\partial t} + \nabla \cdot F\left(u\right) = 0 \ ,
+      \end{equation}
+      $u$ is a $p$-degree polynomial of the position variables, where the polynomial coefficients are functions of time.
+      Then $F\left(u\right)$ has to be a $p + 1$-order polynomial of the position variables.
+      The key to the Spectral Difference method is how to compute a $p + 1$-order $F\left(u\right)$ from a $p$-order $u$.
+      This method uses key elements that were first mentioned by \cite{Kopriva1996}, and was later developed by \cite{LiuVinokurWang2006}.
+
+      \paragraph{}
+      To better understand how this method works, we take a 1D cell: the segment $\left[0, 1\right]$.
+      Because the following is done at a fixed time we will drop the dependency on the time, but the solution and the coefficients are in reality functions of the time, not scalars.
+      The solution $u$ inside this segment is then $u\left(x\right) = \sum_{i=0}^p a_ix^i$.
+      Using Lagrange interpolation polynomials, it is equivalent to use the $p + 1$ coefficients $a_i$ or the $p + 1$ values $u\left(x_i\right)$ computed at the distincts points $x_i \in \left[0, 1\right]$ called \emph{solution points}.
+      The solution is characterised by either one of those two sets.
+
+
+
+
+    \subsection{Exponential integration methods in JAGUAR}
+
+
+
+
+
+
+  \section{Analysis of exponential time integration methods}
+
+    \subsection{Order: convected inviscid isentropic vortex}
+    \subsection{Robustness: Taylor--Green vortex}
+    \subsection{Industrial application: LS89}
