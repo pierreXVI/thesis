@@ -524,6 +524,63 @@ def rae_residuals():
     fig.savefig('rae_residuals.png')
 
 
+def sd_discontinuous():
+    class Lagrange2D:
+        def __init__(self, x, y, z):
+            self.x = x
+            self.y = y
+            self.z = z
+            self._buf_x = np.zeros_like(self.x)
+            self._buf_y = np.zeros_like(self.y)
+
+        def __call__(self, x, y):
+            for i in range(len(self.x)):
+                foo_x = np.delete(self.x, i)
+                self._buf_x[i] = np.prod((x - foo_x) / (self.x[i] - foo_x))
+            for j in range(len(self.y)):
+                foo_y = np.delete(self.y, j)
+                self._buf_y[j] = np.prod((y - foo_y) / (self.y[j] - foo_y))
+            out = 0
+            for i in range(len(self.x)):
+                for j in range(len(self.y)):
+                    out += self.z[j, i] * self._buf_x[i] * self._buf_y[j]
+            return out
+
+    def u(x, y):
+        return np.sin(2 * x) + np.exp(np.cos(3 * y))
+
+    p = 3
+    sol_p = np.array([-np.cos(np.pi * (2 * i + 1) / (2 * p)) for i in range(p)])
+
+    linspace = np.linspace(0, 1, 100)
+
+    fig = plt.figure()
+    ax1 = fig.add_subplot(121, projection='3d')
+    ax2 = fig.add_subplot(122, projection='3d')
+
+    # ax.plot_surface(*np.meshgrid(linspace, linspace), np.array([[u(x, y) for x in linspace] for y in linspace]),
+    #                 antialiased=False)
+    # ax.plot_surface(*np.meshgrid(linspace+1, linspace), np.array([[u(x, y) for x in linspace+1] for y in linspace]),
+    #                 antialiased=False)
+
+    for dx in [0, 1]:
+        for dy in [0, 1]:
+            lag = Lagrange2D(sol_p + dx, sol_p + dy, np.array([[u(x, y) for x in sol_p + dx] for y in sol_p + dy]))
+            ax1.plot_surface(*np.meshgrid(linspace + dx, linspace + dy),
+                             np.array([[u(x, y) for x in linspace + dx] for y in linspace + dy]),
+                             antialiased=False, cmap=plt.cm.coolwarm, vmin=-0.3889049438766065, vmax=3.718269521488654)
+            ax2.plot_surface(*np.meshgrid(linspace + dx, linspace + dy),
+                             np.array([[lag(x, y) for x in linspace + dx] for y in linspace + dy]),
+                             # antialiased=False)
+                             antialiased=False, cmap=plt.cm.coolwarm, vmin=-0.3889049438766065, vmax=3.718269521488654)
+
+    # ax.set_zlim(-1.01, 1.01)
+    # ax.zaxis.set_major_locator(LinearLocator(10))
+    # ax.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
+    # fig.colorbar(surf, shrink=0.5, aspect=5)
+    plt.show()
+
+
 if __name__ == '__main__':
     # fig_rk()
     # fig_bdf()
@@ -532,4 +589,5 @@ if __name__ == '__main__':
     # fig_eps()
     # rae_coefficients()
     # rae_residuals()
+    sd_discontinuous()
     pass
