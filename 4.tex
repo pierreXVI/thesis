@@ -221,7 +221,7 @@
     to achieve a second order.
     As we want to use methods with multiple stages, it is reasonable to want them to have an higher order than the single stage exponential Euler method.
     Using this two conditions, exponential Rosenbrock methods can be written in the form:
-    \begin{equation}
+    \begin{equation}\label{eq:exprb_defect}
       \left\{\begin{aligned}
         y_{n+1} &= y_n  + \Delta t \varphi_1\left(\Delta t L\right) f\left(y_n\right) + \Delta t \sum_{i = 1}^k b_i\left(\Delta t L\right) D_{n,i} \\
         \textrm{with}\quad y_{n,i} &= y_n  + c_i \Delta t \varphi_1\left(c_i \Delta t L\right) f\left(y_n\right) + \Delta t \sum_{j = 1}^{i-1} a_{ij}\left(\Delta t L\right) D_{n,j}
@@ -399,6 +399,25 @@
       By adjusting the scalar coefficient $\tau$ and reading the result in the appropriate column, we can finally compute the quadrature coefficients of our exponential Rosenbrock methods.
 
 
+  \paragraph{}
+  \PS{Mettre dans une section à part sur le coût ?}
+  We explained how to compute one step of an exponential integration method.
+  From what we have seen, the computational cost of one step of an exponential method is roughly the same as the cost of one step of an equivalent implicit method.
+  For example, the computational cost of the exponential Rosenbrock--Euler method is the cost of one Jacobian matrix computation, one Arnoldi decomposition and then one function evaluation on the Hessenberg matrix.
+  The implicit Euler method, that is also a one stage method, also computes a Jacobian matrix, does an Arnoldi decomposition.
+  It then invert the Hessenberg matrix with a QR decomposition which is equivalent to applying a function to the Hessenberg matrix.
+  This is why the computational costs of the implicit Euler method and the exponential Rosenbrock--Euler method are similar.
+
+  \paragraph{}
+  When we wrote the general formula for exponential Rosenbrock methods in equation (\ref{eq:exprb_defect}), we used the defects $D_{n,i}$.
+  The point of this formulation is to write the exponential Rosenbrock methods as corrections of the Rosenbrock--Euler method.
+  Because the defects are usually small in size, we can spend less computational power to compute their contribution to the final step.
+  Practically, it means we can use smaller Krylov subspaces to account for the defects.
+  It means shorter Arnoldi iterations, which means a smaller Hessenberg matrices, and overall a much smaller computational cost.
+  We explained why the one stage exponential method cost is equivalent to the one stage implicit method cost.
+  Because we use the formulation (\ref{eq:exprb_defect}) and the fact that the defects are smalls, adding more stages to the exponential method will be less expensive than adding stages to the implicit method.
+
+
   \section{First developments in CEDRE}
 
     \paragraph{}
@@ -407,23 +426,24 @@
     The matrix used in the decomposition (\ref{eq:edo_split}) can either be the traditional low order Jacobian matrix, or can use the matrix-free approximation (\ref{eq:matrix_free}).
     It shows that this work about exponential integration methods is compatible with our work about the Jacobian matrix, presented before.
     The Arnoldi decomposition (\ref{eq:arnoldi}) is computed by the same routines as the ones used for the GMRES algorithm.
-    We then had to develop the Scaling and Squaring algorithm, with the computation of the Padé approximant to be able to use exponential Rosenbrock methods.
-    Now that everything was accessible, we started with the exponential Rosenbrock--Euler method, as it is the simple one.
+    We only had to develop the Scaling and Squaring algorithm, with the computation of the Padé approximant to be able to use exponential Rosenbrock methods.
+    Because it only required this development we decided to deviate from the original framework of this thesis and try this new type of time integration method.
+    Now that everything was accessible, we started with the exponential Rosenbrock--Euler method, as it is the basic one.
 
     \begin{figure}
       \centering
-      \includegraphics{width=0.5\textwidth}{figures/covo_cedre_mesh.png}
+      \includegraphics[width=0.6\textwidth]{figures/covo_cedre_mesh.png}
       \caption{Mesh for the isentropic vortex test case with CEDRE.}
       \label{fig:covo_cedre_mesh}
     \end{figure}
 
     \paragraph{}
     To test the method, we decided to use a simple academic test case.
-    It is a 2D isentropic vortex that is convected in a periodic box.
+    It is a 2D inviscid isentropic vortex that is convected in a periodic box.
     It is a \PS{calcul adimensionné (du coup je mets pas les unités ?)}, and the mesh is regular over a square of length $L = 20$, with $100^2$ cells.
     It is shown in figure \ref{fig:covo_cedre_mesh}.
-    The vortex is convected in a flow at a Mach number of $\operatorname{Ma} = 0.5$, with the dimensioning parameters $P_\infty = 1$ and $T_\infty = 1$.
-    The undisturbed velocity is then $U_\infty = \operatorname{Ma} \sqrt{\gamma r_\textrm{gas} T_\infty}$ and the vortex is defined in cylindric coordinates system by:
+    The vortex is convected in a flow at a Mach number of $\operatorname{Ma} = 0.5$, with the dimensionnement parameters $P_\infty = 1$ and $T_\infty = 1$.
+    The undisturbed velocity is then $U_\infty \vec{e}_x$ with $U_\infty = \operatorname{Ma} \sqrt{\gamma r_\textrm{gas} T_\infty}$ and the vortex is defined using the polar coordinates system $\left(\vec{e}_r, \vec{e}_\theta\right)$:
     \begin{equation}
       \left\{\begin{aligned}
         \vec{u} &= U_\infty \vec{e}_x + \beta U_\infty \frac{r}{R_0} e^{-r^2 / 2 R_0^2} \ \vec{e}_\theta \\[10pt]
@@ -433,5 +453,52 @@
     \end{equation}
     The heat capacity ratio $\gamma$ is equal to $1.4$, and the specific gas constant is $r_\textrm{gas} = 1$.
     The vortex is defined by its characteristic radius $R_0 = 1$ and its intensity $\beta = 0.2$.
-    As we solve Euler equations, the vortex moves in the $\vec{e}_x$ direction undisturbed, and as the domain is periodic the solution after one period $T = L/U_\infty = 33.8$ is the same as the initial solution.
+    This initial condition is shown in figure \ref{fig:covo_cedre_fields}.
+    As we solve inviscid Navier--Stokes equations, or Euler equations, the vortex moves in the $\vec{e}_x$ direction undisturbed, and as the domain is periodic the solution after one period $\Delta T = L/U_\infty = 33.8$ is the same as the initial solution.
     It gives a way to compute the error of the methods and that is why it is a famous academic case to benchmark numerical methods.
+
+    \begin{figure}
+      \centering
+      \includegraphics[width=\textwidth]{figures/covo_cedre_fields.png}
+      \caption{Initial solution (top left) and solution after one period for the exponential Rosenbrock--Euler method (top right), the implicit Euler method (bottom left and center) and the explicit RK4 method (bottom right).
+      The first two simulations correspond to a CFL number of $1.5$ whereas the last two to a CFL number of $0.9$.}
+      \label{fig:covo_cedre_fields}
+    \end{figure}
+
+    \paragraph{}
+    We compare the exponential Rosenbrock--Euler method to the standard implicit Euler method and the classic fourth-order explicit Runge--Kutta method.
+    Both the implicit and the exponential methods need to compute Jacobian matrices.
+    To reduce the number of variables in this comparison, both will use the traditional Jacobian matrices that is the low-order approximation.
+    We then end up with two equivalent methods in terms of computational cost.
+    We simulate the vortex advection throughout one period $\Delta T$.
+    We show the solution for each method in figure \ref{fig:covo_cedre_fields}.
+    We first look at the bottom center and right simulations.
+    We see that the explicit Runge--Kutta method preserves well enough the vortex compared to the implicit method.
+    It is because the RK4 method is a fourth-order method whereas the implicit method is a first-order method.
+    However, the simulation are made at a CFL number of $0.9$.
+    With a higher CFL number of $1.5$, the explicit method is unstable and the computation fails.
+    The implicit method is able to handle higher CFL numbers, of course as it is the reason implicit methods are used.
+    But unsurprisingly we see in the bottom left figure that the solution is even worse.
+    Finally, the exponential method is both able to handle the higher CFL number and to preserve the vortex well enough.
+    It has the robustness of the implicit method and the precision of the higher-order explicit method.
+
+    \paragraph{}
+    The analysis on this simple test case is quite rudimentary.
+    Indeed, we did not look finely at the error introduced bu the time integration methods, but we visually compared the results.
+    This work showed that at the cost of very few developments we have a method that could prove interesting for time integration with large time steps.
+    Its purpose was not to precisely analyse exponential methods, but to see their feasibility in our solver.
+    Now that this preliminary test showed the quality of exponential time integration methods, we need to perform an actual analysis.
+
+    \paragraph{}
+    We see in figure \ref{fig:covo_cedre_fields} that even the methods that preserve the vortex, the exponential and the RK4 methods, do introduce some error.
+    Indeed, the vortex after one period is not exactly the same as at the beginning, as it should be.
+    We see that it looses in intensity, and the contour lines are not exactly concentric.
+    Those symptoms are seen in both computations with the exponential and the higher-order explicit methods.
+    Furthermore, the error in the result of those simulations looks similar.
+    It is because this error does not come from the time integration method but from the spatial discretisation method.
+    Indeed, the spatial discretisation method induces some error when evaluating the right hand side of equation (\ref{eq:ode_2}).
+    This error is accumulated throughout the simulation, and because of it we could not get the exact result no matter the time integration method.
+    What we can do, however, is take a spatial discretisation method such as the error it adds is small compared to the error from the time integration scheme.
+    This way, the error we get at the end of the computation is mostly due to the time integration method, and it allows us to compare methods.
+    Here the spatial discretisation method used in CEDRE is a second-order method.
+    We need to use a higher-order spatial discretisation method to perform the analysis of exponential time integration methods.
