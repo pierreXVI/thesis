@@ -146,15 +146,15 @@ def covo_cedre_mesh():
 def covo_cedre_fields():
     plotter = pvlib.COVOPlotter()
     plotter.register_plot("/visu/pseize/COVO/BASE/RUN_1/_ENSIGHT_/archive_CHARME.volu.ins.case", 'P', contour=50,
-                          r_gas=1, label='\nBase')
+                          r_gas=1, label='Base')
 
-    view1 = plotter.create_view(pvs.CreateRenderView)
+    view1 = plotter.create_view(pvs.CreateRenderView, InteractionMode='2D')
     for k, s in pvs.GetSources().items():
         if 'Contour' in k[0]:
             force_time = pvs.ForceTime(s, ForcedTime=0)
             display = pvs.Show(force_time, view1)
             display.SetScalarBarVisibility(view1, True)
-            text = pvs.Text(Text='\nInitialisation')
+            text = pvs.Text(Text='Initialisation')
             pvs.Show(text, view1, 'TextSourceRepresentation', WindowLocation='Upper Center', Interactivity=0)
         elif 'EnSightReader' in k[0]:
             pvs.Show(s, view1, ColorArrayName=[])
@@ -162,19 +162,22 @@ def covo_cedre_fields():
             pvs.Show(s, view1)
 
     plotter.register_plot("/visu/pseize/COVO/BASE/RUN_2/_ENSIGHT_/archive_CHARME.volu.ins.case", 'P', contour=50,
-                          r_gas=1, label='\nBase')
+                          r_gas=1, label='Base')
     plotter.register_plot("/visu/pseize/COVO/EXP/RUN_1/_ENSIGHT_/archive_CHARME.volu.ins.case", 'P', contour=50,
-                          r_gas=1, label='\nExponential\nRosenbrock-Euler')
+                          r_gas=1, label='Exponential Rosenbrock-Euler')
     plotter.register_plot("/visu/pseize/COVO/BASE/RUN_RK4/_ENSIGHT_/archive_CHARME.volu.ins.case", 'P', contour=50,
-                          r_gas=1, label='\nRK4')
+                          r_gas=1, label='RK4')
 
     view2 = plotter.get_views("/visu/pseize/COVO/EXP/RUN_1/_ENSIGHT_/archive_CHARME.volu.ins.case")[0]
     view3 = plotter.get_views("/visu/pseize/COVO/BASE/RUN_1/_ENSIGHT_/archive_CHARME.volu.ins.case")[0]
     view4 = plotter.get_views("/visu/pseize/COVO/BASE/RUN_2/_ENSIGHT_/archive_CHARME.volu.ins.case")[0]
     view5 = plotter.get_views("/visu/pseize/COVO/BASE/RUN_RK4/_ENSIGHT_/archive_CHARME.volu.ins.case")[0]
+    view_bar = plotter.create_view(pvs.CreateRenderView)
 
     layout = pvs.CreateLayout()
-    id_1 = layout.SplitVertical(0, 0.5)
+    id_1 = layout.SplitVertical(0, 0.9)
+    layout.AssignView(id_1 + 1, view_bar)
+    id_1 = layout.SplitVertical(id_1, 0.5)
     id_3 = layout.SplitHorizontal(id_1 + 1, 0.33)
     id_4 = layout.SplitHorizontal(id_3 + 1, 0.5)
     id_1 = layout.SplitHorizontal(id_1, 0.5)
@@ -183,28 +186,32 @@ def covo_cedre_fields():
     layout.AssignView(id_3, view3)
     layout.AssignView(id_4, view4)
     layout.AssignView(id_4 + 1, view5)
-    layout.SetSize(1900, 1200)
+    layout.SetSize(1900, 1300)
 
     for view in (view1, view2, view3, view4, view5):
         color_bar = pvs.GetScalarBar(pvs.GetColorTransferFunction('P'), view)
-        color_bar.WindowLocation = 'Lower Center'
-        color_bar.Title = r'$P$'
-        color_bar.ComponentTitle = ''
-        color_bar.Orientation = 'Horizontal'
-        color_bar.TitleFontSize = 24
-        color_bar.LabelFontSize = 20
-        color_bar.ScalarBarLength = 0.6
-        color_bar.RangeLabelFormat = '%.3f'
+        color_bar.Visibility = 0
         view.CameraPosition = [0.5, 0, 1]
         view.CameraFocalPoint = [0.5, 0, 0]
-        view.CameraParallelScale = 1
-        view.ResetCamera()
+        view.CameraParallelScale = 12
+
+    view_bar.OrientationAxesVisibility = 0
+    color_bar = pvs.GetScalarBar(pvs.GetColorTransferFunction('P'), view_bar)
+    color_bar.WindowLocation = 'Lower Center'
+    color_bar.Title = r'$P$'
+    color_bar.ComponentTitle = ''
+    color_bar.Orientation = 'Horizontal'
+    color_bar.TitleFontSize = 24
+    color_bar.LabelFontSize = 20
+    color_bar.ScalarBarLength = 0.5
+    color_bar.RangeLabelFormat = '%.4g'
 
     for k, s in pvs.GetRepresentations().items():
         if 'TextSourceRepresentation' in k[0]:
             s.FontSize = 24
 
-    plotter.draw(0, block=False)
+    # plotter.draw(0, block=False)
+    pvs.GetAnimationScene().GoToLast()
     pvs.SaveScreenshot("covo_cedre_fields.png", layout)
 
 
