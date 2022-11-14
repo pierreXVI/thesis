@@ -6,26 +6,27 @@ import scipy.linalg
 import scipy.special
 from postprocess import bibarch
 
-plt.rcParams.update({
-    'xtick.labelsize': 15,
-    'ytick.labelsize': 15,
-    'xtick.major.width': 1.5,
-    'xtick.minor.width': 1,
-    'ytick.major.width': 1.5,
-    'ytick.minor.width': 1,
-    'axes.grid': True,
-    'axes.labelsize': 20,
-    'axes.titlesize': 20,
-    'grid.linewidth': 2,
-    'legend.fontsize': 20,
-    'legend.labelspacing': 1,
-    'lines.markeredgewidth': 15,
-    'lines.markersize': 3,
-    'lines.linewidth': 3,
-    'text.latex.preamble': r"\usepackage{amsmath}",
-    'text.usetex': True,
-    'font.size': 15
-})
+
+# plt.rcParams.update({
+#     'xtick.labelsize': 15,
+#     'ytick.labelsize': 15,
+#     'xtick.major.width': 1.5,
+#     'xtick.minor.width': 1,
+#     'ytick.major.width': 1.5,
+#     'ytick.minor.width': 1,
+#     'axes.grid': True,
+#     'axes.labelsize': 20,
+#     'axes.titlesize': 20,
+#     'grid.linewidth': 2,
+#     'legend.fontsize': 20,
+#     'legend.labelspacing': 1,
+#     'lines.markeredgewidth': 15,
+#     'lines.markersize': 3,
+#     'lines.linewidth': 3,
+#     'text.latex.preamble': r"\usepackage{amsmath}",
+#     'text.usetex': True,
+#     'font.size': 15
+# })
 
 
 def annotate_slope(axis, s, base=0.2, dx=0.0, dy=0.0, transpose=False):
@@ -549,8 +550,8 @@ def sd_discontinuous():
     def u(x, y):
         return np.sin(2 * x) + np.exp(np.cos(3 * y))
 
-    p = 3
-    sol_p = np.array([-np.cos(np.pi * (2 * i + 1) / (2 * p)) for i in range(p)])
+    p = 2
+    sol_p = (np.array([-np.cos(np.pi * (2 * i + 1) / (2 * (p + 1))) for i in range(p + 1)]) + 1) / 2
 
     linspace = np.linspace(0, 1, 100)
 
@@ -574,10 +575,88 @@ def sd_discontinuous():
                              # antialiased=False)
                              antialiased=False, cmap=plt.cm.coolwarm, vmin=-0.3889049438766065, vmax=3.718269521488654)
 
-    # ax.set_zlim(-1.01, 1.01)
-    # ax.zaxis.set_major_locator(LinearLocator(10))
-    # ax.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
-    # fig.colorbar(surf, shrink=0.5, aspect=5)
+    plt.show()
+
+
+def sd_scheme():
+    fig = plt.figure()
+    ax1 = fig.add_subplot(231)
+    ax2 = fig.add_subplot(232)
+    ax3 = fig.add_subplot(233)
+    ax4 = fig.add_subplot(234)
+    ax5 = fig.add_subplot(235)
+    ax6 = fig.add_subplot(236)
+    ax1.grid(False)
+    ax2.grid(False)
+    ax3.grid(False)
+    ax4.grid(False)
+    ax5.grid(False)
+    ax6.grid(False)
+
+    p = 2
+    sol_p = (np.array([-np.cos(np.pi * (2 * i + 1) / (2 * (p + 1))) for i in range(p + 1)]) + 1) / 2
+    flux_p = (np.append(-1, np.append(np.polynomial.legendre.legroots(p * [0] + [1]), 1)) + 1) / 2
+    linspace = np.linspace(0, 1, 100)
+
+    def u(x):
+        return 7 * x * x - 8 * x + 1
+
+    def f(y):
+        return y * y - 0.25
+
+    ax1.plot(linspace, u(linspace), 'r')
+    ax2.plot(linspace, u(linspace), 'r')
+    ax3.plot(linspace, u(linspace), 'r')
+    ax4.plot(linspace, u(linspace), 'r')
+    ax5.plot(linspace, u(linspace), 'r')
+    ax6.plot(linspace, u(linspace), 'r')
+    ax1.plot(sol_p, u(sol_p), 'ro')
+    ax2.plot(sol_p, u(sol_p), 'ro')
+    ax3.plot(sol_p, u(sol_p), 'ro')
+    ax4.plot(sol_p, u(sol_p), 'ro')
+    ax5.plot(sol_p, u(sol_p), 'ro')
+    ax6.plot(sol_p, u(sol_p), 'ro')
+
+    ax2.plot(flux_p, u(flux_p), 'bo')
+    ax3.plot(flux_p, u(flux_p), 'bo')
+    ax4.plot(flux_p, u(flux_p), 'bo')
+    ax5.plot(flux_p, u(flux_p), 'bo')
+    ax6.plot(flux_p, u(flux_p), 'bo')
+
+    ax3.plot(flux_p, f(u(flux_p)), 'bs')
+    ax4.plot(flux_p, [0.25, *f(u(flux_p[1:-1])), -0.25], 'bs')
+    ax5.plot(flux_p, [0.25, *f(u(flux_p[1:-1])), -0.25], 'bs')
+    ax6.plot(flux_p, [0.25, *f(u(flux_p[1:-1])), -0.25], 'bs')
+
+    class Lagrange:
+        def __init__(self, x, z):
+            self.x = x
+            self.z = z
+            self._buf_x = np.zeros_like(self.x)
+
+        def __call__(self, x):
+            out = 0
+            for i in range(len(self.x)):
+                foo_x = np.delete(self.x, i)
+                out += self.z[i] * np.prod((x - foo_x) / (self.x[i] - foo_x))
+            return out
+
+        def derivative(self, x):
+            out = 0
+            for i in range(len(self.x)):
+                val = 0
+                foo = np.delete(self.x, i)
+                for k in range(len(foo)):
+                    val += np.prod(x - np.delete(foo, k))
+                out += self.z[i] * val / np.prod(self.x[i] - foo)
+            return out
+
+    l = Lagrange(flux_p, [0.25, *f(u(flux_p[1:-1])), -0.25])
+    ax5.plot(linspace, [l(x) for x in linspace], 'b')
+    ax6.plot(linspace, [l(x) for x in linspace], 'b')
+
+    ax6.plot(linspace, [0.1*l.derivative(x) for x in linspace], 'g')
+
     plt.show()
 
 
@@ -589,5 +668,6 @@ if __name__ == '__main__':
     # fig_eps()
     # rae_coefficients()
     # rae_residuals()
-    sd_discontinuous()
+    # sd_discontinuous()
+    sd_scheme()
     pass
