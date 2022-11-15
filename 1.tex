@@ -591,7 +591,7 @@
         Contrary to Adams--Bashforth and Adams--Moulton methods, they use the Lagrange interpolation of the solution $\Xi$ instead of the function $\operatorname{G}$.
         Then, we can replace the time derivative of the solution with the time derivative of the interpolating polynomial, and evaluate this new equality at the next time step $t_{n+1}$.
         This gives an implicit equation we need to solve to get $\Xi_{n+1}$.
-        The name of those methods come from the fact that if we use a constant time step between iterations, this equation can be written using the differentiating operator defined by $\nabla^0 \square_i = \square_i$ and $\nabla^{j+1} \square_i = \nabla^j \square_i - \nabla^j \square_{i-1}$:
+        The name of those methods comes from the fact that if we use a constant time step between iterations, this equation can be written using the differentiating operator defined by $\nabla^0 \square_i = \square_i$ and $\nabla^{j+1} \square_i = \nabla^j \square_i - \nabla^j \square_{i-1}$:
         \begin{equation}
           \sum_{i=1}^k \frac{1}{i} \nabla^i \Xi_{n+1} + \Delta t \operatorname{G}\left(\Xi_{n+1}\right) = 0
         \end{equation}
@@ -605,7 +605,8 @@
         Also, methods of order 7 or higher are unstable, so we can limit our analysis to methods with orders from 1 to 6.
         The corresponding stability regions are satisfying, as can be seen in figure \ref{fig:bdf_stab}.
         Particularly, the first and second methods are A-stable.
-        More generally, there are no A-stable multi steps methods with an order higher than 2 \cite{Dahlquist1963, HairerWanner1996}.
+        We see when looking at the scales in figure \ref{fig:bdf_stab} that the complement of the stability region grows with the index of the method.
+        More generally, there are no A-stable multi steps methods with orders higher than 2 \cite{Dahlquist1963, HairerWanner1996}.
 
         \begin{figure}
           \centering
@@ -619,7 +620,7 @@
       As we said earlier, we want to solve an ordinary differential equation in order to recover the steady solution, reached after a long time.
       Then, explicit methods that constrain the time step are not well fitted.
       Even if they cost more, in an algorithmic way, implicit methods are indeed the best choice for our stiff equations.
-      It is often better to do a single expensive iteration over a large time step with an implicit method, than make a lot of inexpensive iterations over small time steps with an explicit method.
+      It is often better to do a single expensive iteration over a large time step with an implicit method than make a lot of inexpensive iterations over small time steps with an explicit method.
       This is finally why we will continue working with the A-stable implicit Euler method.
       This method is already used in our solver as the base implicit method, for the same reasons we want to use it.
       Furthermore, it is at the base of all other implicit methods, as they can be seen as small variations of the implicit Euler methods.
