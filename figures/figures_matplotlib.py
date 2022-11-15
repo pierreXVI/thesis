@@ -19,7 +19,6 @@ plt.rcParams.update({
     'grid.linewidth': 2,
     'legend.fontsize': 20,
     'legend.labelspacing': 1,
-    'lines.markeredgewidth': 15,
     'lines.markersize': 3,
     'lines.linewidth': 3,
     'text.latex.preamble': r"\usepackage{amsmath}",
@@ -110,7 +109,7 @@ def fig_bdf():
 
         return np.vectorize(sub_r)
 
-    fig = plt.figure(figsize=(19.20, 10.00))
+    fig = plt.figure(figsize=(16, 10))
     c = [.8, .0, .0, 1]
     for (i, x_min, x_max, y_min, y_max) in zip((1, 2, 3, 4, 5, 6),
                                                (-2, -2, -4, -4, -10, -20),
@@ -118,8 +117,8 @@ def fig_bdf():
                                                (-2, -3, -5, -8, -15, -30),
                                                (2, 3, 5, 8, 15, 30),
                                                ):
-        res_x = 100
-        res_y = 100
+        res_x = 500
+        res_y = 500
 
         x, y = np.meshgrid(np.linspace(x_min, x_max, res_x), np.linspace(y_min, y_max, res_y))
 
@@ -138,10 +137,10 @@ def fig_bdf():
         rk_i = r(i)(x + 1j * y)
         ax.pcolormesh(x, y, np.ma.masked_array(rk_i, mask=1 - rk_i), cmap=clr.ListedColormap([c]), shading='auto')
         ax.plot([None], '--', c=c, lw=20)
-        ax.set_title(r'\textbf{{ BDF{0} }}'.format(i), y=-.1, fontsize=30)
+        ax.set_title(r'\textbf{{ BDF{0} }}'.format(i), y=-.1, fontsize=30, pad=-10)
         ax.grid(True)
 
-    plt.subplots_adjust(0.00, 0.05, 1.0, 0.99, 0.05, 0.2)
+    plt.subplots_adjust(0.00, 0.075, 1.0, 0.99, 0.05, 0.25)
     # plt.show()
     plt.savefig("bdf_stab.png", transparent=True)
 
@@ -234,7 +233,7 @@ def fig_preconditioning():
 
     counter = GMRESCounter()
     gmres_scipy(a, np.ones(n), callback=counter, maxiter=12)
-    l1, = ax2.semilogy(counter.res, '+', label=r'$\kappa\left(A\right) = {0:0.2f}$'.format(cond_a))
+    ax2.semilogy(counter.res, '+', label=r'$\kappa\left(A\right) = {0:0.2f}$'.format(cond_a), mew=15)
 
     jacobi = scipy.sparse.diags(1 / a.diagonal())
 
@@ -245,7 +244,7 @@ def fig_preconditioning():
 
     counter = GMRESCounter()
     gmres_scipy(a_prec, np.ones(n), callback=counter, maxiter=12)
-    l2, = ax2.semilogy(counter.res, 'x', label=r'$\kappa\left(A_{{pre}}\right) = {0:0.2f}$'.format(cond_a_pre))
+    ax2.semilogy(counter.res, 'x', label=r'$\kappa\left(A_{{pre}}\right) = {0:0.2f}$'.format(cond_a_pre), mew=15)
 
     ax2.legend(loc='lower center', bbox_to_anchor=(-0.75, -0.075))
 
