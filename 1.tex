@@ -147,7 +147,7 @@
       The standard Finite Volume method represents quantities with the averaged value in each cell.
       This corresponds to a first-order discretisation method.
       Simply put, it means that it can represent quantities exactly as 0-order polynomials locally to each cell.
-      There are ways to achieve higher order representation such as with the MUSCL approach \cite{VanLeer1979}.
+      There are ways to achieve higher-order representation such as with the MUSCL approach \cite{VanLeer1979}.
       It consists in handling the surface flux evaluation on one hand, which is what we did in the Riemann problem part, and deciding what left and right quantities to feed to this flux computation on the other hand.
       In our solver, there are two ways to construct high-order states to give to the flux computation method.
       They are described in the following parts.
@@ -277,7 +277,7 @@
         We look at this equation in $\mathbb{C}$, so that we can compute the eigenvalues and eigenvectors of the matrix $J$.
 
         \paragraph{Note:}
-        When looking at a method applied to the Dahlquist test equation (\ref{eq:dahlquist}), we assume that the real part of the eigenvalues of $J$ are all negative.
+        When looking at a method applied to the Dahlquist test equation (\ref{eq:dahlquist}), we assume that the real parts of the eigenvalues of $J$ are all negative.
         This choice may seem arbitrary but can be understood with the following example.
         Let us work in $\mathbb{C}^2$, with:
         \begin{equation}
@@ -391,7 +391,7 @@
       \subsubsection{Runge--Kutta methods}
 
         \paragraph{}
-        Instead of making one step forward in time as the explicit Euler method, Runge--Kutta methods will make a set of intermediate steps, and the final solution is found as a combination of those intermediate steps.
+        Instead of making one step forward in time as the explicit Euler method, Runge--Kutta methods will make a set of intermediate steps, and find the final solution as a combination of those intermediate steps.
         The general idea is as such.
         Supposing we know the value of $\Xi_n$ in $t_n$, we set the intermediates steps $t_{n, i} = t_n + c_i\Delta t$ for $1 \leq i \leq k$, with a fixed $k$.
         We can now integrate exactly between $t_n$ and $t_{n, i}$ equation (\ref{eq:init_value_ode}):
