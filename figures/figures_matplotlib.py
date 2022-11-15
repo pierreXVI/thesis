@@ -6,27 +6,26 @@ import scipy.linalg
 import scipy.special
 from postprocess import bibarch
 
-
-# plt.rcParams.update({
-#     'xtick.labelsize': 15,
-#     'ytick.labelsize': 15,
-#     'xtick.major.width': 1.5,
-#     'xtick.minor.width': 1,
-#     'ytick.major.width': 1.5,
-#     'ytick.minor.width': 1,
-#     'axes.grid': True,
-#     'axes.labelsize': 20,
-#     'axes.titlesize': 20,
-#     'grid.linewidth': 2,
-#     'legend.fontsize': 20,
-#     'legend.labelspacing': 1,
-#     'lines.markeredgewidth': 15,
-#     'lines.markersize': 3,
-#     'lines.linewidth': 3,
-#     'text.latex.preamble': r"\usepackage{amsmath}",
-#     'text.usetex': True,
-#     'font.size': 15
-# })
+plt.rcParams.update({
+    'xtick.labelsize': 15,
+    'ytick.labelsize': 15,
+    'xtick.major.width': 1.5,
+    'xtick.minor.width': 1,
+    'ytick.major.width': 1.5,
+    'ytick.minor.width': 1,
+    'axes.grid': True,
+    'axes.labelsize': 20,
+    'axes.titlesize': 20,
+    'grid.linewidth': 2,
+    'legend.fontsize': 20,
+    'legend.labelspacing': 1,
+    'lines.markeredgewidth': 15,
+    'lines.markersize': 3,
+    'lines.linewidth': 3,
+    'text.latex.preamble': r"\usepackage{amsmath}",
+    'text.usetex': True,
+    'font.size': 15
+})
 
 
 def annotate_slope(axis, s, base=0.2, dx=0.0, dy=0.0, transpose=False):
@@ -548,34 +547,35 @@ def sd_discontinuous():
             return out
 
     def u(x, y):
-        return np.sin(2 * x) + np.exp(np.cos(3 * y))
+        return -np.cos(5 * x) * np.tanh(-5 * (y - 1))
 
     p = 2
     sol_p = (np.array([-np.cos(np.pi * (2 * i + 1) / (2 * (p + 1))) for i in range(p + 1)]) + 1) / 2
+    mesh = np.linspace(0, 1, 100)
 
-    linspace = np.linspace(0, 1, 100)
-
-    fig = plt.figure()
+    fig = plt.figure(figsize=[16, 9])
     ax1 = fig.add_subplot(121, projection='3d')
     ax2 = fig.add_subplot(122, projection='3d')
-
-    # ax.plot_surface(*np.meshgrid(linspace, linspace), np.array([[u(x, y) for x in linspace] for y in linspace]),
-    #                 antialiased=False)
-    # ax.plot_surface(*np.meshgrid(linspace+1, linspace), np.array([[u(x, y) for x in linspace+1] for y in linspace]),
-    #                 antialiased=False)
+    ax1.set_xlabel('$x$')
+    ax1.set_ylabel('$y$')
+    ax2.set_xlabel('$x$')
+    ax2.set_ylabel('$y$')
+    ax1.tick_params(labelbottom=False, labelleft=False)
+    ax2.tick_params(labelbottom=False, labelleft=False)
 
     for dx in [0, 1]:
         for dy in [0, 1]:
             lag = Lagrange2D(sol_p + dx, sol_p + dy, np.array([[u(x, y) for x in sol_p + dx] for y in sol_p + dy]))
-            ax1.plot_surface(*np.meshgrid(linspace + dx, linspace + dy),
-                             np.array([[u(x, y) for x in linspace + dx] for y in linspace + dy]),
-                             antialiased=False, cmap=plt.cm.coolwarm, vmin=-0.3889049438766065, vmax=3.718269521488654)
-            ax2.plot_surface(*np.meshgrid(linspace + dx, linspace + dy),
-                             np.array([[lag(x, y) for x in linspace + dx] for y in linspace + dy]),
-                             # antialiased=False)
-                             antialiased=False, cmap=plt.cm.coolwarm, vmin=-0.3889049438766065, vmax=3.718269521488654)
+            ax1.plot_surface(*np.meshgrid(mesh + dx, mesh + dy),
+                             np.array([[u(x, y) for x in mesh + dx] for y in mesh + dy]),
+                             antialiased=False, cmap=plt.cm.coolwarm, vmin=-1, vmax=1)
+            ax2.plot_surface(*np.meshgrid(mesh + dx, mesh + dy),
+                             np.array([[lag(x, y) for x in mesh + dx] for y in mesh + dy]),
+                             antialiased=False)
 
-    plt.show()
+    plt.subplots_adjust(0, 0, 1, 1, 0, 0)
+    # plt.show()
+    fig.savefig('sd_discontinuous.png')
 
 
 def sd_scheme():
@@ -655,7 +655,7 @@ def sd_scheme():
     ax5.plot(linspace, [l(x) for x in linspace], 'b')
     ax6.plot(linspace, [l(x) for x in linspace], 'b')
 
-    ax6.plot(linspace, [0.1*l.derivative(x) for x in linspace], 'g')
+    ax6.plot(linspace, [0.1 * l.derivative(x) for x in linspace], 'g')
 
     plt.show()
 
@@ -669,5 +669,5 @@ if __name__ == '__main__':
     # rae_coefficients()
     # rae_residuals()
     # sd_discontinuous()
-    sd_scheme()
+    # sd_scheme()
     pass
