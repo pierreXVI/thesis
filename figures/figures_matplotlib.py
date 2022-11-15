@@ -433,8 +433,8 @@ def fig_eps():
         ax1.set_xlabel(r'$\varepsilon$')
         ax2.set_xlabel(r'$N$')
         ax1.set_ylabel('Relative error in\nJacobian vector product approximation', labelpad=30)
-        fig1.savefig('epsilon_Burgers_10.png')
-        fig2.savefig('epsilon_Burgers.png')
+        fig1.savefig('epsilon_Burgers_10.png', transparent=True)
+        fig2.savefig('epsilon_Burgers.png', transparent=True)
 
         fig = plt.figure()
         gs = gridspec.GridSpec(1, 3)
@@ -451,7 +451,7 @@ def fig_eps():
         ax1.set_xlabel(r'$\varepsilon$')
         ax2.set_xlabel(r'$N$')
         ax1.set_ylabel('Relative error in\nJacobian vector product approximation', labelpad=30)
-        fig.savefig('epsilon_Euler.png')
+        fig.savefig('epsilon_Euler.png', transparent=True)
 
         # plt.show()
 
@@ -488,7 +488,7 @@ def rae_coefficients():
     ax2.set_xlabel('Iteration number', labelpad=20)
     fig.legend(*ax1.get_legend_handles_labels())
     # plt.show()
-    fig.savefig('rae_coefficients.png')
+    fig.savefig('rae_coefficients.png', transparent=True)
 
 
 def rae_residuals():
@@ -520,7 +520,7 @@ def rae_residuals():
     fig.legend(*ax11.get_legend_handles_labels())
     plt.subplots_adjust(0.08, 0.15, 0.99, 0.85, 0.30, 0.05)
     # plt.show()
-    fig.savefig('rae_residuals.png')
+    fig.savefig('rae_residuals.png', transparent=True)
 
 
 def sd_discontinuous():
@@ -574,7 +574,7 @@ def sd_discontinuous():
 
     plt.subplots_adjust(0, 0, 1, 1, 0, 0)
     # plt.show()
-    fig.savefig('sd_discontinuous.png')
+    fig.savefig('sd_discontinuous.png', transparent=True)
 
 
 def sd_scheme():
