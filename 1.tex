@@ -133,7 +133,7 @@
       The idea is now to compute the flux going through the face as a function of $\xi_L^*$, $\xi_R^*$ and the surface vector $\vec{s}$.
       From the interface point of view, there are two possible different states, one from each side: this is what is called a Rienamm problem.
       A Riemann problem is an initial value problem applied to a conservation equation, where the initial solution is piecewise constant with a single possible discontinuity.
-      By working with the equation and deriving the jump condition, it is possible to compute the quantity at the interface from a possibly discontinuous state at the interface.
+      By working with the equation and deriving the jump condition, it is possible to compute the quantity from a possibly discontinuous state at the interface.
       Then it is possible to evaluate the flux associated with this state going through the surface.
       This approach can be called the exact Riemann solver as it uses the exact solution of the Riemann problem.
       But the drawback of this approach usually is the computational cost required to find this exact solution.
@@ -203,7 +203,7 @@
     The idea is now to solve the temporal evolution of $\Xi$ to get the solution after a long time when it approaches the steady solution.
     We will solve the equation numerically, which means we will iteratively compute the next solution after a given time step, knowing the current one.
     It is also possible to modify the equation, as we are interested in the final state, not in the transient one.
-    It is possible for example to use local time-stepping, which consists in having each cell of the mesh move forward in time with its own time step.
+    It is possible, for example, to use local time-stepping, which consists in having each cell of the mesh move forward in time with its own time step.
     The resulting transient states do not make sense from a physical point of view, as the equation solved is not the initial one, but it converges to the same steady solution.
     Therefore, it is alright to change the equation as long as it gives the same steady solution.
     Finally, this way of finding a converged steady solution is what is called a \emph{Pseudo-Transient Continuation} method \cite{KelleyKeyes1996}.
@@ -277,7 +277,7 @@
         We look at this equation in $\mathbb{C}$, so that we can compute the eigenvalues and eigenvectors of the matrix $J$.
 
         \paragraph{Note:}
-        When looking at a method applied to the Dahlquist test equation (\ref{eq:dahlquist}), we assume that the real part of the eigenvalues of $J$ are all negative.
+        When looking at a method applied to the Dahlquist test equation (\ref{eq:dahlquist}), we assume that the real parts of the eigenvalues of $J$ are all negative.
         This choice may seem arbitrary but can be understood with the following example.
         Let us work in $\mathbb{C}^2$, with:
         \begin{equation}
@@ -360,7 +360,7 @@
         Simply put, a method is A-stable if it converges to 0 when it should, and does not diverge due to numerical errors.
         The A-stability is interesting to us, as an A-stable method is also said to be unconditionally stable, whereas a method that is not is conditionally stable.
         This other characterisation comes from the fact that a non-A-stable method needs to respect some additional criteria to be stable, on the time step it uses for example, whereas an A-stable method is stable no matter the time step.
-        As we said before, we would like to use large time steps to quickly find the steady state of our applications, and that is why  we look for A-stability in our methods.
+        As we said before, we would like to use large time steps to quickly find the steady state of our applications, and that is why we look for A-stability in our methods.
 
 
     \subsection{Explicit methods}
@@ -591,7 +591,7 @@
         Contrary to Adams--Bashforth and Adams--Moulton methods, they use the Lagrange interpolation of the solution $\Xi$ instead of the function $\operatorname{G}$.
         Then, we can replace the time derivative of the solution with the time derivative of the interpolating polynomial, and evaluate this new equality at the next time step $t_{n+1}$.
         This gives an implicit equation we need to solve to get $\Xi_{n+1}$.
-        The name of those methods come from the fact that if we use a constant time step between iterations, this equation can be written using the differentiating operator defined by $\nabla^0 \square_i = \square_i$ and $\nabla^{j+1} \square_i = \nabla^j \square_i - \nabla^j \square_{i-1}$:
+        The name of those methods comes from the fact that if we use a constant time step between iterations, this equation can be written using the differentiating operator defined by $\nabla^0 \square_i = \square_i$ and $\nabla^{j+1} \square_i = \nabla^j \square_i - \nabla^j \square_{i-1}$:
         \begin{equation}
           \sum_{i=1}^k \frac{1}{i} \nabla^i \Xi_{n+1} + \Delta t \operatorname{G}\left(\Xi_{n+1}\right) = 0
         \end{equation}
@@ -618,8 +618,8 @@
       This introduction to the classic time integration methods helps us to decide what to do for our solver.
       As we said earlier, we want to solve an ordinary differential equation in order to recover the steady solution, reached after a long time.
       Then, explicit methods that constrain the time step are not well fitted.
-      Even if they cost more, in an algorithmic way, implicit methods are indeed the best choice for our stiff equations.
-      It is often better to do a single expensive iteration over a large time step with an implicit method, than make a lot of inexpensive iterations over small time steps with an explicit method.
+      Even if they cost more, algorithmically speaking, implicit methods are indeed the best choice for our stiff equations.
+      It is often better to do a single expensive iteration over a large time step with an implicit method than make a lot of inexpensive iterations over small time steps with an explicit method.
       This is finally why we will continue working with the A-stable implicit Euler method.
       This method is already used in our solver as the base implicit method, for the same reasons we want to use it.
       Furthermore, it is at the base of all other implicit methods, as they can be seen as small variations of the implicit Euler methods.
@@ -636,8 +636,8 @@
       As we explained in the previous section, implicit time integration methods give the next state as the solution of a nonlinear equation or a system of nonlinear equations.
       If we want to use implicit methods, we then need to be able to solve a nonlinear problem.
       We will continue our discussion using the implicit Euler method, but everything can easily be adapted for any other implicit method.
-      For Diagonally Implicit Runge--Kutta methods, we apply the nonlinear solve successively for each step.
-      For BDF methods, we apply the nonlinear solve on a slightly different equation.
+      For Diagonally Implicit Runge--Kutta methods, we apply the nonlinear solver successively for each step.
+      For BDF methods, we apply the nonlinear solver on a slightly different equation.
 
 
       \subsubsection{From a nonlinear problem \dots}
