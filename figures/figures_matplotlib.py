@@ -671,7 +671,7 @@ def sd_scheme():
     ax5.plot(mesh, 0.2 * f_c.derivative(mesh) - 1, 'g', lw=3)
     ax5.plot(sol_p, 0.2 * f_c.derivative(sol_p) - 1, 'go', ms=8)
 
-    plt.subplots_adjust(0, 0, 1, 1, 0, 0)
+    plt.subplots_adjust(0.01, 0.01, 0.99, 0.99, 0, 0)
     # plt.show()
     fig.savefig('sd_scheme.png', transparent=True)
 
