@@ -578,29 +578,14 @@ def sd_discontinuous():
 
 
 def sd_scheme():
-    p = 2
-    sol_p = (np.array([-np.cos(np.pi * (2 * i + 1) / (2 * (p + 1))) for i in range(p + 1)]) + 1) / 2
-    flux_p = (np.append(-1, np.append(np.polynomial.legendre.legroots(p * [0] + [1]), 1)) + 1) / 2
-    mesh = np.linspace(0, 1, 100)
-
-    def u(x):
-        return 7 * x * x - 8 * x + 1
-
-    def f(x):
-        return x * x - 0.25
-
     class Lagrange:
         def __init__(self, x, z):
             self.x = x
             self.z = z
 
         def __call__(self, x):
-            try:
-                return np.array([self._call_scalar(_x) for _x in x])
-            except TypeError:
-                return self._call_scalar(x)
-
-        def _call_scalar(self, x):
+            if isinstance(x, (list, tuple, np.ndarray)):
+                return np.array([self(_x) for _x in x])
             out = 0
             for i in range(len(self.x)):
                 foo_x = np.delete(self.x, i)
@@ -608,9 +593,8 @@ def sd_scheme():
             return out
 
         def derivative(self, x):
-            return np.array([self._derivative_scalar(_x) for _x in x])
-
-        def _derivative_scalar(self, x):
+            if isinstance(x, (list, tuple, np.ndarray)):
+                return np.array([self.derivative(_x) for _x in x])
             out = 0
             for i in range(len(self.x)):
                 val = 0
@@ -620,9 +604,17 @@ def sd_scheme():
                 out += self.z[i] * val / np.prod(self.x[i] - foo)
             return out
 
-    continuous_f = Lagrange(flux_p, [0.25, *f(u(flux_p[1:-1])), -0.25])
+    p = 2
+    sol_p = (np.array([-np.cos(np.pi * (2 * i + 1) / (2 * (p + 1))) for i in range(p + 1)]) + 1) / 2
+    flux_p = (np.append(-1, np.append(np.polynomial.legendre.legroots(p * [0] + [1]), 1)) + 1) / 2
+    u = Lagrange(sol_p, [0.5, -1.25, -0.4])
+    f = Lagrange(flux_p, [1.5, 0.1, -1.2, -0.5])
+    f_l, f_r = 0, 1
+    f_c = Lagrange(flux_p, [0.4, 0.1, -1.2, 0.2])
 
-    fig = plt.figure(figsize=[16, 9])
+    mesh = np.linspace(0, 1, 100)
+
+    fig = plt.figure(figsize=[18, 9])
     ax0 = fig.add_subplot(231)
     ax1 = fig.add_subplot(232)
     ax2 = fig.add_subplot(233)
@@ -637,32 +629,41 @@ def sd_scheme():
         ax.set_ylim(-3, 2)
         ax.grid(False)
 
-    for ax in (ax0, ax1, ax2, ax3, ax4, ax5):
-        ax.plot(mesh, u(mesh), 'r', ms=6, mew=1)
-        ax.plot(sol_p, u(sol_p), 'ro', ms=6, mew=1)
-
-    for ax in (ax1, ax2, ax3, ax4, ax5):
-        ax.plot(flux_p, u(flux_p), 'bo', ms=6, mew=1)
-
-    for ax in (ax2, ax3, ax4, ax5):
-        ax.plot(flux_p, f(u(flux_p)), 'bs', ms=6, mew=1)
-
-    ax4.plot(mesh, continuous_f(mesh), 'b')
-    ax5.plot(mesh, continuous_f(mesh), 'b')
-
-    ax5.plot(mesh, 0.1 * continuous_f.derivative(mesh), 'g')
-
     ax0.set_title("Step 0: $p$-order interpolation of the\nsolution on $p+1$ solution points", x=0.5, y=0)
+    for ax in (ax0, ax1, ax2, ax3, ax4, ax5):
+        ax.plot(mesh, u(mesh), 'r', lw=3)
+        ax.plot(sol_p, u(sol_p), 'ro', ms=8)
+        ax.plot([-0.1, 0], [1, 0.5], 'r', lw=2)
+        ax.plot([1, 1.1], [0.5, 0], 'r', lw=2)
+
     ax1.set_title("Step 1: extrapolation of the\nsolution at $p+2$ flux points", x=0.5, y=0)
-    ax2.set_title("Step 2: evaluation of the\nflux density $F$ at flux points", x=0.5, y=0)
+    for ax in (ax1, ax2, ax3, ax4, ax5):
+        ax.plot(flux_p, u(flux_p), 'bo', ms=8)
+
+    ax2.set_title("Step 2: evaluation of the\nflux density at flux points", x=0.5, y=0)
+    ax2.plot(flux_p, f(flux_p), 'bs', ms=8)
+    ax2.plot(0, f_l, 'ks', ms=8)
+    ax2.plot(1, f_r, 'ks', ms=8, mew=3, fillstyle='none')
+
     ax3.set_title("Step 3: computation of a unique\nflux density at segment end points", x=0.5, y=0)
-    ax4.set_title("Step 4: $p\\!+\\!1$-order interpolation of $F$ on\nflux points, continuous between segments",
+    for ax in (ax3, ax4, ax5):
+        ax.plot(flux_p, f_c(flux_p), 'bs', ms=8)
+
+    ax4.set_title("Step 4: $p\\!+\\!1$-order interpolation of the flux on\nflux points, continuous between segments",
                   x=0.5, y=0)
+    for ax in (ax4, ax5):
+        ax.plot(mesh, f_c(mesh), 'b', lw=3)
+        ax.plot([-0.1, 0], [0.7, f_c(0)], 'b', lw=2)
+        ax.plot([1, 1.1], [f_c(1), -0.1], 'b', lw=2)
+
     ax5.set_title("Step 5: computation of the flux divergence\nas a $p$-order polynomial at solution points",
                   x=0.5, y=0)
+    ax5.plot(mesh, 0.2 * f_c.derivative(mesh) - 1, 'g', lw=3)
+    ax5.plot(sol_p, 0.2 * f_c.derivative(sol_p) - 1, 'go', ms=8)
 
     plt.subplots_adjust(0, 0, 1, 1, 0, 0)
-    plt.show()
+    # plt.show()
+    fig.savefig('sd_scheme.png', transparent=True)
 
 
 if __name__ == '__main__':
