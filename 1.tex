@@ -605,7 +605,8 @@
         Also, methods of order 7 or higher are unstable, so we can limit our analysis to methods with orders from 1 to 6.
         The corresponding stability regions are satisfying, as can be seen in figure \ref{fig:bdf_stab}.
         Particularly, the first and second methods are A-stable.
-        More generally, there are no A-stable multi steps methods with an order higher than 2 \cite{Dahlquist1963, HairerWanner1996}.
+        We see when looking at the scales in figure \ref{fig:bdf_stab} that the complement of the stability region grows with the index of the method.
+        More generally, there are no A-stable multi steps methods with orders higher than 2 \cite{Dahlquist1963, HairerWanner1996}.
 
         \begin{figure}
           \centering
