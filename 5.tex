@@ -115,7 +115,23 @@
       They are the roots of the Chebyshev polynomials of the first kind, and are often used in polynomial interpolation as they tend to minimise Runge's phenomenon.
       The $p + 2$ flux points used by our methods are the $p$ roots of the $p$-th Legendre polynomials to which are added the two segment end points.
       This choice has the property that there is a flux point between each contiguous solution points.
+      There is no explicit formula for the Legendre polynomial roots as there is one got the Chebyshev polynomial roots.
+      Their value is taken from tables from the literature \PS{ref ?}.
+      They are also defined in the $\left[-1, 1\right]$ segment and are scaled into $\left[0, 1\right]$.
+      Finally, the solution and flux points can be seen in figure \ref{fig:sd_points}.
 
+      \begin{figure}
+        \centering
+        \includegraphics[width=\textwidth]{figures/sd_points.png}
+        \caption{Solution points and flux points in the $\left[0, 1\right]$ segment used in the Spectral Difference method for $0 \leq p \leq 11$.}
+        \label{fig:sd_points}
+      \end{figure}
+
+      \paragraph{}
+      As a side note, we see that the Spectral Difference method with $p = 0$ correspond to the first-order Finite Volume method.
+      Indeed, the solution is assumed constant in the cell, represented by the value at its barycenter.
+      The flux balance is made at the cell interfaces with a Riemann solver.
+      This correspond to the placement of the solution and flux points in figure \ref{fig:sd_points} when $p = 0$.
 
 
     \subsection{Exponential integration methods in JAGUAR}

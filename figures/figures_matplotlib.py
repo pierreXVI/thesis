@@ -153,12 +153,12 @@ def fig_ab():
 
     x, y = np.meshgrid(np.linspace(x_min, x_max, res_x), np.linspace(y_min, y_max, res_y))
 
-    def lbd(i, n):
+    def lbd(_i, n):
         coeff = np.ones(1)
         for j in range(n):
-            if j == i:
+            if j == _i:
                 continue
-            ai, bi = 1 / (j - i), j / (j - i)
+            ai, bi = 1 / (j - _i), j / (j - _i)
             new_coeff = np.zeros(len(coeff) + 1)
             new_coeff[0] = coeff[0] * ai
             for k in range(1, len(coeff)):
@@ -174,8 +174,8 @@ def fig_ab():
         def sub_r(z):
             coeff = np.zeros(k + 1, dtype=complex)
             coeff[0] = 1
-            for i in range(1, k + 1):
-                coeff[i] = -z * lbd(i - 1, k)
+            for _i in range(1, k + 1):
+                coeff[i] = -z * lbd(_i - 1, k)
             coeff[1] -= 1
             return (np.abs(np.roots(coeff)) <= 1).all()
 
@@ -676,6 +676,29 @@ def sd_scheme():
     fig.savefig('sd_scheme.png', transparent=True)
 
 
+def sd_points():
+    fig = plt.figure(figsize=[16, 5])
+    ax = fig.add_subplot(111)
+    ax.grid(False)
+    ax.set_ylabel('$p$', rotation=0, labelpad=10, fontsize=30)
+    ax.xaxis.set_tick_params(labelsize=18)
+    ax.yaxis.set_tick_params(labelsize=18)
+
+    sp = fp = None
+    for p in range(12):
+        sol_p = (np.array([-np.cos(np.pi * (2 * i + 1) / (2 * (p + 1))) for i in range(p + 1)]) + 1) / 2
+        flux_p = (np.append(-1, np.append(np.polynomial.legendre.legroots(p * [0] + [1]), 1)) + 1) / 2
+        ax.plot([0, 1], [p, p], 'k', lw=1)
+        fp, = ax.plot(flux_p, 0 * flux_p + p, 'bs', ms=8)
+        sp, = ax.plot(sol_p, 0 * sol_p + p, 'ro', ms=8)
+    ax.set_ylim(np.flip(ax.get_ylim()))
+    ax.legend([sp, fp], ['Solution points', 'Flux points'], ncol=2, loc='lower center', bbox_to_anchor=(0.5, 1))
+
+    plt.subplots_adjust(0.05, 0.1, 0.99, 0.85)
+    # plt.show()
+    fig.savefig('sd_points.png', transparent=True)
+
+
 if __name__ == '__main__':
     # fig_rk()
     # fig_bdf()
@@ -686,4 +709,5 @@ if __name__ == '__main__':
     # rae_residuals()
     # sd_discontinuous()
     # sd_scheme()
+    # sd_points()
     pass
