@@ -184,6 +184,37 @@
 
   \section{Analysis of exponential time integration methods}
 
+
+    \paragraph{}
+    We now have in JAGUAR all the tools necessary to analyse exponential time integration methods.
+    We have to choose several test cases to do so.
+    We compare the exponential methods to explicit Runge--Kutta methods as they are the only available methods in JAGUAR.
+    Apart from the classical Midpoint RK2 method and four stage fourth-order RK4 method, all methods are low-storage Runge--Kutta methods.
+    It means that the matrix $A$ in their Butcher tableau is lower diagonal, or in other words all $a_{ij}$ are null except for $j = i - 1$.
+    It also means that all $b_i$ are null except the last one that is equal to $1$.
+    Finally, it means that the final stage and all intermediate ones use only the previous stage.
+    Therefore we do not need to keep track of the intermediate steps in memory, only to update the current value, which gives the name of the method.
+    Among those methods we look at the following:
+    \begin{itemize}
+      \item RK6LDLD, a 6 stage second-order method of Bogey and Bailly \PS{ref}
+      \item RK6SD, a 6 stage second-order method optimised for SD by \PS{ref ?}
+      \item RK3SHU, a 3 stage thirt-order TVD method \PS{définir TVD ?}
+      \item \PS{Où est passée RK4SHU ?}
+      \item \PS{Est-ce que je rajoute RK54RUUSPI ?}.
+    \end{itemize}
+
+
     \subsection{Order: convected inviscid isentropic vortex}
+
+      \paragraph{}
+      For the first testwe wanted to see if the orders of the exponential time integration methods were the correct ones when used in JAGUAR.
+      We decided to use the same test case we used with CEDRE: the 2D inviscid isentropic vortex.
+      The case is still described by equation \ref{eq:covo}, but the numerical values are different.
+      The convective flow Mach number is still $0.5$, but this time $P_\infty = 10^5$ and $T_\infty = 300$.
+      The heat capacity ratio is $\gamma = 1.4$ and the specific gas constant is $r_\textrm{gas} = 287.058$.
+      The mesh represent the 2D box $\left[0, L\right]^2$ with $L = 0.1$, and the vortex is defined by its characteristic radius $R_0 = 0.005$ and its intensity $\beta = 0.2$.
+      It correspond in fact to the same vortex as the one we used with CEDRE, in size and in intensity, but it has been scaled down into a smaller box, and dimensionned to some given pressure and temperature.
+      \PS{unités ?}
+
     \subsection{Robustness: Taylor--Green vortex}
     \subsection{Industrial application: LS89}
