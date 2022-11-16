@@ -109,7 +109,7 @@
       \begin{equation}\label{eq:expeuler}
         y_{n+1} = y_n + \Delta t \varphi_1\left(\Delta t L\right) f\left(y_n\right) \ .
       \end{equation}
-      We note the difference with the corresponding standard Euler method, for which the $\varphi$ function is replaced with the identity function.
+      We note the difference with the corresponding standard Euler method, for which the $\varphi_1$ function is replaced with the identity function.
       If there is no linear part in the decomposition, with $L = 0$, then nothing is treated differently by the exponential method, and we recover the standard explicit Euler method.
 
       \paragraph{}
@@ -271,7 +271,7 @@
 
     \paragraph{}
     The reason why exponential methods are not that good is the reason why they were not used for a long time after being introduced.
-    It is because evaluating matrix exponential, or more generally evaluating the $\varphi$ functions on matrices, is not trivial.
+    It is because evaluating matrix exponential, or more generally evaluating the $\varphi$-functions on matrices, is not trivial.
     Indeed, the power serie definition of the matrix exponential is not well suited for numerical evaluations.
     In particular in our context, computing powers of the matrix is completely out of the question.
     The dimension of our matrices can get large, and the powers of the matrices would loose the sparsity.
@@ -289,7 +289,7 @@
       The solution for both issues is the same: Krylov subspace methods.
       The Cayley--Hamilton theorem ensure that the exponential of a matrix is an polynomial of degree less or equal to $N$ where $N$ is the dimension of the matrix.
       Instead of looking for the matrix exponential as an infinite serie, we can look for an $N$-order polynomial.
-      Moreover, exponential methods do not need to evaluate the exponential or the $\varphi$ functions of the matrix, but their effect when applied to a vector.
+      Moreover, exponential methods do not need to evaluate the exponential or the $\varphi$-functions of the matrix, but their effect when applied to a vector.
       For instance, the exponential Rosenbrock--Euler method from equation (\ref{eq:expeuler}) does not need to compute $\varphi_1\left(\Delta t L\right)$ but $\varphi_1\left(\Delta t L\right)f\left(y_n\right)$.
       It means we do not need to evaluate the function $g$ on the matrix $A$, but to compute its effect on the vector $b$.
       The idea, originally developed to approximate eigenvalues of a large sparse matrix, is to use a Krylov subspace method to approximate $g\left(A\right)b$ \cite{Saad1992, Sidje1998}.

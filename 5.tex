@@ -26,8 +26,8 @@
       \begin{equation}\label{eq:pde_2}
         \frac{\partial u}{\partial t} + \nabla \cdot F\left(u\right) = 0 \ ,
       \end{equation}
-      $u$ is a $p$-degree polynomial of the position variables, where the polynomial coefficients are functions of time.
-      Then $F\left(u\right)$ has to be a $p\!+\!1$-order polynomial of the position variables.
+      $u$ is a $p$-degree polynomial of the coordinate variables, where the polynomial coefficients are functions of time.
+      Then $F\left(u\right)$ has to be a $p\!+\!1$-order polynomial of the coordinate variables.
       The key to the Spectral Difference method is how to compute a $p + 1$-order $F\left(u\right)$ from a $p$-order $u$.
       This method uses key elements that were first mentioned by \cite{Kopriva1996}, and was later developed by \cite{LiuVinokurWang2006}.
 
@@ -132,13 +132,54 @@
       Indeed, the solution is assumed constant in the cell, represented by the value at its barycenter.
       The flux balance is made at the cell interfaces with a Riemann solver.
       This correspond to the placement of the solution and flux points in figure \ref{fig:sd_points} when $p = 0$.
+      For higher $p$ we have a true Spectral Difference method, of order $p$ \PS{preuve de l'ordre ?}.
+      In JAGUAR, we can chose the order $p$ from 2 to 10 \PS{10 en pratique ?}.
 
 
     \subsection{Exponential integration methods in JAGUAR}
 
+      \paragraph{}
+      We now have a high-order spatial discretisation method, so that when we test our high-order time integration methods the resulting error will come mostly from the time integration and not the spatial discretisation.
+      The development of an exponential time integration method was inexpensive within CEDRE as the method reuses lots of already existing parts.
+      For JAGUAR that only have explicit methods, we would have to develop the Arnoldi iteration in addition to the exponential computation functions.
+      As this work does not aim to produce a finely tuned method for JAGUAR but to analyse scientifically exponential methods, we decided to rely on the SLEPc library \cite{HernandezRomanVidal2005}.
+      The Scalable Library for Eigenvalue Problem Computation, or SLEPc, is an extension of the software library PETSc \cite{petsc-web-page,petsc-user-ref,petsc-efficient}.
+      Instead of rewriting the algorithms we need, we can use their SLEPc implementation.
+      In particular, SLEPc handles what it calls \emph{Matrix Function} objects or MFN:
+      \begin{quote}
+        "Given a matrix $A$ and a vector $b$, the call \mintinline{c}{MFNSolve(mfn, b, x)} computes \\
+        $x=f\left(A\right) b$, where $f$ is a function such as the exponential."
+      \end{quote}
+      As it handles the previously introduced $\varphi$-functions with its MFN objects, SLEPc is then the obvious choice of library for implementing exponential integration methods.
+      Furthermore, because it relies on PETSc, it is efficiently scalable to fit our multiprocessing needs.
+
+      \paragraph{}
+      We saw that exponential methods are based on a decomposition of the ordinary differential equation such as equation (\ref{eq:ode_split}).
+      However, JAGUAR uses only explicit time integration methods, so no Jacobian matrix is available.
+      Computing analytically the Jacobian matrix would prove challenging as we would have to differentiate the Spectral Difference scheme, the Riemann solvers, the diffusion scheme, etc.
+      It is not insurmountable, but would amount to more work than what we can afford during this thesis.
+      We decided instead to reuse the work from the previous part: the Jacobian matrix will not be formed, but its effect will be computed by a finite difference approximation.
+      An other reason to work with the SLEPc library is that using a finite difference approximation is easy with it.
+      More precisely, it is PETSc that handles this approximation.
+      To sum up, to compute $\varphi_k\left(L\right)b$ that is required for our exponential methods with $L = f'\left(y\right)$, we first use the fact that $L$ is a Jacobian matrix to create it with the appropriate PETSc data type.
+      We only need to indicate to PETSc what function $L$ it is the Jacobian matrix of: $f$.
+      Then, after setting the MFN object of SLEPc, we can compute the desired result.
+      The Arnoldi iteration, the Scaling and Squaring algorithm and the exponential evaluation are all handled internally by the library.
+      Overall, this procedure is extremely simple from our perspective and require only few lines of code to implement.
+      This highlight the relevance of using the SLEPc library.
+
+      \paragraph{}
+      With what we described, we are able to write an exponential time integration method in JAGUAR.
+      Other people that also work with JAGUAR did develop implicit time integration methods using PETSc.
+      To continue in this direction, we decided to add a time integration method based on the generic PETSc Time Stepper \cite{AbhyankarBrownConstantinescuEtAl2018}.
+      This way, a user may use most methods from PETSc in JAGUAR with no additional developments
+      It includes any explicit and implicit time integration methods, but also nonlinear solvers such as Newton's methods with various line searches algorithms, linear solvers with various Krylov subspace methods and finally various preconditioning.
+      However, this generic PETSc Time Stepper method was added on the side of this thesis, and therefore will not be discussed here, along with the previous work on implicit methods.
 
 
-
+    \paragraph{}
+    In the end, we now have a high-order spatial discretisation method with the Spectral Difference method that allows us to analyse and compare exponential methods.
+    In the following, we will work with the three methods we developed in JAGUAR and we presented earlier in table \ref{tab:exp_rb_butcher}: the Rosenbrock--Euler, ExpRB32 and ExpRB42 methods.
 
 
   \section{Analysis of exponential time integration methods}
