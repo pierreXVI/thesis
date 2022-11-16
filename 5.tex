@@ -207,7 +207,7 @@
     \subsection{Order: convected inviscid isentropic vortex}
 
       \paragraph{}
-      For the first testwe wanted to see if the orders of the exponential time integration methods were the correct ones when used in JAGUAR.
+      For the first test we wanted to see if the orders of the exponential time integration methods were the correct ones when used in JAGUAR.
       We decided to use the same test case we used with CEDRE: the 2D inviscid isentropic vortex.
       The case is still described by equation \ref{eq:covo}, but the numerical values are different.
       The convective flow Mach number is still $0.5$, but this time $P_\infty = 10^5$ and $T_\infty = 300$.
@@ -215,6 +215,34 @@
       The mesh represent the 2D box $\left[0, L\right]^2$ with $L = 0.1$, and the vortex is defined by its characteristic radius $R_0 = 0.005$ and its intensity $\beta = 0.2$.
       It correspond in fact to the same vortex as the one we used with CEDRE, in size and in intensity, but it has been scaled down into a smaller box, and dimensionned to some given pressure and temperature.
       \PS{unités ?}
+
+      \paragraph{}
+      The period for those numerical values is \PS{TODO}.
+      After 20 periods, we can compute the error for a variable $u\left(\vec{x}, t\right)$:
+      \begin{equation}
+        \operatorname{err}\left(u\right) = \int_{\left[0, L\right]^2} \norm[2]{u\left(\vec{x}, 20T\right) - u\left(\vec{x}, 0\right)} \mathrm{d}\vec{x} \ .
+      \end{equation}
+      Because it is a periodic case, the initial value correspond to the exact solution.
+      This error corresponds then to the error of the time integration method.
+      By looking at this error as a function of the time step, we can determine the order of our time integration methods.
+
+      \paragraph{}
+      The error we get is the global truncation error: the error the method makes while getting to a fixed time, no matter how much iteration it took.
+      However we previously defined the order of a time integration method using the local truncation error: the error it makes after a single small step.
+      There is a link between global and local truncation errors for our single-step methods.
+      Let us call $\tau_n$ the local truncation error and $e_n$ the global truncation error at step $n$.
+      Because our methods are single-step methods that can be written as:
+      \begin{equation}
+        y_{n+1} = y_n + \Delta t_n g\left(y_n, \Delta t_n\right) \ ,
+      \end{equation}
+      with a $K$-Lipschitz continuous increment function $g$, we have \PS{Suli, E., and Mayers, D. F. (2003). An introduction to numerical analysis. Cambridge University Press.}:
+      \begin{equation}
+        \left| e_n \right| \leq \frac{\max_{1 \leq i \leq n} \left| \tau_i \right|}{K \Delta t_n} \left(e^{K\left(t_n - t_0\right)} - 1\right) \ .
+      \end{equation}
+      A method is a $p$-order method if $\tau_n = O\left(\Delta t^{p+1}\right)$.
+      Therefore, a $p$-order method verify $e_n = O\left(\Delta t^{p}\right)$.
+      \PS{Mais du coup on va montrer qu'on a le bon ordre sur l'errreur globale, ca n'implique rien sur l'ordre de la méthode ?????????}
+
 
     \subsection{Robustness: Taylor--Green vortex}
     \subsection{Industrial application: LS89}

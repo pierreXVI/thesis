@@ -242,7 +242,7 @@
         \begin{equation}
           \Xi_1 - \Xi\left(t_0 + \Delta t\right) = O\left(\Delta t^{p+1}\right) \ .
         \end{equation}
-        This means a $p$ order method can recover exactly a solution that is a polynomial function of time with an order less or equal to $p$.
+        This means a $p$-order method can recover exactly a solution that is a polynomial function of time with an order less or equal to $p$.
 
         \paragraph{Note:}
         The order of a time integration method reflects its "local" behaviour, meaning on a single given time step, provided it is small enough.
@@ -254,7 +254,7 @@
         We notice a difference between the two definitions: the error order of magnitude is $p+1$ for the temporal method and $p$ for the spatial one.
         This is due to the fact that the error we look at in the spatial case is global: it sums the error over the whole domain.
         It would correspond to counting the error on each step for the temporal integration.
-        To convince oneself, we could say that when solving the differential equation \PS{on/in} an interval $\left[0, T\right]$ with a fixed $T$, the global error of a $p$ order method would \PS{be of, in, behave like ?} $O\left(\Delta t^p\right)$ as it amounts to summing $T/\Delta t$ local errors of $O\left(\Delta t^{p+1}\right)$.
+        To convince oneself, we could say that when solving the differential equation \PS{on/in} an interval $\left[0, T\right]$ with a fixed $T$, the global error of a $p$-order method would \PS{be of, in, behave like ?} $O\left(\Delta t^p\right)$ as it amounts to summing $T/\Delta t$ local errors of $O\left(\Delta t^{p+1}\right)$.
         We then get the coherency with the definition of the order for spatial discretisation methods.
         If this trick can help understand the difference between the two definitions, this is indeed just a mental trick and not a rigorous mathematical proof.
         To get this proof, more hypotheses on the method are required \cite{Iserles2008}.
