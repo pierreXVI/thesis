@@ -204,7 +204,7 @@
     Therefore we do not need to keep track of the intermediate stages in memory, only to update the current value, which gives the name low-storage method.
     The last two methods are Runge--Kutta methods with an additional property first called TVD \cite{GottliebShu1996} and more recently SSP  \cite{GottliebShuTadmor2001}.
     Without going into too much detail, it means that they are methods that are convex combinations of explicit Euler steps, so that their stability is guaranteed for sufficiently small time steps.
-    It means they are defined differently than other methods, using the coefficients $\alpha_{0 < i \leq k, 0\leq j < i}$ and $\beta_{0 < i \leq k, 0\leq j < i}$ as:
+    To us, it means they are defined differently than other methods, using the coefficients $\alpha_{0 < i \leq k, 0\leq j < i}$ and $\beta_{0 < i \leq k, 0\leq j < i}$ as:
     \begin{equation}
       \left\{\begin{aligned}
         y_{n+1} &= y^{\left(k\right)} \\
