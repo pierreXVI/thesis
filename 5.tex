@@ -190,7 +190,7 @@
     We now have in JAGUAR all the tools necessary to analyse exponential time integration methods.
     We have to choose several test cases to do so.
     We compare the exponential methods to explicit Runge--Kutta methods as they are the only available methods in JAGUAR.
-    Among those methods we look at the following:
+    Those methods are:
     \begin{itemize}
       \item RK2, the Midpoint method
       \item RK4, the classical four stage fourth-order method
@@ -198,11 +198,11 @@
       \item RK3SHU, a 3 stage third-order TVD method from \cite{ShuOsher1988, GottliebShu1996}
       \item SSPRK(5, 4), an optimal SSP 5 stage fourth-order method from \cite{SpiteriRuuth2002}.
     \end{itemize}
-    Low-storage methods are Runge--Kutta methods for which the matrix $A$ in their Butcher tableau is lower diagonal, or in other words all $a_{ij}$ are null except for $j = i - 1$.
+    Low-storage methods are Runge--Kutta methods for which the matrix $A$ in their Butcher tableau is lower diagonal, or in other words all $a_{ij}$ are null except when $j = i - 1$.
     Also, all $b_i$ are null except the last one that is equal to $1$.
     It means that the final stage and all intermediate ones use only the previous stage.
     Therefore we do not need to keep track of the intermediate stages in memory, only to update the current value, which gives the name low-storage method.
-    The last two methods are Runge--Kutta methods with an additional property first called TVD \cite{GottliebShu1996} and more recently SSP  \cite{GottliebShuTadmor2001}.
+    The last two methods are Runge--Kutta methods with an additional property originally called TVD \cite{GottliebShu1996} and more recently SSP  \cite{GottliebShuTadmor2001}.
     Without going into too much detail, it means that they are methods that are convex combinations of explicit Euler steps, so that their stability is guaranteed for sufficiently small time steps.
     To us, it means they are defined differently than other methods, using the coefficients $\alpha_{0 < i \leq k, 0\leq j < i}$ and $\beta_{0 < i \leq k, 0\leq j < i}$ as:
     \begin{equation}
@@ -219,7 +219,7 @@
         b_i &= \sum_{l = i+1}^{k} \alpha_{k, l-1} a_{l, i} + \beta_{k, i-1}
       \end{aligned}\right. \ .
     \end{equation}
-
+    We can finally say that we are indeed working with explicit Runge--Kutta methods, as they were introduced initially.
 
 
     \subsection{Order: convected inviscid isentropic vortex}
@@ -253,14 +253,22 @@
       \begin{equation}
         y_{n+1} = y_n + \Delta t_n g\left(y_n, \Delta t_n\right) \ ,
       \end{equation}
-      with a $K$-Lipschitz continuous increment function $g$, we have \cite{SueliMayers2003}:
+      with an increment function $g$ that is $K$-Lipschitz continuous in the $y$ variable, we have \cite{SueliMayers2003}:
       \begin{equation}
         \left| e_n \right| \leq \frac{\max_{1 \leq i \leq n} \left| \tau_i \right|}{K \Delta t_n} \left(e^{K\left(t_n - t_0\right)} - 1\right) \ .
       \end{equation}
       A method is a $p$-order method if $\tau_n = O\left(\Delta t^{p+1}\right)$.
       Therefore, a $p$-order method verify $e_n = O\left(\Delta t^{p}\right)$.
-      What interest us is the global truncation error, as it is the error a user look at, and this is why we look at it in this test case.
-      \PS{Mais du coup on va montrer qu'on a le bon ordre sur l'erreur globale, ca n'implique rien sur l'ordre de la méthode ?????????}
+      However, the reciprocal is not true: just because we observe a global truncation error is $e_n = O\left(\Delta t^{p}\right)$ does not mean the order of the method is $p$.
+      Here we do not look at the error to show the method orders are correct, but to see if we end up with the expected order for the global truncation error, as it is the error a user look at.
+      The proof of the order for a method is analytical, by writing the partial Taylor series of the exact solution, as we did earlier for the exponential Rosenbrock--Euler method.
+
+
+      \paragraph{}
+      The point of this analysis is to see how the global truncation error depends on the time step $\Delta t$ that is kept constant throughout the computations.
+      Because some methods are more accurate than others, we did several computations with different meshes resolution and Spectral Difference method orders.
+      It means that the error from accurate methods on coarse meshes with a low-order Spectral Difference method will not represent the error from the time integration method, 
+
 
 
     \subsection{Robustness: Taylor--Green vortex}
