@@ -150,6 +150,7 @@
         "Given a matrix $A$ and a vector $b$, the call \mintinline{c}{MFNSolve(mfn, b, x)} computes \\
         $x=f\left(A\right) b$, where $f$ is a function such as the exponential."
       \end{quote}
+      This is precisely what we need to develop our methods:
       As it handles the previously introduced $\varphi$-functions with its MFN objects, SLEPc is then the obvious choice of library for implementing exponential integration methods.
       Furthermore, because it relies on PETSc, it is efficiently scalable to fit our multiprocessing needs.
 
@@ -189,19 +190,36 @@
     We now have in JAGUAR all the tools necessary to analyse exponential time integration methods.
     We have to choose several test cases to do so.
     We compare the exponential methods to explicit Runge--Kutta methods as they are the only available methods in JAGUAR.
-    Apart from the classical Midpoint RK2 method and four stage fourth-order RK4 method, all methods are low-storage Runge--Kutta methods.
-    It means that the matrix $A$ in their Butcher tableau is lower diagonal, or in other words all $a_{ij}$ are null except for $j = i - 1$.
-    It also means that all $b_i$ are null except the last one that is equal to $1$.
-    Finally, it means that the final stage and all intermediate ones use only the previous stage.
-    Therefore we do not need to keep track of the intermediate steps in memory, only to update the current value, which gives the name of the method.
     Among those methods we look at the following:
     \begin{itemize}
-      \item RK6LDLD, a 6 stage second-order method of Bogey and Bailly \PS{ref}
-      \item RK6SD, a 6 stage second-order method optimised for SD by \PS{ref ?}
-      \item RK3SHU, a 3 stage thirt-order TVD method \PS{définir TVD ?}
-      \item \PS{Où est passée RK4SHU ?}
-      \item \PS{Est-ce que je rajoute RK54RUUSPI ?}.
+      \item RK2, the Midpoint method
+      \item RK4, the classical four stage fourth-order method
+      \item RKo6s, a low-storage 6 stage second-order method from \cite{BogeyBailly2004}
+      \item RK3SHU, a 3 stage third-order TVD method from \cite{ShuOsher1988, GottliebShu1996}
+      \item SSPRK(5, 4), an optimal SSP 5 stage fourth-order method from \cite{SpiteriRuuth2002}.
     \end{itemize}
+    Low-storage methods are Runge--Kutta methods for which the matrix $A$ in their Butcher tableau is lower diagonal, or in other words all $a_{ij}$ are null except for $j = i - 1$.
+    Also, all $b_i$ are null except the last one that is equal to $1$.
+    It means that the final stage and all intermediate ones use only the previous stage.
+    Therefore we do not need to keep track of the intermediate stages in memory, only to update the current value, which gives the name low-storage method.
+    The last two methods are Runge--Kutta methods with an additional property first called TVD \cite{GottliebShu1996} and more recently SSP  \cite{GottliebShuTadmor2001}.
+    Without going into too much detail, it means that they are methods that are convex combinations of explicit Euler steps, so that their stability is guaranteed for sufficiently small time steps.
+    It means they are defined differently than other methods, using the coefficients $\alpha_{0 < i \leq k, 0\leq j < i}$ and $\beta_{0 < i \leq k, 0\leq j < i}$ as:
+    \begin{equation}
+      \left\{\begin{aligned}
+        y_{n+1} &= y^{\left(k\right)} \\
+        \textrm{with}\quad y^{\left(i\right)} &= \sum_{j = 0}^{i-1} \alpha_{ij} y^{\left(j\right)} + \Delta t \beta_{ij} f\left(y^{\left(j\right)}\right) , \quad 1 \leq i \leq k\\
+        \textrm{and}\quad y^{\left(0\right)} &= y_n
+      \end{aligned}\right. \ .
+    \end{equation}
+    However, they are equivalent to traditional Runge--Kutta methods in the sense that they can be represented by the standard Butcher tableau, with:
+    \begin{equation}
+      \left\{\begin{aligned}
+        a_{ij} &= \sum_{l = j+1}^{i-1} \alpha_{i-1, l-1} a_{l, j} + \beta_{i-1, j-1} \\
+        b_i &= \sum_{l = i+1}^{k} \alpha_{k, l-1} a_{l, i} + \beta_{k, i-1}
+      \end{aligned}\right. \ .
+    \end{equation}
+
 
 
     \subsection{Order: convected inviscid isentropic vortex}
@@ -213,14 +231,14 @@
       The convective flow Mach number is still $0.5$, but this time $P_\infty = 10^5$ and $T_\infty = 300$.
       The heat capacity ratio is $\gamma = 1.4$ and the specific gas constant is $r_\textrm{gas} = 287.058$.
       The mesh represent the 2D box $\left[0, L\right]^2$ with $L = 0.1$, and the vortex is defined by its characteristic radius $R_0 = 0.005$ and its intensity $\beta = 0.2$.
-      It correspond in fact to the same vortex as the one we used with CEDRE, in size and in intensity, but it has been scaled down into a smaller box, and dimensionned to some given pressure and temperature.
+      It correspond in fact to the same vortex as the one we used with CEDRE, in size and in intensity, but it has been scaled down into a smaller box, and dimensioned to some given pressure and temperature.
       \PS{unités ?}
 
       \paragraph{}
       The period for those numerical values is \PS{TODO}.
-      After 20 periods, we can compute the error for a variable $u\left(\vec{x}, t\right)$:
+      After 20 periods, we can compute the L2 error for a scalar variable $u\left(\vec{x}, t\right)$:
       \begin{equation}
-        \operatorname{err}\left(u\right) = \int_{\left[0, L\right]^2} \norm[2]{u\left(\vec{x}, 20T\right) - u\left(\vec{x}, 0\right)} \mathrm{d}\vec{x} \ .
+        \operatorname{err}\left(u\right) = \left(\int_{\left[0, L\right]^2} \left|u\left(\vec{x}, 20T\right) - u\left(\vec{x}, 0\right)\right|^2 \mathrm{d}\vec{x} \right)^{1/2} \ .
       \end{equation}
       Because it is a periodic case, the initial value correspond to the exact solution.
       This error corresponds then to the error of the time integration method.
@@ -235,13 +253,14 @@
       \begin{equation}
         y_{n+1} = y_n + \Delta t_n g\left(y_n, \Delta t_n\right) \ ,
       \end{equation}
-      with a $K$-Lipschitz continuous increment function $g$, we have \PS{Suli, E., and Mayers, D. F. (2003). An introduction to numerical analysis. Cambridge University Press.}:
+      with a $K$-Lipschitz continuous increment function $g$, we have \cite{SueliMayers2003}:
       \begin{equation}
         \left| e_n \right| \leq \frac{\max_{1 \leq i \leq n} \left| \tau_i \right|}{K \Delta t_n} \left(e^{K\left(t_n - t_0\right)} - 1\right) \ .
       \end{equation}
       A method is a $p$-order method if $\tau_n = O\left(\Delta t^{p+1}\right)$.
       Therefore, a $p$-order method verify $e_n = O\left(\Delta t^{p}\right)$.
-      \PS{Mais du coup on va montrer qu'on a le bon ordre sur l'errreur globale, ca n'implique rien sur l'ordre de la méthode ?????????}
+      What interest us is the global truncation error, as it is the error a user look at, and this is why we look at it in this test case.
+      \PS{Mais du coup on va montrer qu'on a le bon ordre sur l'erreur globale, ca n'implique rien sur l'ordre de la méthode ?????????}
 
 
     \subsection{Robustness: Taylor--Green vortex}

@@ -538,7 +538,7 @@
         \paragraph{}
         Runge--Kutta methods can also be implicit methods.
         This happens when the quadratures use points that have not already been computed.
-        In other words, this corresponds to a full $A$ matrix in the butcher tableau, where it is strictly lower triangular for explicit Runge--Kutta methods.
+        In other words, this corresponds to a full $A$ matrix in the Butcher tableau, where it is strictly lower triangular for explicit Runge--Kutta methods.
         This also means that any step of the Runge--Kutta method may be used in any other step, and therefore we may have to simultaneously solve an implicit system of equations.
         This may lead to awfully expensive methods, and therefore users tend to restrict themselves to some particular methods.
 

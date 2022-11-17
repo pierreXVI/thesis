@@ -1802,6 +1802,86 @@ Studies were made at the Naval Ordnance Laboratory of the shock detachment dista
   file     = {:On the Stability and Accuracy of the Spectral Difference Method - Van den AbeeleLacorWang.pdf:PDF},
 }
 
+@Book{SueliMayers2003,
+  author    = {Süli, Endre and Mayers, David F.},
+  publisher = {Cambridge University Press},
+  title     = {An introduction to numerical analysis},
+  year      = {2003},
+  doi       = {10.1017/CBO9780511801181},
+  file      = {:books/An Introduction to Numerical Analysis - SüliMayers.pdf:PDF},
+  place     = {Cambridge},
+}
+
+@Article{BogeyBailly2004,
+  author   = {Bogey, Christophe and Bailly, Christophe},
+  journal  = {Journal of Computational Physics},
+  title    = {A family of low dispersive and low dissipative explicit schemes for flow and noise computations},
+  year     = {2004},
+  issn     = {0021-9991},
+  number   = {1},
+  pages    = {194--214},
+  volume   = {194},
+  abstract = {Explicit numerical methods for spatial derivation, filtering and time integration are proposed. They are developed with the aim of computing flow and noise with high accuracy and fidelity. All the methods are constructed in the same way by minimizing the dispersion and the dissipation errors in the wavenumber space up to kΔx=π/2 corresponding to four points per wavelength. They are shown to be more accurate, and also more efficient numerically, than most of the standard explicit high-order methods, for uniform and slowly non-uniform grids. Two problems involving long-range sound propagation are resolved to illustrate their respective precisions. Remarks about their practical applications are then made, especially about the connection with the boundary conditions. Finally, their relevance for the simulation of turbulent flows is emphasized.},
+  doi      = {10.1016/j.jcp.2003.09.003},
+  file     = {:A Family of Low Dispersive and Low Dissipative Explicit Schemes for Flow and Noise Computations - BogeyBailly.pdf:PDF},
+  keywords = {Explicit schemes, Low dispersion, Low dissipation, High-order, Finite differences, Selective filters, Low storage Runge–Kutta algorithms, Computational aeroacoustics, Large Eddy Simulation},
+  url      = {https://www.sciencedirect.com/science/article/pii/S0021999103004662},
+}
+
+@Article{SpiteriRuuth2002,
+  author   = {Spiteri, Raymond J. and Ruuth, Steven J.},
+  journal  = {SIAM Journal on Numerical Analysis},
+  title    = {A new class of optimal high-order strong-stability-preserving time discretization methods},
+  year     = {2002},
+  number   = {2},
+  pages    = {469--491},
+  volume   = {40},
+  abstract = {Strong-stability-preserving (SSP) time discretization methods have a nonlinear stability property that makes them particularly suitable for the integration of hyperbolic conservation laws where discontinuous behavior is present. Optimal SSP schemes have been previously found for methods of order 1, 2, and 3, where the number of stages s equals the order p. An optimal low-storage SSP scheme with s=p=3 is also known. In this paper, we present a new class of optimal high-order SSP and low-storage SSP Runge--Kutta schemes with s>p. We find that these schemes are ultimately more efficient than the known schemes with s=p because the increase in the allowable time step more than offsets the added computational expense per step. We demonstrate these efficiencies on a set of scalar conservation laws.},
+  doi      = {10.1137/S0036142901389025},
+  eprint   = {https://doi.org/10.1137/S0036142901389025},
+  file     = {:A New Class of Optimal High Order Strong Stability Preserving Time Discretization Methods - SpiteriRuuth.pdf:PDF},
+}
+
+@Article{ShuOsher1988,
+  author   = {Shu, Chi-Wang and Osher, Stanley},
+  journal  = {Journal of Computational Physics},
+  title    = {Efficient implementation of essentially non-oscillatory shock-capturing schemes},
+  year     = {1988},
+  issn     = {0021-9991},
+  number   = {2},
+  pages    = {439--471},
+  volume   = {77},
+  abstract = {In the computation of discontinuous solutions of hyperbolic conservation laws, TVD (total-variation-diminishing), TVB (total-variation-bounded), and the recently developed ENO (essentially non-oscillatory) schemes have proven to be very useful. In this paper two improvements are discussed: a simple TVD Runge-Kutta type time discretization, and an ENO construction procedure based on fluxes rather than on cell averages. These improvements simplify the schemes considerably-especially for multi-dimensional problems with forcing terms. Preliminary numerical results are also given.},
+  doi      = {10.1016/0021-9991(88)90177-5},
+  file     = {:Efficient Implementation of Essentially Non Oscillatory Shock Capturing Schemes - ShuOsher.pdf:PDF},
+  url      = {https://www.sciencedirect.com/science/article/pii/0021999188901775},
+}
+
+@Article{GottliebShu1996,
+  author  = {Gottlieb, Sigal and Shu, Chi-Wang},
+  journal = {Mathematics of Computation},
+  title   = {Total variation diminishing {R}unge--{K}utta schemes.},
+  year    = {1996},
+  month   = aug,
+  volume  = {67},
+  doi     = {10.1090/S0025-5718-98-00913-2},
+  file    = {:Total Variation Diminishing Runge Kutta Schemes. - GottliebShu.pdf:PDF},
+}
+
+@Article{GottliebShuTadmor2001,
+  author   = {Gottlieb, Sigal and Shu, Chi-Wang and Tadmor, Eitan},
+  journal  = {SIAM Review},
+  title    = {Strong stability-preserving high-order time discretization methods},
+  year     = {2001},
+  number   = {1},
+  pages    = {89--112},
+  volume   = {43},
+  abstract = {In this paper we review and further develop a class of strong stability-preserving (SSP) high-order time discretizations for semidiscrete method of lines approximations of partial differential equations. Previously termed TVD (total variation diminishing) time discretizations, these high-order time discretization methods preserve the strong stability properties of first-order Euler time stepping and have proved very useful, especially in solving hyperbolic partial differential equations. The new developments in this paper include the construction of optimal explicit SSP linear Runge--Kutta methods, their application to the strong stability of coercive approximations, a systematic study of explicit SSP multistep methods for nonlinear problems, and the study of the SSP property of implicit Runge--Kutta and multistep methods.},
+  doi      = {10.1137/S003614450036757X},
+  eprint   = {https://doi.org/10.1137/S003614450036757X},
+  file     = {:Strong Stability Preserving High Order Time Discretization Methods - GottliebShuTadmor.pdf:PDF},
+}
+
 @Comment{jabref-meta: databaseType:bibtex;}
 
 @Comment{jabref-meta: fileDirectoryLatex-pierre-ubuntu-XVI:/home/pierre/latex;}
