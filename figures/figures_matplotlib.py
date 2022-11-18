@@ -24,7 +24,9 @@ plt.rcParams.update({
     'lines.linewidth': 3,
     'text.latex.preamble': r"\usepackage{amsmath}",
     'text.usetex': True,
-    'font.size': 15
+    'font.size': 15,
+    'mathtext.fontset': 'cm',
+    'font.family': 'STIXGeneral'
 })
 
 
@@ -68,54 +70,54 @@ def fig_rk():
 
 
 def fig_bdf():
-    plt.rcParams['text.latex.preamble'] = r'\usepackage{sfmath} \boldmath'
+    with plt.rc_context({'text.latex.preamble': r'\usepackage{sfmath} \boldmath'}):
 
-    def r(k):
-        def sub_r(z):
-            coeff = np.zeros(k + 1, dtype=complex)
-            for _i in range(1, k + 1):
-                coeff[0] += 1 / _i
-                coeff[_i] = np.power(-1, _i) * scipy.special.binom(k, _i) / _i
-            coeff[0] -= z
-            return (np.abs(np.roots(coeff)) < 1).all()
+        def r(k):
+            def sub_r(z):
+                coeff = np.zeros(k + 1, dtype=complex)
+                for _i in range(1, k + 1):
+                    coeff[0] += 1 / _i
+                    coeff[_i] = np.power(-1, _i) * scipy.special.binom(k, _i) / _i
+                coeff[0] -= z
+                return (np.abs(np.roots(coeff)) < 1).all()
 
-        return np.vectorize(sub_r)
+            return np.vectorize(sub_r)
 
-    fig = plt.figure(figsize=(16, 10))
-    c = [.8, .0, .0, 1]
-    for (i, x_min, x_max, y_min, y_max) in zip((1, 2, 3, 4, 5, 6),
-                                               (-2, -2, -4, -4, -10, -20),
-                                               (3, 5, 8, 14, 25, 40),
-                                               (-2, -3, -5, -8, -15, -30),
-                                               (2, 3, 5, 8, 15, 30),
-                                               ):
-        res_x = 500
-        res_y = 500
+        fig = plt.figure(figsize=(16, 10))
+        c = [.8, .0, .0, 1]
+        for (i, x_min, x_max, y_min, y_max) in zip((1, 2, 3, 4, 5, 6),
+                                                   (-2, -2, -4, -4, -10, -20),
+                                                   (3, 5, 8, 14, 25, 40),
+                                                   (-2, -3, -5, -8, -15, -30),
+                                                   (2, 3, 5, 8, 15, 30),
+                                                   ):
+            res_x = 500
+            res_y = 500
 
-        x, y = np.meshgrid(np.linspace(x_min, x_max, res_x), np.linspace(y_min, y_max, res_y))
+            x, y = np.meshgrid(np.linspace(x_min, x_max, res_x), np.linspace(y_min, y_max, res_y))
 
-        ax = fig.add_subplot(2, 3, i)
-        ax.grid(False)
-        ax.set_aspect('equal')
-        for axis in ('left', 'bottom'):
-            ax.spines[axis].set_position('zero')
-            ax.spines[axis].set_linewidth(2)
-        for axis in ('right', 'top'):
-            ax.spines[axis].set_color('none')
-        ax.xaxis.set_tick_params(labelsize=20)
-        ax.yaxis.set_tick_params(labelsize=20)
-        ax.yaxis.tick_left()
-        ax.xaxis.tick_bottom()
-        rk_i = r(i)(x + 1j * y)
-        ax.pcolormesh(x, y, np.ma.masked_array(rk_i, mask=1 - rk_i), cmap=matplotlib.colors.ListedColormap([c]),
-                      shading='auto')
-        ax.plot([None], '--', c=c, lw=20)
-        ax.set_title(r'\textbf{{ BDF{0} }}'.format(i), y=-.1, fontsize=30, pad=-10)
-        ax.grid(True)
+            ax = fig.add_subplot(2, 3, i)
+            ax.grid(False)
+            ax.set_aspect('equal')
+            for axis in ('left', 'bottom'):
+                ax.spines[axis].set_position('zero')
+                ax.spines[axis].set_linewidth(2)
+            for axis in ('right', 'top'):
+                ax.spines[axis].set_color('none')
+            ax.xaxis.set_tick_params(labelsize=20)
+            ax.yaxis.set_tick_params(labelsize=20)
+            ax.yaxis.tick_left()
+            ax.xaxis.tick_bottom()
+            rk_i = r(i)(x + 1j * y)
+            ax.pcolormesh(x, y, np.ma.masked_array(rk_i, mask=1 - rk_i), cmap=matplotlib.colors.ListedColormap([c]),
+                          shading='auto')
+            ax.plot([None], '--', c=c, lw=20)
+            ax.set_title(r'\textbf{{ BDF{0} }}'.format(i), y=-.1, fontsize=30, pad=-10)
+            ax.grid(True)
 
-    plt.subplots_adjust(0.00, 0.075, 1.0, 0.99, 0.05, 0.25)
-    # plt.show()
-    plt.savefig("bdf_stab.png", transparent=True)
+        plt.subplots_adjust(0.00, 0.075, 1.0, 0.99, 0.05, 0.25)
+        # plt.show()
+        plt.savefig("bdf_stab.png", transparent=True)
 
 
 def fig_ab():
@@ -148,7 +150,7 @@ def fig_ab():
             coeff = np.zeros(k + 1, dtype=complex)
             coeff[0] = 1
             for _i in range(1, k + 1):
-                coeff[i] = -z * lbd(_i - 1, k)
+                coeff[_i] = -z * lbd(_i - 1, k)
             coeff[1] -= 1
             return (np.abs(np.roots(coeff)) <= 1).all()
 
@@ -749,8 +751,6 @@ def covo_rk2_rk4():
         lines_rk4.append(ax.loglog(data_x, data_y, 'x-', lw=2, ms=8, label="RK4, N = {0}".format(mesh))[0])
         ax.loglog([0.01, 0.1], [data_y[0], data_y[0]], 'k--', lw=2)
 
-    matplotlib.rcParams['mathtext.fontset'] = 'cm'
-    matplotlib.rcParams['font.family'] = 'STIXGeneral'
     ax.legend([lines_rk2, lines_rk4], ['RK2', 'RK4'], loc='lower center', bbox_to_anchor=(0.8, 0.1),
               handler_map={list: matplotlib.legend_handler.HandlerTuple(ndivide=None)}, handlelength=6)
     ax.text(0.1, 0.9, r'$16 \times 16$', transform=ax.transAxes, fontsize=20,
