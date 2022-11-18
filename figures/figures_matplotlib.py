@@ -183,6 +183,8 @@ def fig_ab():
 def fig_preconditioning():
     from scipy.sparse.linalg import gmres as gmres_scipy
 
+    rng = np.random.RandomState(161616)
+
     class GMRESCounter:
         def __init__(self, res0=1):
             self.niter = 0
@@ -201,7 +203,7 @@ def fig_preconditioning():
 
     n = 200
     angle = 2 * np.arange(n) * np.pi / (n - 1)
-    a = np.diagflat(2 * np.sin(angle) - 1 + 1j * np.cos(angle)) + np.random.normal(size=(n, n)) / (2 * np.sqrt(n))
+    a = np.diagflat(2 * np.sin(angle) - 1 + 1j * np.cos(angle)) + rng.normal(size=(n, n)) / (2 * np.sqrt(n))
 
     val = scipy.linalg.eigvals(a)
     cond_a = np.linalg.cond(a)
@@ -231,6 +233,8 @@ def fig_preconditioning():
 
 
 def fig_eps():
+    rng = np.random.RandomState(12)
+
     class EpsWP2:
 
         def __str__(self):
@@ -280,11 +284,11 @@ def fig_eps():
 
         @staticmethod
         def x(_n):
-            return np.random.random(_n) + 10
+            return rng.random(_n) + 10
 
         @staticmethod
         def v(_n):
-            return 1e-1 * (2 * np.random.random(_n) - 1)
+            return 1e-1 * (2 * rng.random(_n) - 1)
 
     class Euler:
         gamma = 1.4
@@ -340,7 +344,7 @@ def fig_eps():
 
         @staticmethod
         def v(_n):
-            _v = np.random.random((_n, 3))
+            _v = rng.random((_n, 3))
             _v[:, 0] *= 1e-3
             _v[:, 1] *= 1e-2
             _v[:, 2] *= 1e+2
@@ -695,7 +699,7 @@ def covo_rk2():
             data_x.append(cfl)
             data_y.append(error)
 
-        ax.loglog(data_x, data_y, 'x-', lw=2, ms=8, label="N = {0}".format(mesh))
+        ax.loglog(data_x, data_y, 'x-', lw=2, ms=8, label="$N = {0}$".format(mesh))
 
     ax.grid(True)
     ax.set_xlabel(r'$\mathcal{N}_\textrm{CFL}$')
