@@ -1,10 +1,12 @@
+import os
+
 import matplotlib.colors as clr
 import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.linalg
 import scipy.special
-from postprocess import bibarch, utils
+from postprocess import bibarch, utils, jaguar_tools
 
 plt.rcParams.update({
     'xtick.labelsize': 15,
@@ -669,6 +671,39 @@ def sd_points():
     fig.savefig('sd_points.png', transparent=True)
 
 
+def covo_rk2():
+    fig = plt.figure(figsize=[12, 6])
+    ax = fig.add_subplot(111)
+
+    for mesh in [16, 32, 64]:
+        data_x, data_y = [], []
+        for case in ['CFL_0.01', 'CFL_0.0129', 'CFL_0.0167', 'CFL_0.0215', 'CFL_0.0278', 'CFL_0.0359', 'CFL_0.0464',
+                     'CFL_0.0599', 'CFL_0.0774', 'CFL_0.1', 'CFL_0.129', 'CFL_0.167', 'CFL_0.215', 'CFL_0.278',
+                     'CFL_0.359', 'CFL_0.464', 'CFL_0.599', 'CFL_0.774', 'CFL_1']:
+            data = jaguar_tools.read_error(
+                os.path.join("/visu/pseize/COVO_JAGUAR/JOB_CFL_RK2/4x{0}".format(mesh), case))
+
+            cfl = float(case.split('_')[1])
+            error = data['Integral L2 error']['p'][-1]
+            if np.isnan(error) or (
+                    data_x and error / data_y[-1] > np.power(cfl / data_x[-1], 10)):
+                break
+            data_x.append(cfl)
+            data_y.append(error)
+
+        ax.loglog(data_x, data_y, 'x-', lw=2, ms=8, label="N = {0}".format(mesh))
+
+    ax.grid(True)
+    ax.set_xlabel(r'$\mathcal{N}_\textrm{CFL}$')
+    ax.set_title('Pressure L2 error, RK2, $p = 4$', pad=20)
+    utils.annotate_slope(ax, 2, dx=0.1, dy=0.5)
+    ax.legend()
+
+    plt.subplots_adjust(0.05, 0.1, 0.99, 0.9)
+    # plt.show()
+    fig.savefig('covo_rk2.png', transparent=True)
+
+
 if __name__ == '__main__':
     # fig_rk()
     # fig_bdf()
@@ -680,4 +715,5 @@ if __name__ == '__main__':
     # sd_discontinuous()
     # sd_scheme()
     # sd_points()
+    # covo_rk2()
     pass
