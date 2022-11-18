@@ -1,7 +1,6 @@
 import os
 
-import matplotlib.colors as clr
-import matplotlib.gridspec as gridspec
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.linalg
@@ -56,7 +55,8 @@ def fig_rk():
                              ([.8, .0, .0, 1], [.0, .8, .0, 1], [.0, .0, .8, 1], [.5, .5, .5, 1]),
                              ('4th', '3rd', '2nd', '1st')):
         rk_i = abs(r(i)(x + 1j * y)) < 1
-        ax.pcolormesh(x, y, np.ma.masked_array(rk_i, mask=1 - rk_i), cmap=clr.ListedColormap([c]), shading='auto')
+        ax.pcolormesh(x, y, np.ma.masked_array(rk_i, mask=1 - rk_i), cmap=matplotlib.colors.ListedColormap([c]),
+                      shading='auto')
         ax.plot([None], '--', c=c, lw=20, label=r'\textrm{{ {0} order}}'.format(label))
 
     handles, labels = ax.get_legend_handles_labels()
@@ -73,9 +73,9 @@ def fig_bdf():
     def r(k):
         def sub_r(z):
             coeff = np.zeros(k + 1, dtype=complex)
-            for i in range(1, k + 1):
-                coeff[0] += 1 / i
-                coeff[i] = np.power(-1, i) * scipy.special.binom(k, i) / i
+            for _i in range(1, k + 1):
+                coeff[0] += 1 / _i
+                coeff[_i] = np.power(-1, _i) * scipy.special.binom(k, _i) / _i
             coeff[0] -= z
             return (np.abs(np.roots(coeff)) < 1).all()
 
@@ -107,7 +107,8 @@ def fig_bdf():
         ax.yaxis.tick_left()
         ax.xaxis.tick_bottom()
         rk_i = r(i)(x + 1j * y)
-        ax.pcolormesh(x, y, np.ma.masked_array(rk_i, mask=1 - rk_i), cmap=clr.ListedColormap([c]), shading='auto')
+        ax.pcolormesh(x, y, np.ma.masked_array(rk_i, mask=1 - rk_i), cmap=matplotlib.colors.ListedColormap([c]),
+                      shading='auto')
         ax.plot([None], '--', c=c, lw=20)
         ax.set_title(r'\textbf{{ BDF{0} }}'.format(i), y=-.1, fontsize=30, pad=-10)
         ax.grid(True)
@@ -166,7 +167,8 @@ def fig_ab():
     ax.xaxis.tick_bottom()
     for (i, c) in zip((1, 2, 3, 4), ([.5, .5, .5, 1], [.0, .0, .8, 1], [.0, .8, .0, 1], [.8, .0, .0, 1],)):
         rk_i = r(i)(x + 1j * y)
-        ax.pcolormesh(x, y, np.ma.masked_array(rk_i, mask=1 - rk_i), cmap=clr.ListedColormap([c]), shading='auto')
+        ax.pcolormesh(x, y, np.ma.masked_array(rk_i, mask=1 - rk_i), cmap=matplotlib.colors.ListedColormap([c]),
+                      shading='auto')
         ax.plot([None], '--', c=c, lw=20, label=r'\textrm{{ k = {0} }}'.format(i))
     ax.legend(loc='upper left')
     ax.grid(True)
@@ -391,7 +393,7 @@ def fig_eps():
         ax.set_ylabel('Relative error in\nJacobian vector product approximation', labelpad=30)
 
         fig2 = plt.figure()
-        gs = gridspec.GridSpec(1, 3)
+        gs = matplotlib.gridspec.GridSpec(1, 3)
         ax1 = fig2.add_subplot(gs[0, :2])
         ax2 = fig2.add_subplot(gs[0, 2], sharey=ax1)
         ax1.loglog(list_e, err_1, 'x', ms=3, color='grey')
@@ -409,7 +411,7 @@ def fig_eps():
         fig2.savefig('epsilon_Burgers.png', transparent=True)
 
         fig = plt.figure()
-        gs = gridspec.GridSpec(1, 3)
+        gs = matplotlib.gridspec.GridSpec(1, 3)
         ax1 = fig.add_subplot(gs[0, :2])
         ax2 = fig.add_subplot(gs[0, 2], sharey=ax1)
         ax1.loglog(list_e_euler, err, 'x', ms=3, color='grey')
@@ -704,6 +706,69 @@ def covo_rk2():
     fig.savefig('covo_rk2.png', transparent=True)
 
 
+def covo_rk2_rk4():
+    fig = plt.figure(figsize=[12, 6])
+    ax = fig.add_subplot(111)
+
+    lines_rk2 = []
+    for mesh in [16, 32, 64]:
+        data_x, data_y = [], []
+        for case in ['CFL_0.01', 'CFL_0.0129', 'CFL_0.0167', 'CFL_0.0215', 'CFL_0.0278', 'CFL_0.0359', 'CFL_0.0464',
+                     'CFL_0.0599', 'CFL_0.0774', 'CFL_0.1', 'CFL_0.129', 'CFL_0.167', 'CFL_0.215', 'CFL_0.278',
+                     'CFL_0.359', 'CFL_0.464', 'CFL_0.599', 'CFL_0.774', 'CFL_1']:
+            data = jaguar_tools.read_error(
+                os.path.join("/visu/pseize/COVO_JAGUAR/JOB_CFL_RK2/4x{0}".format(mesh), case))
+
+            cfl = float(case.split('_')[1])
+            error = data['Integral L2 error']['p'][-1]
+            if np.isnan(error) or (
+                    data_x and error / data_y[-1] > np.power(cfl / data_x[-1], 10)):
+                break
+            data_x.append(cfl)
+            data_y.append(error)
+
+        lines_rk2.append(ax.loglog(data_x, data_y, 'x-', lw=2, ms=8, label="RK2, N = {0}".format(mesh))[0])
+
+    lines_rk4 = []
+    for mesh in [16, 32, 64]:
+        data_x, data_y = [], []
+        for case in ['CFL_0.1', 'CFL_0.129', 'CFL_0.167', 'CFL_0.215', 'CFL_0.278', 'CFL_0.359', 'CFL_0.464',
+                     'CFL_0.599', 'CFL_0.774', 'CFL_1']:
+            data = jaguar_tools.read_error(
+                os.path.join("/visu/pseize/COVO_JAGUAR/JOB_CFL_RK4/4x{0}".format(mesh), case))
+
+            cfl = float(case.split('_')[1])
+            error = data['Integral L2 error']['p'][-1]
+            if np.isnan(error) or (
+                    data_x and error / data_y[-1] > np.power(cfl / data_x[-1], 10)):
+                break
+
+            data_x.append(cfl)
+            data_y.append(error)
+
+        lines_rk4.append(ax.loglog(data_x, data_y, 'x-', lw=2, ms=8, label="RK4, N = {0}".format(mesh))[0])
+        ax.loglog([0.01, 0.1], [data_y[0], data_y[0]], 'k--', lw=2)
+
+    matplotlib.rcParams['mathtext.fontset'] = 'cm'
+    matplotlib.rcParams['font.family'] = 'STIXGeneral'
+    ax.legend([lines_rk2, lines_rk4], ['RK2', 'RK4'], loc='lower center', bbox_to_anchor=(0.8, 0.1),
+              handler_map={list: matplotlib.legend_handler.HandlerTuple(ndivide=None)}, handlelength=6)
+    ax.text(0.1, 0.9, r'$16 \times 16$', transform=ax.transAxes, fontsize=20,
+            bbox={'boxstyle': 'round', 'facecolor': 'white', 'alpha': 0.8, 'edgecolor': '0.8'})
+    ax.text(0.1, 0.5, r'$32 \times 32$', transform=ax.transAxes, fontsize=20,
+            bbox={'boxstyle': 'round', 'facecolor': 'white', 'alpha': 0.8, 'edgecolor': '0.8'})
+    ax.text(0.1, 0.175, r'$64 \times 64$', transform=ax.transAxes, fontsize=20,
+            bbox={'boxstyle': 'round', 'facecolor': 'white', 'alpha': 0.8, 'edgecolor': '0.8'})
+
+    ax.grid(True)
+    ax.set_xlabel(r'$\mathcal{N}_\textrm{CFL}$')
+    ax.set_title('Pressure L2 error, $p = 4$', pad=20)
+
+    plt.subplots_adjust(0.05, 0.1, 0.99, 0.9)
+    # plt.show()
+    fig.savefig('covo_rk2_rk4.png', transparent=True)
+
+
 if __name__ == '__main__':
     # fig_rk()
     # fig_bdf()
@@ -716,4 +781,5 @@ if __name__ == '__main__':
     # sd_scheme()
     # sd_points()
     # covo_rk2()
+    # covo_rk2_rk4()
     pass

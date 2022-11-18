@@ -230,7 +230,8 @@
       The case is still described by equation \ref{eq:covo}, but the numerical values are different.
       The convective flow Mach number is still $0.5$, but this time $P_\infty = 10^5$ and $T_\infty = 300$.
       The heat capacity ratio is $\gamma = 1.4$ and the specific gas constant is $r_\textrm{gas} = 287.058$.
-      The mesh represent the 2D box $\left[0, L\right]^2$ with $L = 0.1$, and the vortex is defined by its characteristic radius $R_0 = 0.005$ and its intensity $\beta = 0.2$.
+      The mesh represent the 2D box $\left[0, L\right]^2$ with $L = 0.1$, and is made of $N \times N$ cells.
+      The vortex is defined by its characteristic radius $R_0 = 0.005$ and its intensity $\beta = 0.2$.
       It correspond in fact to the same vortex as the one we used with CEDRE, in size and in intensity, but it has been scaled down into a smaller box, and dimensioned to some given pressure and temperature.
       \PS{unités ?}
 
@@ -267,8 +268,22 @@
       \paragraph{}
       The point of this analysis is to see how the global truncation error depends on the time step $\Delta t$ that is kept constant throughout the computations.
       Because some methods are more accurate than others, we did several computations with different meshes resolution and Spectral Difference method orders.
-      It means that the error from accurate methods on coarse meshes with a low-order Spectral Difference method will not represent the error from the time integration method, 
+      We start with the Midpoint method.
+      We take the order of the spatial discretisation method $p = 4$.
+      We look at the L2 error for the pressure after 20 periods, for given time steps.
+      We will in fact show results using the CFL number, as it is proportional to the time step:
+      \begin{equation}
+        \mathcal{N}_\textrm{CFL} = \frac{N \left(p + 1\right) \left(1 + \operatorname{Ma}\right) \sqrt{\gamma r_\textrm{gas} T}}{L} \Delta t\ .
+      \end{equation}
+      We do this for multiple values of $N$: 16, 32 and 64.
+      The result is shown in figure
 
+      \begin{figure}
+        \centering
+        \includegraphics{figures/covo_rk2.png}
+        \caption{}
+        \label{covo_rk2}
+      \end{figure}
 
 
     \subsection{Robustness: Taylor--Green vortex}
