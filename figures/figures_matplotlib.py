@@ -698,7 +698,6 @@ def covo_rk2():
                 break
             data_x.append(cfl)
             data_y.append(error)
-
         ax.loglog(data_x, data_y, 'x-', lw=2, ms=8, label="$N = {0}$".format(mesh))
 
     ax.grid(True)
@@ -732,7 +731,6 @@ def covo_rk2_rk4():
                 break
             data_x.append(cfl)
             data_y.append(error)
-
         lines_rk2.append(ax.loglog(data_x, data_y, 'x-', lw=2, ms=8, label="RK2, N = {0}".format(mesh))[0])
 
     lines_rk4 = []
@@ -751,7 +749,6 @@ def covo_rk2_rk4():
 
             data_x.append(cfl)
             data_y.append(error)
-
         lines_rk4.append(ax.loglog(data_x, data_y, 'x-', lw=2, ms=8, label="RK4, N = {0}".format(mesh))[0])
         ax.loglog([0.01, 0.1], [data_y[0], data_y[0]], 'k--', lw=2)
 
@@ -773,6 +770,74 @@ def covo_rk2_rk4():
     fig.savefig('covo_rk2_rk4.png', transparent=True)
 
 
+def covo_rk():
+    fig = plt.figure(figsize=[12, 8])
+    ax = fig.add_subplot(111)
+
+    data_x, data_y = [], []
+    for case in ['CFL_0.1', 'CFL_0.129', 'CFL_0.167', 'CFL_0.215', 'CFL_0.278', 'CFL_0.359', 'CFL_0.464',
+                 'CFL_0.599', 'CFL_0.774', 'CFL_1']:
+        data = jaguar_tools.read_error(
+            os.path.join("/visu/pseize/COVO_JAGUAR/JOB_CFL_RK4/8x32", case))
+
+        cfl = float(case.split('_')[1])
+        error = data['Integral L2 error']['p'][-1]
+        if np.isnan(error) or (data_x and error / data_y[-1] > np.power(cfl / data_x[-1], 10)):
+            break
+        data_x.append(cfl)
+        data_y.append(error)
+    ax.loglog(data_x, data_y, 'x-', lw=2, ms=8, label="RK4, $p = 8$, $N = 32$")
+    axins = ax.inset_axes([0.65, 0.02, 0.3, 0.5])
+    axins.loglog(data_x, data_y, 'x-', lw=2, ms=8)
+    axins.set_xticklabels([], minor=True)
+    axins.set_yticklabels([], minor=True)
+    axins.set_xlim(0.15, 0.3)
+    axins.set_ylim(4e-07, 3e-06)
+
+    data_x, data_y = [], []
+    for case in ['CFL_0.1', 'CFL_0.129', 'CFL_0.167', 'CFL_0.215', 'CFL_0.278', 'CFL_0.359', 'CFL_0.464',
+                 'CFL_0.599', 'CFL_0.774', 'CFL_1']:
+        data = jaguar_tools.read_error(
+            os.path.join("/visu/pseize/COVO_JAGUAR/JOB_CFL_RK6LDLD/4x64", case))
+
+        cfl = float(case.split('_')[1])
+        error = data['Integral L2 error']['p'][-1]
+        if np.isnan(error) or (data_x and error / data_y[-1] > np.power(cfl / data_x[-1], 10)):
+            break
+        data_x.append(cfl)
+        data_y.append(error)
+    ax.loglog(data_x, data_y, 'x-', lw=2, ms=8, label="RKo6s, $p = 4$, $N = 64$")
+
+    data_x, data_y = [], []
+    for case in ['CFL_0.1', 'CFL_0.129', 'CFL_0.167', 'CFL_0.215', 'CFL_0.278', 'CFL_0.359', 'CFL_0.464',
+                 'CFL_0.599', 'CFL_0.774', 'CFL_1']:
+        data = jaguar_tools.read_error(
+            os.path.join("/visu/pseize/COVO_JAGUAR/JOB_CFL_RK3SHU/6x64", case))
+
+        cfl = float(case.split('_')[1])
+        error = data['Integral L2 error']['p'][-1]
+        if np.isnan(error) or (
+                data_x and error / data_y[-1] > np.power(cfl / data_x[-1], 10)):
+            break
+        data_x.append(cfl)
+        data_y.append(error)
+    ax.loglog(data_x, data_y, 'x-', lw=2, ms=8, label="TVDRK(3, 3), $p = 6$, $N = 64$")
+
+    ax.indicate_inset_zoom(axins, edgecolor="black")
+    utils.annotate_slope(axins, 4, dx=0.01, dy=0.8)
+    utils.annotate_slope(ax, 3, dx=0.6, dy=0.6)
+    utils.annotate_slope(ax, 2, dy=0.95)
+
+    ax.grid(True)
+    ax.set_xlabel(r'$\mathcal{N}_\textrm{CFL}$')
+    ax.set_title('Pressure L2 error', pad=50)
+    ax.legend(loc='upper left', bbox_to_anchor=(0, 1.1))
+
+    plt.subplots_adjust(0.05, 0.1, 0.99, 0.85)
+    # plt.show()
+    fig.savefig('covo_rk.png', transparent=True)
+
+
 if __name__ == '__main__':
     # fig_rk()
     # fig_bdf()
@@ -786,4 +851,5 @@ if __name__ == '__main__':
     # sd_points()
     # covo_rk2()
     # covo_rk2_rk4()
+    # covo_rk()
     pass

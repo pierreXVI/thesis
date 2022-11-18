@@ -185,7 +185,6 @@
 
   \section{Analysis of exponential time integration methods}
 
-
     \paragraph{}
     We now have in JAGUAR all the tools necessary to analyse exponential time integration methods.
     We have to choose several test cases to do so.
@@ -195,7 +194,7 @@
       \item RK2, the Midpoint method
       \item RK4, the classical four stage fourth-order method
       \item RKo6s, a low-storage 6 stage second-order method from \cite{BogeyBailly2004}
-      \item RK3SHU, a 3 stage third-order TVD method from \cite{ShuOsher1988, GottliebShu1996}
+      \item TVDRK(3, 3), a 3 stage third-order TVD method from \cite{ShuOsher1988, GottliebShu1996}
       \item SSPRK(5, 4), an optimal SSP 5 stage fourth-order method from \cite{SpiteriRuuth2002}.
     \end{itemize}
     Low-storage methods are Runge--Kutta methods for which the matrix $A$ in their Butcher tableau is lower diagonal, or in other words all $a_{ij}$ are null except when $j = i - 1$.
@@ -264,7 +263,6 @@
       Here we do not look at the error to show the method orders are correct, but to see if we end up with the expected order for the global truncation error, as it is the error a user look at.
       The proof of the order for a method is analytical, by writing the partial Taylor series of the exact solution, as we did earlier for the exponential Rosenbrock--Euler method.
 
-
       \paragraph{}
       The point of this analysis is to see how the global truncation error depends on the time step $\Delta t$ that is kept constant throughout the computations.
       Because some methods are more accurate than others, we did several computations with different meshes resolution and Spectral Difference method orders.
@@ -276,13 +274,56 @@
         \mathcal{N}_\textrm{CFL} = \frac{N \left(p + 1\right) \left(1 + \operatorname{Ma}\right) \sqrt{\gamma r_\textrm{gas} T}}{L} \Delta t\ .
       \end{equation}
       We do this for multiple values of $N$: 16, 32 and 64.
-      The result is shown in figure
+      The result is shown in figure \ref{fig:covo_rk2}.
+      We see that the $16\times16$ mesh does not allow for a good analysis: the error due to the spatial discretisation method is too important and prevent us to see the expected dependency between the global truncation error and the time step.
+      The two other meshes however shows the expected relation: $\operatorname{err} = O\left(\Delta t^2\right)$.
 
       \begin{figure}
         \centering
-        \includegraphics{figures/covo_rk2.png}
-        \caption{}
-        \label{covo_rk2}
+        \includegraphics[width=\textwidth]{figures/covo_rk2.png}
+        \caption{Global truncation error for the RK2 Midpoint method.}
+        \label{fig:covo_rk2}
+      \end{figure}
+
+      \paragraph{}
+      We can repeat this analysis for other methods, and we look next at the RK4 method.
+      However, we see in figure \ref{fig:covo_rk2_rk4} that the error is constant no matter the value of $N$.
+      It is because the error due to the RK4 method is so small that it is dominated by the error due to the spatial discretisation scheme.
+      It is useless to do the same for lower time steps, as the error would not change, therefore the RK4 error lines are continued by black dashed lines.
+      We still see the curves corresponding to the Midpoint method.
+      As the time step decreases, we see that those curves tend to the dashed lines: to the same values as the constant errors we have with the RK4 method.
+      This lower bound for the error correspond to the error of the Spectral Difference method.
+      It shows once again that we need spatial discretisation methods with small errors in order to analyse time integration methods.
+
+      \begin{figure}
+        \centering
+        \includegraphics[width=\textwidth]{figures/covo_rk2_rk4.png}
+        \caption{Global truncation error for the RK2 and RK4 method.}
+        \label{fig:covo_rk2_rk4}
+      \end{figure}
+
+      \paragraph{}
+      At first, we kept increasing $N$ up to 128 and then 256, unsuccessfully: the error was still constant.
+      Instead of refining the mesh, we can use the Spectral Difference method to increase the spatial discretisation order.
+      As the theory behind this analysis does not directly depends on $N$ ans $p$, we can adjust them to better fit the method we want to analyse.
+      This is done in figure \ref{fig:covo_rk} where we show the global truncation error as a function of the time step, or CFL number, for the RK4, RKo6s and TVDRK(3, 3) methods.
+      We observe the expected slopes for the second and thiro-order methods.
+      The result is more subtle for the fourth-order method.
+      The error is once again dominated by the error of the spatial discretisation scheme.
+      On the right part of the curve we are able to guess the correct slope.
+      To see it more clearly we should plot the error for larger time step values.
+      However, those larger time step values are outside the stability domain of the method, so we can not do it.
+      This is the issue with this analysis: if we use too small time steps, the error from the spatial discretisation method is dominant and we do not see the expected slope.
+      If on the other hand we use too large time steps, we fall outside the stability region of the method.
+      We need to find the correct window that allows us to observe the desired slope by choosing suitable values for $p$ and $N$.
+      Because the error of the SSPRK(5, 4) is particularly small, we were not able to find reasonable values below $p = 8$ and $N = 64$.
+      Above those values, the computations get rather long so we skipped this method.
+
+      \begin{figure}
+        \centering
+        \includegraphics[width=\textwidth]{figures/covo_rk.png}
+        \caption{Global truncation error for the RK4, RKo6s and TVDRK(3, 3) methods.}
+        \label{fig:covo_rk}
       \end{figure}
 
 
