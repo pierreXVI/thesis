@@ -273,7 +273,9 @@
       \begin{equation}
         \mathcal{N}_\textrm{CFL} = \frac{N \left(p + 1\right) \left(1 + \operatorname{Ma}\right) \sqrt{\gamma r_\textrm{gas} T}}{L} \Delta t\ .
       \end{equation}
-      We do this for multiple values of $N$: 16, 32 and 64.
+      Using the CFL number instead of the time step allows us to compare results with different $N$ or even $p$.
+      It can be seen here as a nodimensional time.
+      We do the computation for multiple values of $N$: 16, 32 and 64.
       The result is shown in figure \ref{fig:covo_rk2}.
       We see that the $16\times16$ mesh does not allow for a good analysis: the error due to the spatial discretisation method is too important and prevent us to see the expected dependency between the global truncation error and the time step.
       The two other meshes however shows the expected relation: $\operatorname{err} = O\left(\Delta t^2\right)$.
@@ -313,6 +315,8 @@
       On the right part of the curve we are able to guess the correct slope.
       To see it more clearly we should plot the error for larger time step values.
       However, those larger time step values are outside the stability domain of the method, so we can not do it.
+      In fact, all curves end on the right at the largest time step for which the computation did not fail.
+      It means from figure \ref{fig:covo_rk} that the RKo6s method is more stable than both the RK4 and TVDRK(3, 3) methods.
       This is the issue with this analysis: if we use too small time steps, the error from the spatial discretisation method is dominant and we do not see the expected slope.
       If on the other hand we use too large time steps, we fall outside the stability region of the method.
       We need to find the correct window that allows us to observe the desired slope by choosing suitable values for $p$ and $N$.
@@ -324,6 +328,16 @@
         \includegraphics[width=\textwidth]{figures/covo_rk.png}
         \caption{Global truncation error for the RK4, RKo6s and TVDRK(3, 3) methods.}
         \label{fig:covo_rk}
+      \end{figure}
+
+      \paragraph{}
+      Now that we tried our analysis on traditional explicit Runge--Kutta methods, we look at the newly added exponential Rosenbrock methods.
+
+      \begin{figure}
+        \centering
+        \includegraphics[width=\textwidth]{figures/covo_exp.png}
+        \caption{Global truncation error for the exponential Rosenbrock--Euler, ExpRB32 and ExpRB42 methods.}
+        \label{fig:covo_exp}
       \end{figure}
 
 

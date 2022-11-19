@@ -838,6 +838,67 @@ def covo_rk():
     fig.savefig('covo_rk.png', transparent=True)
 
 
+def covo_exp():
+    fig = plt.figure(figsize=[12, 6])
+    ax = fig.add_subplot(111)
+
+    data_x, data_y = [], []
+    for case in ['CFL_0.1', 'CFL_0.129', 'CFL_0.167', 'CFL_0.215', 'CFL_0.278', 'CFL_0.359', 'CFL_0.464',
+                 'CFL_0.599', 'CFL_0.774', 'CFL_1', 'CFL_1.29', 'CFL_1.67', 'CFL_2.15', 'CFL_2.78', 'CFL_3.59']:
+        data = jaguar_tools.read_error(
+            os.path.join("/visu/pseize/COVO_JAGUAR/JOB_CFL_EXPEULER_20/6x32", case))
+
+        cfl = float(case.split('_')[1])
+        error = data['Integral L2 error']['p'][-1]
+        if np.isnan(error) or (data_x and error / data_y[-1] > np.power(cfl / data_x[-1], 10)):
+            break
+        data_x.append(cfl)
+        data_y.append(error)
+    ax.loglog(data_x, data_y, 'x-', lw=2, ms=8, label="exponential Rosenbrock--Euler")
+
+    data_x, data_y = [], []
+    for case in ['CFL_0.1', 'CFL_0.129', 'CFL_0.167', 'CFL_0.215', 'CFL_0.278', 'CFL_0.359', 'CFL_0.464',
+                 'CFL_0.599', 'CFL_0.774', 'CFL_1', 'CFL_1.29', 'CFL_1.67', 'CFL_2.15', 'CFL_2.78', 'CFL_3.59']:
+        data = jaguar_tools.read_error(
+            os.path.join("/visu/pseize/COVO_JAGUAR/JOB_CFL_EXPRB32_20.5/6x32", case))
+
+        cfl = float(case.split('_')[1])
+        error = data['Integral L2 error']['p'][-1]
+        if np.isnan(error) or (data_x and error / data_y[-1] > np.power(cfl / data_x[-1], 10)):
+            break
+        data_x.append(cfl)
+        data_y.append(error)
+    ax.loglog(data_x, data_y, 'x-', lw=2, ms=8, label="ExpRB32")
+
+    data_x, data_y = [], []
+    for case in ['CFL_0.1', 'CFL_0.129', 'CFL_0.167', 'CFL_0.215', 'CFL_0.278', 'CFL_0.359', 'CFL_0.464',
+                 'CFL_0.599', 'CFL_0.774', 'CFL_1', 'CFL_1.29', 'CFL_1.67', 'CFL_2.15', 'CFL_2.78', 'CFL_3.59']:
+        data = jaguar_tools.read_error(
+            os.path.join("/visu/pseize/COVO_JAGUAR/JOB_CFL_EXPRB42_20.5/6x32", case))
+
+        cfl = float(case.split('_')[1])
+        error = data['Integral L2 error']['p'][-1]
+        if np.isnan(error) or (
+                data_x and error / data_y[-1] > np.power(cfl / data_x[-1], 10)):
+            break
+        data_x.append(cfl)
+        data_y.append(error)
+    ax.loglog(data_x, data_y, 'x-', lw=2, ms=8, label="ExpRB42")
+
+    utils.annotate_slope(ax, 4, base=0.1, dx=0.1, dy=0.15)
+    utils.annotate_slope(ax, 3, base=0.2, dx=0.15, dy=0.22, transpose=True)
+    utils.annotate_slope(ax, 2, dy=0.95)
+
+    ax.grid(True)
+    ax.set_xlabel(r'$\mathcal{N}_\textrm{CFL}$')
+    ax.set_title('Pressure L2 error, $p = 6$, $N = 32$', pad=0)
+    ax.legend()
+
+    plt.subplots_adjust(0.05, 0.1, 0.99, 0.85)
+    # plt.show()
+    fig.savefig('covo_exp.png', transparent=True)
+
+
 if __name__ == '__main__':
     # fig_rk()
     # fig_bdf()
