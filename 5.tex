@@ -332,6 +332,22 @@
 
       \paragraph{}
       Now that we tried our analysis on traditional explicit Runge--Kutta methods, we look at the newly added exponential Rosenbrock methods.
+      Their corresponding error curves are show in figure \ref{fig:covo_exp}.
+      As expected, we see the respective 2, 3 and 4 slope values.
+      Furthermore, by looking at the abscissa ranges, we see that they work correctly with higher CFL numbers than all the explicit methods we tried.
+      The goal of this first analysis of the exponential integration methods is not to analyse their robustness, but it already seem better than with explicit methods.
+      What is interesting from this analysis is that we are able to use a higher-order methods with fewer Runge--Kutta stages.
+      Furthermore, the additional computational cost of the additional stages is low.
+      As we discussed earlier, we can reformulate exponential Rosenbrock methods as in equation (\ref{eq:exprb_defect})  using the defects $D_{n, i}$.
+      The first stage of an exponential Rosenbrock method is then an exponential Rosenbrock--Euler method, for which we compute the contribution of the "full" right hand side $f\left(y_n\right)$.
+      Here, this is done with the algorithms previously described, using a Krylov subspace of dimension 20.
+      Then, because the defects are relatively smaller, the other stages compute their contribution with only 5 Krylov basis vectors.
+      The two exponential Rosenbrock methods with two stages are not a lot more expensive than the Rosenbrock--Euler method.
+      In comparison, a 2-stage explicit Runge--Kutta method will we twice as computationally expensive as the Euler method.
+      We also tried this analysis with larger Krylov subspace methods.
+      In this other configuration, the first stage use 40 Krylov basis vectors for all three exponential methods, and the second stage uses 10 Krylov basis vectors for the ExpRB32 and ExpRB42 methods.
+      However, using larger subspace did not have any impact on the result for this analysis.
+      For all $\left(N, p\right)$ configuration, the error curve as a function of the time step was almost the same as with smaller Krylov subspace, such as they were almost indistinguishable when plotted in figures like figure \ref{fig:covo_exp}.
 
       \begin{figure}
         \centering
@@ -340,6 +356,22 @@
         \label{fig:covo_exp}
       \end{figure}
 
+      \paragraph{}
+      We choose this first test case as it is widespread in the computational fluid dynamic community, as a tool to analyse the order of integration schemes.
+      Often, it concerns spatial discretisation methods, but we used it for our time integration method as it gives us easy access to the global truncation error, which is the error that interest the solver users.
+      First, we showed that this analysis recover the correct slope on the error curve as a function of the time step for the already existing explicit Runge--Kutta integration methods.
+      Indeed, the error converges, as the time step decreases, to a minimum error value that comes from the spatial discretisation scheme.
+      By refining the mesh and using higher-order spatial discretisation methods, we are able to reduce this minimal error and observe the expected curve for almost all methods.
+      The same analysis but with the newly implemented exponential Rosenbrock methods showed that we get the expected order.
+      It also showed that the additional cost of using more stages with exponential methods is relatively small compared to the same additional cost for explicit Runge--Kutta methods.
+      Finally, it showed that for this convected inviscid isentropic vortex case, the exponential Rosenbrock methods were much more robust, as they work with higher CFL numbers.
+      The analysis of their stability is the topic of the next section.
 
-    \subsection{Robustness: Taylor--Green vortex}
+
+    \subsection{Robustness \PS{(or stability ?)}: Taylor--Green vortex}
+
+      \paragraph{}
+      For the next text case, we choose another explicit computation: the Taylor--Green vortex.
+
+
     \subsection{Industrial application: LS89}
