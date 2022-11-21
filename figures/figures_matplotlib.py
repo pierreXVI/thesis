@@ -8,31 +8,21 @@ import scipy.special
 from postprocess import bibarch, utils, jaguar_tools
 
 plt.rcParams.update({
-    'xtick.labelsize': 15,
-    'ytick.labelsize': 15,
-    'xtick.major.width': 1.5,
-    'xtick.minor.width': 1,
-    'ytick.major.width': 1.5,
-    'ytick.minor.width': 1,
-    'axes.grid': True,
-    'axes.labelsize': 20,
-    'axes.titlesize': 20,
-    'grid.linewidth': 2,
-    'legend.fontsize': 20,
-    'legend.labelspacing': 1,
-    'lines.markersize': 3,
-    'lines.linewidth': 3,
+    'xtick.labelsize': 8,
+    'ytick.labelsize': 8,
+    'figure.dpi': 200,
+    'savefig.transparent': True,
     'text.latex.preamble': r"\usepackage{amsmath}",
     'text.usetex': True,
-    'font.size': 15,
+    'font.size': 10,
     'mathtext.fontset': 'cm',
     'font.family': 'STIXGeneral'
 })
 
 
-def fig_rk():
+def rk_stab():
     x_min, x_max = -4, 2
-    y_min, y_max = -4, 4
+    y_min, y_max = -3.5, 3.5
     res_x = 1000
     res_y = 1000
 
@@ -41,88 +31,33 @@ def fig_rk():
     def r(k):
         return np.vectorize(lambda z: sum(np.power(z, range(k + 1)) / scipy.special.factorial(range(k + 1))))
 
-    fig = plt.figure(figsize=(6.28, 8.11))
+    fig = plt.figure(figsize=(3, 3.5))
     ax = fig.add_subplot(111)
-    ax.grid(False)
     ax.set_aspect('equal')
     for axis in ('left', 'bottom'):
         ax.spines[axis].set_position('zero')
-        ax.spines[axis].set_linewidth(2)
     for axis in ('right', 'top'):
         ax.spines[axis].set_color('none')
-    ax.yaxis.tick_left()
-    ax.xaxis.tick_bottom()
 
+    handles = []
     for (i, c, label) in zip((4, 3, 2, 1),
                              ([.8, .0, .0, 1], [.0, .8, .0, 1], [.0, .0, .8, 1], [.5, .5, .5, 1]),
                              ('4th', '3rd', '2nd', '1st')):
         rk_i = abs(r(i)(x + 1j * y)) < 1
         ax.pcolormesh(x, y, np.ma.masked_array(rk_i, mask=1 - rk_i), cmap=matplotlib.colors.ListedColormap([c]),
                       shading='auto')
-        ax.plot([None], '--', c=c, lw=20, label=r'\textrm{{ {0} order}}'.format(label))
+        handles.append(matplotlib.patches.Patch(color=c, label=r'\textrm{{ {0} order}}'.format(label)))
 
-    handles, labels = ax.get_legend_handles_labels()
-    ax.legend(handles[::-1], labels[::-1], loc='upper left')
+    ax.legend(handles=handles[::-1], loc='upper left')
     ax.grid(True)
-    plt.subplots_adjust(0.00, 0.02, 1.0, 0.99)
+    fig.subplots_adjust(0.00, 0.02, 1.0, 0.99)
+    fig.savefig("rk_stab.png")
     # plt.show()
-    fig.savefig("rk_stab.png", transparent=True)
 
 
-def fig_bdf():
-    with plt.rc_context({'text.latex.preamble': r'\usepackage{sfmath} \boldmath'}):
-
-        def r(k):
-            def sub_r(z):
-                coeff = np.zeros(k + 1, dtype=complex)
-                for _i in range(1, k + 1):
-                    coeff[0] += 1 / _i
-                    coeff[_i] = np.power(-1, _i) * scipy.special.binom(k, _i) / _i
-                coeff[0] -= z
-                return (np.abs(np.roots(coeff)) < 1).all()
-
-            return np.vectorize(sub_r)
-
-        fig = plt.figure(figsize=(16, 10))
-        c = [.8, .0, .0, 1]
-        for (i, x_min, x_max, y_min, y_max) in zip((1, 2, 3, 4, 5, 6),
-                                                   (-2, -2, -4, -4, -10, -20),
-                                                   (3, 5, 8, 14, 25, 40),
-                                                   (-2, -3, -5, -8, -15, -30),
-                                                   (2, 3, 5, 8, 15, 30),
-                                                   ):
-            res_x = 500
-            res_y = 500
-
-            x, y = np.meshgrid(np.linspace(x_min, x_max, res_x), np.linspace(y_min, y_max, res_y))
-
-            ax = fig.add_subplot(2, 3, i)
-            ax.grid(False)
-            ax.set_aspect('equal')
-            for axis in ('left', 'bottom'):
-                ax.spines[axis].set_position('zero')
-                ax.spines[axis].set_linewidth(2)
-            for axis in ('right', 'top'):
-                ax.spines[axis].set_color('none')
-            ax.xaxis.set_tick_params(labelsize=20)
-            ax.yaxis.set_tick_params(labelsize=20)
-            ax.yaxis.tick_left()
-            ax.xaxis.tick_bottom()
-            rk_i = r(i)(x + 1j * y)
-            ax.pcolormesh(x, y, np.ma.masked_array(rk_i, mask=1 - rk_i), cmap=matplotlib.colors.ListedColormap([c]),
-                          shading='auto')
-            ax.plot([None], '--', c=c, lw=20)
-            ax.set_title(r'\textbf{{ BDF{0} }}'.format(i), y=-.1, fontsize=30, pad=-10)
-            ax.grid(True)
-
-        plt.subplots_adjust(0.00, 0.075, 1.0, 0.99, 0.05, 0.25)
-        # plt.show()
-        plt.savefig("bdf_stab.png", transparent=True)
-
-
-def fig_ab():
+def ab_stab():
     x_min, x_max = -2.5, .5
-    y_min, y_max = -1.5, 1.5
+    y_min, y_max = -1.25, 1.25
     res_x = 1000
     res_y = 1000
 
@@ -156,31 +91,68 @@ def fig_ab():
 
         return np.vectorize(sub_r)
 
-    fig = plt.figure(figsize=(8.40, 8.20))
+    fig = plt.figure(figsize=(3.5, 3))
     ax = fig.add_subplot(111)
-    ax.grid(False)
     ax.set_aspect('equal')
     for axis in ('left', 'bottom'):
         ax.spines[axis].set_position('zero')
-        ax.spines[axis].set_linewidth(2)
     for axis in ('right', 'top'):
         ax.spines[axis].set_color('none')
-    ax.yaxis.tick_left()
-    ax.xaxis.tick_bottom()
+
+    handles = []
     for (i, c) in zip((1, 2, 3, 4), ([.5, .5, .5, 1], [.0, .0, .8, 1], [.0, .8, .0, 1], [.8, .0, .0, 1],)):
         rk_i = r(i)(x + 1j * y)
         ax.pcolormesh(x, y, np.ma.masked_array(rk_i, mask=1 - rk_i), cmap=matplotlib.colors.ListedColormap([c]),
                       shading='auto')
-        ax.plot([None], '--', c=c, lw=20, label=r'\textrm{{ k = {0} }}'.format(i))
-    ax.legend(loc='upper left')
+        handles.append(matplotlib.patches.Patch(color=c, label=r'\textrm{{ k = {0} }}'.format(i)))
+
+    ax.legend(handles=handles, loc='upper left')
     ax.grid(True)
 
-    plt.subplots_adjust(0.00, 0.02, 1.0, 0.99)
+    fig.subplots_adjust(0.00, 0.02, 1.0, 0.99)
+    fig.savefig("ab_stab.png")
     # plt.show()
-    fig.savefig("ab_stab.png", transparent=True)
 
 
-def fig_preconditioning():
+def bdf_stab():
+    def r(k):
+        def sub_r(z):
+            coeff = np.zeros(k + 1, dtype=complex)
+            for _i in range(1, k + 1):
+                coeff[0] += 1 / _i
+                coeff[_i] = np.power(-1, _i) * scipy.special.binom(k, _i) / _i
+            coeff[0] -= z
+            return (np.abs(np.roots(coeff)) < 1).all()
+
+        return np.vectorize(sub_r)
+
+    fig = plt.figure(figsize=(5.78851, 3.61782))
+    for (i, y_max) in zip((1, 2, 3, 4, 5, 6), (2.5, 4, 5, 10, 15, 22)):
+        x_min = -y_max / 2
+        x_max = 2 * y_max
+
+        res_x = 500
+        res_y = 500
+        x, y = np.meshgrid(np.linspace(x_min, x_max, res_x), np.linspace(-y_max, y_max, res_y))
+
+        ax = fig.add_subplot(2, 3, i)
+        ax.set_aspect('equal')
+        for axis in ('left', 'bottom'):
+            ax.spines[axis].set_position('zero')
+        for axis in ('right', 'top'):
+            ax.spines[axis].set_color('none')
+        rk_i = r(i)(x + 1j * y)
+        ax.pcolormesh(x, y, np.ma.masked_array(rk_i, mask=1 - rk_i),
+                      cmap=matplotlib.colors.ListedColormap([.8, .0, .0, 1]), shading='auto')
+        ax.set_title(r'\textrm{{ BDF{0} }}'.format(i), y=-.2)
+        ax.grid(True)
+
+    fig.subplots_adjust(0.00, 0.075, 1.0, 0.99, 0.05, 0.25)
+    plt.savefig("bdf_stab.png")
+    # plt.show()
+
+
+def preconditioning():
     from scipy.sparse.linalg import gmres as gmres_scipy
 
     rng = np.random.RandomState(161616)
@@ -194,12 +166,14 @@ def fig_preconditioning():
             self.res.append(rk)
             self.niter += 1
 
-    fig = plt.figure()
+    fig = plt.figure(figsize=(5.78851, 2.5))
     ax1 = fig.add_subplot(121)
     ax2 = fig.add_subplot(122)
+    ax1.grid(True)
+    ax2.grid(True)
     ax1.set_aspect('equal')
-    ax2.set_xlabel(r'$n_{iter}$', fontsize=30)
-    ax2.set_ylabel(r'$\frac{\left\| r_n \right\|}{\left\| r_0 \right\|}$', rotation=0, labelpad=30, fontsize=30)
+    ax2.set_xlabel(r'$n_{iter}$')
+    ax2.set_ylabel(r'$\frac{\left\| r_n \right\|}{\left\| r_0 \right\|}$', rotation=0, labelpad=10)
 
     n = 200
     angle = 2 * np.arange(n) * np.pi / (n - 1)
@@ -207,29 +181,24 @@ def fig_preconditioning():
 
     val = scipy.linalg.eigvals(a)
     cond_a = np.linalg.cond(a)
-    ax1.plot(np.real(val), np.imag(val), 'x', mew=1, ms=6)
-
+    ax1.plot(np.real(val), np.imag(val), 'x', ms=3)
     counter = GMRESCounter()
     gmres_scipy(a, np.ones(n), callback=counter, maxiter=12)
-    ax2.semilogy(counter.res, '+', label=r'$\kappa\left(A\right) = {0:0.2f}$'.format(cond_a), mew=15)
+    ax2.semilogy(counter.res, 'x', label=r'$\kappa\left(A\right) = {0:0.2f}$'.format(cond_a))
 
-    jacobi = scipy.sparse.diags(1 / a.diagonal())
-
-    a_prec = a @ jacobi
+    a_prec = a @ scipy.sparse.diags(1 / a.diagonal())
     val = scipy.linalg.eigvals(a_prec)
     cond_a_pre = np.linalg.cond(a_prec)
-    ax1.plot(np.real(val), np.imag(val), '+', mew=1, ms=6)
-
+    ax1.plot(np.real(val), np.imag(val), '+', ms=3)
     counter = GMRESCounter()
     gmres_scipy(a_prec, np.ones(n), callback=counter, maxiter=12)
-    ax2.semilogy(counter.res, 'x', label=r'$\kappa\left(A_{{pre}}\right) = {0:0.2f}$'.format(cond_a_pre), mew=15)
+    ax2.semilogy(counter.res, '+', label=r'$\kappa\left(A_{{pre}}\right) = {0:0.2f}$'.format(cond_a_pre))
 
-    ax2.legend(loc='lower center', bbox_to_anchor=(-0.75, -0.075))
+    ax1.legend(*ax2.get_legend_handles_labels(), loc='upper center', bbox_to_anchor=(0.5, -0.2))
 
-    fig.set_size_inches(19.2, 7.23)
-    plt.subplots_adjust(0.05, 0.1, 0.99, 0.99)
+    fig.subplots_adjust(0.06, 0.1, 0.99, 0.99, 0.3, 0)
+    fig.savefig("preconditioning.png")
     # plt.show()
-    fig.savefig("preconditioning.png", transparent=True)
 
 
 def fig_eps():
@@ -389,55 +358,62 @@ def fig_eps():
             data_euler[eps][1].append(er)
     err = np.array([np.linalg.norm(ref - (Euler.f(x + e * v) - f0) / e) for e in list_e_euler]) / np.linalg.norm(ref)
 
-    with plt.rc_context({'figure.figsize': [12, 6], 'lines.markeredgewidth': 1, 'lines.markersize': 15}):
+    with plt.rc_context({'figure.figsize': [5.78851, 2.894255], 'axes.grid': True}):
         fig1 = plt.figure()
         ax = fig1.add_subplot()
-        ax.loglog(list_e, err_0, 'x', ms=3, color='grey')
+        ax.loglog(list_e, err_0, 'x', color='grey', ms=3, mew=0.5)
         ax.loglog(data[epsilons[0]][0][0], data[epsilons[0]][1][0], 'o', label=str(epsilons[0]))
         ax.legend()
         ax.set_xlabel(r'$\varepsilon$')
-        ax.set_ylabel('Relative error in\nJacobian vector product approximation', labelpad=30)
+        ax.set_ylabel('Relative error in\nJacobian vector product approximation', labelpad=10)
+        fig1.subplots_adjust(0.15, 0.15, 0.99, 0.99)
 
         fig2 = plt.figure()
         gs = matplotlib.gridspec.GridSpec(1, 3)
         ax1 = fig2.add_subplot(gs[0, :2])
         ax2 = fig2.add_subplot(gs[0, 2], sharey=ax1)
-        ax1.loglog(list_e, err_1, 'x', ms=3, color='grey')
+        ax1.loglog(list_e, err_1, 'x', color='grey', ms=3, mew=0.5)
         for eps in epsilons:
-            color = ax1.loglog(*data[eps], '+-', ms=8, mew=2)[0].get_color()
+            color = ax1.loglog(*data[eps], '+-')[0].get_color()
             ax1.loglog(data[eps][0][-1], data[eps][1][-1], 'o', label=str(eps), color=color)
-            ax2.loglog(list_n, data[eps][1], '+-', ms=8, mew=2, color=color)
+            ax2.loglog(list_n, data[eps][1], '+-', color=color)
             ax2.loglog(list_n[-1], data[eps][1][-1], 'o', color=color)
-        utils.annotate_slope(ax2, 0.25, transpose=True, base=0.4, dy=0.9, dx=0.3)
+        with plt.rc_context({'lines.linewidth': 1}):
+            utils.annotate_slope(ax2, 0.25, transpose=True, base=0.4, dy=0.9, dx=0.3)
         ax1.legend()
         ax1.set_xlabel(r'$\varepsilon$')
         ax2.set_xlabel(r'$N$')
-        ax1.set_ylabel('Relative error in\nJacobian vector product approximation', labelpad=30)
-        fig1.savefig('epsilon_Burgers_10.png', transparent=True)
-        fig2.savefig('epsilon_Burgers.png', transparent=True)
+        ax1.set_ylabel('Relative error in\nJacobian vector product approximation', labelpad=10)
+        ax2.tick_params(labelleft=False)
+        fig2.subplots_adjust(0.15, 0.15, 0.99, 0.99, 0.05, 0)
 
         fig = plt.figure()
         gs = matplotlib.gridspec.GridSpec(1, 3)
         ax1 = fig.add_subplot(gs[0, :2])
         ax2 = fig.add_subplot(gs[0, 2], sharey=ax1)
-        ax1.loglog(list_e_euler, err, 'x', ms=3, color='grey')
+        ax1.loglog(list_e_euler, err, 'x', color='grey', ms=3, mew=0.5)
         for eps in epsilons:
-            color = ax1.loglog(*data_euler[eps], '+-', ms=8, mew=2)[0].get_color()
+            color = ax1.loglog(*data_euler[eps], '+-')[0].get_color()
             ax1.loglog(data_euler[eps][0][-1], data_euler[eps][1][-1], 'o', label=str(eps), color=color)
-            ax2.loglog(list_n_euler, data_euler[eps][1], '+-', ms=8, mew=2, color=color)
+            ax2.loglog(list_n_euler, data_euler[eps][1], '+-', color=color)
             ax2.loglog(list_n_euler[-1], data_euler[eps][1][-1], 'o', color=color)
-        utils.annotate_slope(ax2, 0.25, transpose=True, base=0.4, dy=1, dx=0.3)
+        with plt.rc_context({'lines.linewidth': 1}):
+            utils.annotate_slope(ax2, 0.25, transpose=True, base=0.4, dy=1, dx=0.3)
         ax1.legend()
         ax1.set_xlabel(r'$\varepsilon$')
         ax2.set_xlabel(r'$N$')
-        ax1.set_ylabel('Relative error in\nJacobian vector product approximation', labelpad=30)
-        fig.savefig('epsilon_Euler.png', transparent=True)
+        ax1.set_ylabel('Relative error in\nJacobian vector product approximation', labelpad=10)
+        ax2.tick_params(labelleft=False)
+        fig.subplots_adjust(0.15, 0.15, 0.99, 0.99, 0.05, 0)
 
+        fig1.savefig('epsilon_Burgers_10.png')
+        fig2.savefig('epsilon_Burgers.png')
+        fig.savefig('epsilon_Euler.png')
         # plt.show()
 
 
 def rae_coefficients():
-    fig = plt.figure(figsize=[16, 9])
+    fig = plt.figure(figsize=[5.78851, 3.8])
     fig.suptitle(r"Aerodynamic coefficients")
 
     ax1 = fig.add_subplot(211)
@@ -458,49 +434,53 @@ def rae_coefficients():
 
     ax1.set_title('')
     ax2.set_title('')
-    ax1.set_ylabel('Drag coefficient', labelpad=15)
-    ax2.set_ylabel('Lift coefficient', labelpad=15)
+    ax1.set_ylabel('Lift coefficient', labelpad=10)
+    ax2.set_ylabel('Drag coefficient', labelpad=10)
     ax1.set_xlim(3800, 8000)
     ax1.set_ylim(0.3025197803328823, 0.3025198287464075)
     ax2.set_ylim(0.009251204600522693, 0.009251211374678542)
     ax1.tick_params(labelbottom=False)
     ax1.set_xlabel('')
-    ax2.set_xlabel('Iteration number', labelpad=20)
+    ax2.set_xlabel('Iteration number', labelpad=10)
     fig.legend(*ax1.get_legend_handles_labels())
+
+    fig.subplots_adjust(0.1, 0.15, 0.97, 0.85, 0, 0.2)
+    fig.savefig('rae_coefficients.png')
     # plt.show()
-    fig.savefig('rae_coefficients.png', transparent=True)
 
 
 def rae_residuals():
-    fig = plt.figure(figsize=[16, 7])
-    fig.suptitle(r"$\log_{10}$ of the $L_2$ residual norms", y=0.94)
+    with plt.rc_context({'font.size': 8, 'xtick.labelsize': 6, 'ytick.labelsize': 6}):
+        fig = plt.figure(figsize=[5.78851, 3])
+        fig.suptitle(r"$\log_{10}$ of the $L_2$ residual norms", y=0.95)
 
-    ax11 = fig.add_subplot(221)
-    ax12 = fig.add_subplot(222)
-    ax21 = fig.add_subplot(223, sharex=ax11)
-    ax22 = fig.add_subplot(224, sharex=ax12)
+        ax11 = fig.add_subplot(221)
+        ax12 = fig.add_subplot(222)
+        ax21 = fig.add_subplot(223, sharex=ax11)
+        ax22 = fig.add_subplot(224, sharex=ax12)
 
-    for ax, tag, title in zip((ax11, ax12, ax21, ax22),
-                              ('RhoV_x', 'RhoV_y', 'RhoEtot', 'RhoNuTilde'),
-                              ("$x$ momentum", "$y$ momentum", "Energy", "Turbulent viscosity")):
-        ax.grid(True)
-        plotter = bibarch.HistoPlotter(ax, ('RESIDUS', 'MOYENS', tag), 'ITER', "/scratchm/pseize/RAE_2822")
-        plotter.plot('BASE/INIT', 'k', label='Initialisation')
-        plotter.plot('BASE/RUN_1', label='Traditional method')
-        plotter.plot('MF/RUN_1', label='JFNK method')
-        ax.set_title('')
-        ax.set_ylabel(title, labelpad=15)
+        for ax, tag, title in zip((ax11, ax12, ax21, ax22),
+                                  ('RhoV_x', 'RhoV_y', 'RhoEtot', 'RhoNuTilde'),
+                                  ("$x$ momentum", "$y$ momentum", "Energy", "Turbulent viscosity")):
+            ax.grid(True)
+            plotter = bibarch.HistoPlotter(ax, ('RESIDUS', 'MOYENS', tag), 'ITER', "/scratchm/pseize/RAE_2822")
+            plotter.plot('BASE/INIT', 'k', label='Initialisation')
+            plotter.plot('BASE/RUN_1', label='Traditional method')
+            plotter.plot('MF/RUN_1', label='JFNK method')
+            ax.set_title('')
+            ax.set_ylabel(title)
 
-    ax11.tick_params(labelbottom=False)
-    ax12.tick_params(labelbottom=False)
-    ax11.set_xlabel('')
-    ax12.set_xlabel('')
-    ax21.set_xlabel('Iteration number', labelpad=20)
-    ax22.set_xlabel('Iteration number', labelpad=20)
-    fig.legend(*ax11.get_legend_handles_labels())
-    plt.subplots_adjust(0.08, 0.15, 0.99, 0.85, 0.30, 0.05)
-    # plt.show()
-    fig.savefig('rae_residuals.png', transparent=True)
+        ax11.tick_params(labelbottom=False)
+        ax12.tick_params(labelbottom=False)
+        ax11.set_xlabel('')
+        ax12.set_xlabel('')
+        ax21.set_xlabel('Iteration number', labelpad=10)
+        ax22.set_xlabel('Iteration number', labelpad=10)
+        fig.legend(*ax11.get_legend_handles_labels())
+
+        fig.subplots_adjust(0.1, 0.15, 0.99, 0.85, 0.30, 0.1)
+        fig.savefig('rae_residuals.png')
+        # plt.show()
 
 
 def sd_discontinuous():
@@ -532,25 +512,25 @@ def sd_discontinuous():
     sol_p = (np.array([-np.cos(np.pi * (2 * i + 1) / (2 * (p + 1))) for i in range(p + 1)]) + 1) / 2
     mesh = np.linspace(0, 1, 100)
 
-    fig = plt.figure(figsize=[16, 9])
+    fig = plt.figure(figsize=[5.78851, 3.25])
     ax1 = fig.add_subplot(121, projection='3d')
     ax2 = fig.add_subplot(122, projection='3d')
-    ax1.set_xlabel('$x$', fontsize=30, labelpad=15)
-    ax1.set_ylabel('$y$', fontsize=30, labelpad=15)
-    ax2.set_xlabel('$x$', fontsize=30, labelpad=15)
-    ax2.set_ylabel('$y$', fontsize=30, labelpad=15)
+    ax1.set_xlabel('$x$', labelpad=-10)
+    ax1.set_ylabel('$y$', labelpad=-10)
+    ax2.set_xlabel('$x$', labelpad=-10)
+    ax2.set_ylabel('$y$', labelpad=-10)
     ax1.set_xticks([0, 1, 2])
     ax1.set_yticks([0, 1, 2])
     ax2.set_xticks([0, 1, 2])
     ax2.set_yticks([0, 1, 2])
-    ax1.xaxis.set_tick_params(labelsize=20)
-    ax2.xaxis.set_tick_params(labelsize=20)
-    ax1.yaxis.set_tick_params(labelsize=20)
-    ax2.yaxis.set_tick_params(labelsize=20)
+    ax1.xaxis.set_tick_params(pad=-5)
+    ax2.xaxis.set_tick_params(pad=-5)
+    ax1.yaxis.set_tick_params(pad=-5)
+    ax2.yaxis.set_tick_params(pad=-5)
     ax1.zaxis.set_tick_params(label1On=False)
     ax2.zaxis.set_tick_params(label1On=False)
-    ax1.set_title(r'$u\left(x, y\right)$', fontsize=30, y=1, pad=30)
-    ax2.set_title(r'$u_\textrm{SD}\left(x, y\right)$', fontsize=30, y=1, pad=30)
+    ax1.set_title(r'$u\left(x, y\right)$', y=1, pad=15)
+    ax2.set_title(r'$u_\textrm{SD}\left(x, y\right)$', y=1, pad=15)
 
     for dx in [0, 1]:
         for dy in [0, 1]:
@@ -562,9 +542,9 @@ def sd_discontinuous():
                              np.array([[lag(x, y) for x in mesh + dx] for y in mesh + dy]),
                              antialiased=False)
 
-    plt.subplots_adjust(0, 0, 1, 1, 0, 0)
+    fig.subplots_adjust(0, 0, 1, 1, 0, 0)
+    fig.savefig('sd_discontinuous.png')
     # plt.show()
-    fig.savefig('sd_discontinuous.png', transparent=True)
 
 
 def sd_scheme():
@@ -604,83 +584,83 @@ def sd_scheme():
 
     mesh = np.linspace(0, 1, 100)
 
-    fig = plt.figure(figsize=[18, 9])
-    ax0 = fig.add_subplot(231)
-    ax1 = fig.add_subplot(232)
-    ax2 = fig.add_subplot(233)
-    ax3 = fig.add_subplot(234)
-    ax4 = fig.add_subplot(235)
-    ax5 = fig.add_subplot(236)
+    with plt.rc_context({'font.size': 5, 'lines.markersize': 3}):
+        fig = plt.figure(figsize=[5.78851, 3])
+        ax0 = fig.add_subplot(231)
+        ax1 = fig.add_subplot(232)
+        ax2 = fig.add_subplot(233)
+        ax3 = fig.add_subplot(234)
+        ax4 = fig.add_subplot(235)
+        ax5 = fig.add_subplot(236)
 
-    for ax in (ax0, ax1, ax2, ax3, ax4, ax5):
-        ax.get_xaxis().set_visible(False)
-        ax.get_yaxis().set_visible(False)
-        ax.set_xlim(-0.1, 1.1)
-        ax.set_ylim(-3, 2)
-        ax.grid(False)
+        for ax in (ax0, ax1, ax2, ax3, ax4, ax5):
+            ax.get_xaxis().set_visible(False)
+            ax.get_yaxis().set_visible(False)
+            ax.set_xlim(-0.1, 1.1)
+            ax.set_ylim(-3, 1.65)
+            ax.grid(False)
 
-    ax0.set_title("Step 0: $p$-order interpolation of the\nsolution on $p+1$ solution points", x=0.5, y=0)
-    for ax in (ax0, ax1, ax2, ax3, ax4, ax5):
-        ax.plot(mesh, u(mesh), 'r', lw=3)
-        ax.plot(sol_p, u(sol_p), 'ro', ms=8)
-        ax.plot([-0.1, 0], [1, 0.5], 'r', lw=2)
-        ax.plot([1, 1.1], [0.5, 0], 'r', lw=2)
+        ax0.set_title("Step 0: $p$-order interpolation of the\nsolution on $p+1$ solution points", x=0.5, y=0)
+        for ax in (ax0, ax1, ax2, ax3, ax4, ax5):
+            ax.plot(mesh, u(mesh), 'r')
+            ax.plot(sol_p, u(sol_p), 'ro')
+            ax.plot([-0.1, 0], [1, 0.5], 'r')
+            ax.plot([1, 1.1], [0.5, 0], 'r')
 
-    ax1.set_title("Step 1: extrapolation of the\nsolution at $p+2$ flux points", x=0.5, y=0)
-    for ax in (ax1, ax2, ax3, ax4, ax5):
-        ax.plot(flux_p, u(flux_p), 'bo', ms=8)
+        ax1.set_title("Step 1: extrapolation of the\nsolution at $p+2$ flux points", x=0.5, y=0)
+        for ax in (ax1, ax2, ax3, ax4, ax5):
+            ax.plot(flux_p, u(flux_p), 'bo')
 
-    ax2.set_title("Step 2: evaluation of the\nflux density at flux points", x=0.5, y=0)
-    ax2.plot(flux_p, f(flux_p), 'bs', ms=8)
-    ax2.plot(0, f_l, 'ks', ms=8)
-    ax2.plot(1, f_r, 'ks', ms=8, mew=3, fillstyle='none')
+        ax2.set_title("Step 2: evaluation of the\nflux density at flux points", x=0.5, y=0)
+        ax2.plot(flux_p, f(flux_p), 'bs')
+        ax2.plot(0, f_l, 'ks')
+        ax2.plot(1, f_r, 'ks', fillstyle='none')
 
-    ax3.set_title("Step 3: computation of a unique\nflux density at segment end points", x=0.5, y=0)
-    for ax in (ax3, ax4, ax5):
-        ax.plot(flux_p, f_c(flux_p), 'bs', ms=8)
+        ax3.set_title("Step 3: computation of a unique\nflux density at segment end points", x=0.5, y=0)
+        for ax in (ax3, ax4, ax5):
+            ax.plot(flux_p, f_c(flux_p), 'bs')
 
-    ax4.set_title("Step 4: $p\\!+\\!1$-order interpolation of the flux on\nflux points, continuous between segments",
-                  x=0.5, y=0)
-    for ax in (ax4, ax5):
-        ax.plot(mesh, f_c(mesh), 'b', lw=3)
-        ax.plot([-0.1, 0], [0.7, f_c(0)], 'b', lw=2)
-        ax.plot([1, 1.1], [f_c(1), -0.1], 'b', lw=2)
+        ax4.set_title("Step 4: $p\\!+\\!1$-order interpolation\nof the flux on flux points,\n"
+                      "continuous between segments", x=0.5, y=0)
+        for ax in (ax4, ax5):
+            ax.plot(mesh, f_c(mesh), 'b')
+            ax.plot([-0.1, 0], [0.7, f_c(0)], 'b')
+            ax.plot([1, 1.1], [f_c(1), -0.1], 'b')
 
-    ax5.set_title("Step 5: computation of the flux divergence\nas a $p$-order polynomial at solution points",
-                  x=0.5, y=0)
-    ax5.plot(mesh, 0.2 * f_c.derivative(mesh) - 1, 'g', lw=3)
-    ax5.plot(sol_p, 0.2 * f_c.derivative(sol_p) - 1, 'go', ms=8)
+        ax5.set_title("Step 5: computation of the flux\ndivergence as a $p$-order\npolynomial at solution points",
+                      x=0.5, y=0)
+        ax5.plot(mesh, 0.2 * f_c.derivative(mesh) - 1, 'g')
+        ax5.plot(sol_p, 0.2 * f_c.derivative(sol_p) - 1, 'go')
 
-    plt.subplots_adjust(0.01, 0.01, 0.99, 0.99, 0, 0)
-    # plt.show()
-    fig.savefig('sd_scheme.png', transparent=True)
+        fig.subplots_adjust(0.01, 0.01, 0.99, 0.99, 0, 0)
+        fig.savefig('sd_scheme.png')
+        # plt.show()
 
 
 def sd_points():
-    fig = plt.figure(figsize=[16, 5])
+    fig = plt.figure(figsize=[5.78851, 1.8089093749999998])
     ax = fig.add_subplot(111)
     ax.grid(False)
-    ax.set_ylabel('$p$', rotation=0, labelpad=10, fontsize=30)
-    ax.xaxis.set_tick_params(labelsize=18)
-    ax.yaxis.set_tick_params(labelsize=18)
+    ax.set_ylabel('$p$', rotation=0, labelpad=10)
+    ax.yaxis.set_ticks([0, 2, 4, 6, 8, 10])
 
     sp = fp = None
     for p in range(12):
         sol_p = (np.array([-np.cos(np.pi * (2 * i + 1) / (2 * (p + 1))) for i in range(p + 1)]) + 1) / 2
         flux_p = (np.append(-1, np.append(np.polynomial.legendre.legroots(p * [0] + [1]), 1)) + 1) / 2
         ax.plot([0, 1], [p, p], 'k', lw=1)
-        fp, = ax.plot(flux_p, 0 * flux_p + p, 'bs', ms=8)
-        sp, = ax.plot(sol_p, 0 * sol_p + p, 'ro', ms=8)
+        fp, = ax.plot(flux_p, 0 * flux_p + p, 'bs', ms=3)
+        sp, = ax.plot(sol_p, 0 * sol_p + p, 'ro', ms=3)
     ax.set_ylim(np.flip(ax.get_ylim()))
     ax.legend([sp, fp], ['Solution points', 'Flux points'], ncol=2, loc='lower center', bbox_to_anchor=(0.5, 1))
 
-    plt.subplots_adjust(0.05, 0.1, 0.99, 0.85)
+    fig.subplots_adjust(0.1, 0.1, 0.99, 0.8)
+    fig.savefig('sd_points.png')
     # plt.show()
-    fig.savefig('sd_points.png', transparent=True)
 
 
 def covo_rk2():
-    fig = plt.figure(figsize=[12, 6])
+    fig = plt.figure(figsize=[5.78851, 2.894255])
     ax = fig.add_subplot(111)
 
     for mesh in [16, 32, 64]:
@@ -698,21 +678,22 @@ def covo_rk2():
                 break
             data_x.append(cfl)
             data_y.append(error)
-        ax.loglog(data_x, data_y, 'x-', lw=2, ms=8, label="$N = {0}$".format(mesh))
+        ax.loglog(data_x, data_y, 'x-', label="$N = {0}$".format(mesh))
 
     ax.grid(True)
     ax.set_xlabel(r'$\mathcal{N}_\textrm{CFL}$')
-    ax.set_title('Pressure L2 error, RK2, $p = 4$', pad=20)
-    utils.annotate_slope(ax, 2, dx=0.1, dy=0.5)
+    ax.set_title('Pressure $L_2$ error, RK2, $p = 4$')
+    with plt.rc_context({'lines.linewidth': 1}):
+        utils.annotate_slope(ax, 2, dx=0.1, dy=0.5)
     ax.legend()
 
-    plt.subplots_adjust(0.05, 0.1, 0.99, 0.9)
+    fig.subplots_adjust(0.08, 0.15, 0.99, 0.9)
+    fig.savefig('covo_rk2.png')
     # plt.show()
-    fig.savefig('covo_rk2.png', transparent=True)
 
 
 def covo_rk2_rk4():
-    fig = plt.figure(figsize=[12, 6])
+    fig = plt.figure(figsize=[5.78851, 2.894255])
     ax = fig.add_subplot(111)
 
     lines_rk2 = []
@@ -731,7 +712,7 @@ def covo_rk2_rk4():
                 break
             data_x.append(cfl)
             data_y.append(error)
-        lines_rk2.append(ax.loglog(data_x, data_y, 'x-', lw=2, ms=8, label="RK2, N = {0}".format(mesh))[0])
+        lines_rk2.append(ax.loglog(data_x, data_y, 'x-', label="RK2, N = {0}".format(mesh))[0])
 
     lines_rk4 = []
     for mesh in [16, 32, 64]:
@@ -749,29 +730,29 @@ def covo_rk2_rk4():
 
             data_x.append(cfl)
             data_y.append(error)
-        lines_rk4.append(ax.loglog(data_x, data_y, 'x-', lw=2, ms=8, label="RK4, N = {0}".format(mesh))[0])
-        ax.loglog([0.01, 0.1], [data_y[0], data_y[0]], 'k--', lw=2)
+        lines_rk4.append(ax.loglog(data_x, data_y, 'x-', label="RK4, N = {0}".format(mesh))[0])
+        ax.loglog([0.01, 0.1], [data_y[0], data_y[0]], 'k--')
 
     ax.legend([lines_rk2, lines_rk4], ['RK2', 'RK4'], loc='lower center', bbox_to_anchor=(0.8, 0.1),
               handler_map={list: matplotlib.legend_handler.HandlerTuple(ndivide=None)}, handlelength=6)
-    ax.text(0.1, 0.9, r'$16 \times 16$', transform=ax.transAxes, fontsize=20,
+    ax.text(0.1, 0.9, r'$16 \times 16$', transform=ax.transAxes,
             bbox={'boxstyle': 'round', 'facecolor': 'white', 'alpha': 0.8, 'edgecolor': '0.8'})
-    ax.text(0.1, 0.5, r'$32 \times 32$', transform=ax.transAxes, fontsize=20,
+    ax.text(0.1, 0.5, r'$32 \times 32$', transform=ax.transAxes,
             bbox={'boxstyle': 'round', 'facecolor': 'white', 'alpha': 0.8, 'edgecolor': '0.8'})
-    ax.text(0.1, 0.175, r'$64 \times 64$', transform=ax.transAxes, fontsize=20,
+    ax.text(0.1, 0.175, r'$64 \times 64$', transform=ax.transAxes,
             bbox={'boxstyle': 'round', 'facecolor': 'white', 'alpha': 0.8, 'edgecolor': '0.8'})
 
     ax.grid(True)
     ax.set_xlabel(r'$\mathcal{N}_\textrm{CFL}$')
-    ax.set_title('Pressure L2 error, $p = 4$', pad=20)
+    ax.set_title('Pressure $L_2$ error, $p = 4$')
 
-    plt.subplots_adjust(0.05, 0.1, 0.99, 0.9)
+    fig.subplots_adjust(0.08, 0.15, 0.99, 0.9)
+    fig.savefig('covo_rk2_rk4.png')
     # plt.show()
-    fig.savefig('covo_rk2_rk4.png', transparent=True)
 
 
 def covo_rk():
-    fig = plt.figure(figsize=[12, 8])
+    fig = plt.figure(figsize=[5.78851, 3.859])
     ax = fig.add_subplot(111)
 
     data_x, data_y = [], []
@@ -788,7 +769,7 @@ def covo_rk():
         data_y.append(error)
     ax.loglog(data_x, data_y, 'x-', lw=2, ms=8, label="RK4, $p = 8$, $N = 32$")
     axins = ax.inset_axes([0.65, 0.02, 0.3, 0.5])
-    axins.loglog(data_x, data_y, 'x-', lw=2, ms=8)
+    axins.loglog(data_x, data_y, 'x-')
     axins.set_xticklabels([], minor=True)
     axins.set_yticklabels([], minor=True)
     axins.set_xlim(0.15, 0.3)
@@ -830,16 +811,20 @@ def covo_rk():
 
     ax.grid(True)
     ax.set_xlabel(r'$\mathcal{N}_\textrm{CFL}$')
-    ax.set_title('Pressure L2 error', pad=50)
-    ax.legend(loc='upper left', bbox_to_anchor=(0, 1.1))
+    ax.set_title('Pressure $L_2$ error', pad=25)
+    legend = ax.legend(loc='upper left', bbox_to_anchor=(0, 1.1))
+    shift = max([t.get_window_extent().width for t in legend.get_texts()])
+    for t in legend.get_texts():
+        temp_shift = shift - t.get_window_extent().width
+        t.set_position((temp_shift, 0))
 
-    plt.subplots_adjust(0.05, 0.1, 0.99, 0.85)
+    fig.subplots_adjust(0.08, 0.1, 0.99, 0.85)
+    fig.savefig('covo_rk.png')
     # plt.show()
-    fig.savefig('covo_rk.png', transparent=True)
 
 
 def covo_exp():
-    fig = plt.figure(figsize=[12, 6])
+    fig = plt.figure(figsize=[5.78851, 2.894255])
     ax = fig.add_subplot(111)
 
     data_x, data_y = [], []
@@ -854,7 +839,7 @@ def covo_exp():
             break
         data_x.append(cfl)
         data_y.append(error)
-    ax.loglog(data_x, data_y, 'x-', lw=2, ms=8, label="exponential Rosenbrock--Euler")
+    ax.loglog(data_x, data_y, 'x-', label="exponential Rosenbrock--Euler")
 
     data_x, data_y = [], []
     for case in ['CFL_0.1', 'CFL_0.129', 'CFL_0.167', 'CFL_0.215', 'CFL_0.278', 'CFL_0.359', 'CFL_0.464',
@@ -868,7 +853,7 @@ def covo_exp():
             break
         data_x.append(cfl)
         data_y.append(error)
-    ax.loglog(data_x, data_y, 'x-', lw=2, ms=8, label="ExpRB32")
+    ax.loglog(data_x, data_y, 'x-', label="ExpRB32")
 
     data_x, data_y = [], []
     for case in ['CFL_0.1', 'CFL_0.129', 'CFL_0.167', 'CFL_0.215', 'CFL_0.278', 'CFL_0.359', 'CFL_0.464',
@@ -883,7 +868,7 @@ def covo_exp():
             break
         data_x.append(cfl)
         data_y.append(error)
-    ax.loglog(data_x, data_y, 'x-', lw=2, ms=8, label="ExpRB42")
+    ax.loglog(data_x, data_y, 'x-', label="ExpRB42")
 
     utils.annotate_slope(ax, 4, base=0.1, dx=0.1, dy=0.15)
     utils.annotate_slope(ax, 3, base=0.2, dx=0.15, dy=0.22, transpose=True)
@@ -891,19 +876,19 @@ def covo_exp():
 
     ax.grid(True)
     ax.set_xlabel(r'$\mathcal{N}_\textrm{CFL}$')
-    ax.set_title('Pressure L2 error, $p = 6$, $N = 32$', pad=0)
+    ax.set_title('Pressure $L_2$ error, $p = 6$, $N = 32$')
     ax.legend()
 
-    plt.subplots_adjust(0.05, 0.1, 0.99, 0.85)
+    fig.subplots_adjust(0.08, 0.15, 0.99, 0.9)
+    fig.savefig('covo_exp.png')
     # plt.show()
-    fig.savefig('covo_exp.png', transparent=True)
 
 
 if __name__ == '__main__':
-    # fig_rk()
-    # fig_bdf()
-    # fig_ab()
-    # fig_preconditioning()
+    # rk_stab()
+    # ab_stab()
+    # bdf_stab()
+    # preconditioning()
     # fig_eps()
     # rae_coefficients()
     # rae_residuals()
@@ -913,4 +898,5 @@ if __name__ == '__main__':
     # covo_rk2()
     # covo_rk2_rk4()
     # covo_rk()
+    # covo_exp()
     pass
