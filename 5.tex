@@ -9,7 +9,7 @@
   This is why we decided to accomplish our analysis of exponential time integration methods with the solver JAGUAR.
 
 
-  \section{JAGUAR: a spectral difference solver}
+  \section{JAGUAR: a Spectral Difference solver}
 
     \paragraph{}
     JAGUAR means proJect of an Aerodynamic solver using General Unstructured grids And high ordeR schemes.
@@ -42,7 +42,7 @@
       Because the solution is represented in each cell by a polynomial, there is no reason for the solution to be continuous throughout cell interfaces.
       Indeed, the Spectral Difference method uses a piecewise representation of the solution.
       For example, we show in figure \ref{fig:sd_discontinuous} a function represented as the Spectral Difference method represents the solution.
-      The 2D mesh is regular and made of $2 \times 2$ cells over $\left[0, 2\right]^2$.
+      The two-dimensional mesh is regular and made of $2 \times 2$ cells over $\left[0, 2\right]^2$.
       We represent the function
       \begin{equation}
         \begin{aligned}
@@ -55,12 +55,12 @@
       This function is interpolated with a second-order method using Lagrange polynomials over each cell.
       The result is shown in the right part of figure \ref{fig:sd_discontinuous}, where each colour corresponds to one cell.
       We see that there are discontinuities at the cell interfaces, which shows a specificity of the Spectral Difference methods.
-      If we were to use the function on the left part of figure \ref{fig:sd_discontinuous} as an initial condition for a simulation, the Spectral difference method would in fact use the function on the right part of the figure.
+      If we were to use the function on the left part of figure \ref{fig:sd_discontinuous} as an initial condition for a simulation, the Spectral Difference method would in fact use the function on the right part of the figure.
       However, to respect the underlying conservation property of equation (\ref{eq:pde_2}), it is necessary for $F$ to be continuous over the whole computational domain.
       The Spectral Difference method will then make sure that the polynomial representations of the flux density are continuous throughout cell interfaces.
 
       \paragraph{}
-      To better understand how this method works, we take a 1D cell: the segment $\left[0, 1\right]$.
+      To better understand how this method works, we take a one-dimensional cell: the segment $\left[0, 1\right]$.
       Because the following is done at a fixed time we will drop the dependency on the time, but the solution and the coefficients are in reality functions of the time, not scalars.
       The solution $u$ inside this segment is then $u\left(x\right) = \sum_{i=0}^p a_ix^i$.
       Using Lagrange interpolation polynomials, it is equivalent to use the set of the $p + 1$ coefficients $a_i$ or the set of the $p + 1$ values $u\left(x_i\right)$ computed at the distinct points $x_i \in \left[0, 1\right]$ called \emph{solution points}.
@@ -180,7 +180,7 @@
 
     \paragraph{}
     In the end, we now have a high-order spatial discretisation method with the Spectral Difference method that allows us to analyse and compare exponential methods.
-    In the following, we will work with the three methods we developed in JAGUAR and we presented earlier in table \ref{tab:exp_rb_butcher}: the Rosenbrock--Euler, ExpRB32 and ExpRB42 methods.
+    In the following, we will work with the three methods we developed in JAGUAR and we presented earlier in table \ref{tab:exprb_butcher}: the Rosenbrock--Euler, ExpRB32 and ExpRB42 methods.
 
 
   \section{Analysis of exponential time integration methods}
@@ -225,20 +225,20 @@
 
       \paragraph{}
       For the first test, we wanted to see if the orders of the exponential time integration methods were the correct ones when used in JAGUAR.
-      We decided to use the same test case we used with CEDRE: the 2D inviscid isentropic vortex.
+      We decided to use the same test case we used with CEDRE: the two-dimensional inviscid isentropic vortex.
       The case is still described by equation \ref{eq:covo}, but the numerical values are different.
       The convective flow Mach number is still $0.5$, but this time $P_\infty = 10^5$ and $T_\infty = 300$.
       The heat capacity ratio is $\gamma = 1.4$ and the specific gas constant is $r_\textrm{gas} = 287.058$.
-      The mesh represent the 2D box $\left[0, L\right]^2$ with $L = 0.1$, and is made of $N \times N$ cells.
+      The mesh represent the two-dimensional box $\left[0, L\right]^2$ with $L = 0.1$, and is made of $N \times N$ cells.
       The vortex is defined by its characteristic radius $R_0 = 0.005$ and its intensity $\beta = 0.2$.
       It corresponds in fact to the same vortex as the one we used with CEDRE, in size and in intensity, but it has been scaled down into a smaller box and dimensioned to some given pressure and temperature.
       \PS{unités ?}
 
       \paragraph{}
       The period for those numerical values is \PS{TODO}.
-      After 20 periods, we can compute the L2 error for a scalar variable $u\left(\vec{x}, t\right)$:
+      After 20 periods, we can compute the $L_2$ error for a scalar variable $u\left(\vec{x}, t\right)$:
       \begin{equation}
-        \operatorname{err}\left(u\right) = \left(\int_{\left[0, L\right]^2} \left|u\left(\vec{x}, 20T\right) - u\left(\vec{x}, 0\right)\right|^2 \mathrm{d}\vec{x} \right)^{1/2} \ .
+        \operatorname{err}\left(u\right) = \left(\int_{\left[0, L\right]^2} \left(u\left(\vec{x}, 20T\right) - u\left(\vec{x}, 0\right)\right)^2 \mathrm{d}\vec{x} \right)^{1/2} \ .
       \end{equation}
       Because it is a periodic case, the initial value corresponds to the exact solution.
       This error corresponds then to the error of the time integration method.
@@ -268,7 +268,7 @@
       Because some methods are more accurate than others, we did several computations with different mesh resolutions and Spectral Difference method orders.
       We start with the Midpoint method.
       We take the order of the spatial discretisation method $p = 4$.
-      We look at the L2 error for the pressure after 20 periods, for given time steps.
+      We look at the $L_2$ error for the pressure after 20 periods, for given time steps.
       We will in fact show results using the CFL number, as it is proportional to the time step:
       \begin{equation}
         \mathcal{N}_\textrm{CFL} = \frac{N \left(p + 1\right) \left(1 + \operatorname{Ma}\right) \sqrt{\gamma r_\textrm{gas} T}}{L} \Delta t\ .
@@ -368,10 +368,106 @@
       The analysis of their stability is the topic of the next section.
 
 
-    \subsection{Robustness \PS{(or stability ?)}: Taylor--Green vortex}
+    \subsection{Robustness: Taylor--Green vortex}
+    \PS{Renommer en "Stability: Taylor--Green vortex" ?}
 
       \paragraph{}
       For the next text case, we choose another explicit computation: the Taylor--Green vortex.
+      It is a three-dimensional case where we solve the Navier-Stokes equations in a periodic box of length $2 \pi L$ centered around the origin.
+      The initial flow is given by:
+      \begin{equation}\label{eq:tgv}
+        \left\{\begin{aligned}
+          \vec{u} &= \operatorname{Ma} \sqrt{\gamma r_\textrm{gas} T_\infty} \begin{pmatrix}
+            \sin\left(\frac{x}{L}\right) \cos\left(\frac{y}{L}\right) \cos\left(\frac{z}{L}\right) \\[10pt]
+            \cos\left(\frac{x}{L}\right) \sin\left(\frac{y}{L}\right) \cos\left(\frac{z}{L}\right) \\[10pt]
+            0
+          \end{pmatrix} \\[10pt]
+          T &= T_\infty \\[10pt]
+          P &= P_\infty \left(1 + \frac{\gamma \operatorname{Ma}^2}{16} \left(\cos\left(\frac{2x}{L}\right) + \cos\left(\frac{2y}{L}\right)\right) \left(\cos\left(\frac{2z}{L}\right) + 2\right) \right)
+        \end{aligned}\right.
+      \end{equation}
+      over the domain $\left(x, y, z\right) \in \left[-\pi L, \pi L\right]^3$, and can be seen in figure \PS{TODO}.
+      Even if $\vec{u}_z = 0$ at the initialisation, it becomes non-null afterwards and the problem is fully three-dimensional.
+      The initial flow transition to turbulence: the initial large scales decay into smaller ones, that end up dissipated.
+
+      \paragraph{}
+      \PS{UNITÉS ?}
+      The numerical values we took in this test case are $L = 1$, $\operatorname{Ma} = 0.1$, $r_\textrm{gas} = 71.4284$, $T_\infty = 1$ and $P_\infty = 71.4288$.
+      Because here the fluid viscosity is constant with $\mu = \num{6.25e-4}$, we have the Reynolds number based on L: $\operatorname{Re} = \rho_\infty U\infty L / \mu = 1600$, which is a standard value in many validation cases from the literature \PS{REFs}.
+      The Prandtl number, ratio of momentum diffusivity to thermal diffusivity, is equal to 0.71.
+      Using the convective time $t_c = L / U_\infty$ \PS{c'est bien ça ?}, it is known for our numerical values that the maximum of dissipation happens around $8 t_c$, and after $15 t_c$ the flow is fully turbulent without any trace of the initial structures.
+
+      \paragraph{}
+      The values of interest for this test case are the \PS{mean turbulent kinetic energy averaged over the computational domain $\Omega$}:
+      \begin{equation} \PS{TODO}
+        E_k = \frac{1}{\Omega} \int_\Omega \rho \frac{\norm{\vec{u}}^2}{2} \mathrm{d}\Omega \ ,
+      \end{equation}
+      the mean enstrophy, defined by
+      \begin{equation} \PS{TODO}
+        \mathcal{E} = \frac{1}{\rho_\infty \Omega} \int_\Omega \rho \frac{\norm{\nabla \times \vec{u}}^2}{2} \mathrm{d}\Omega \ ,
+      \end{equation}
+      and the kinetic energy dissipation rate, that follows the relation:
+      \begin{equation} \PS{TODO}
+        \epsilon = -\frac{\mathrm{d} E_k}{\mathrm{d} t} = 2 \mu \mathcal{E} \ .
+      \end{equation}
+      We can compare those values computed by our simulation with some reference values.
+      Those reference values were computed using spectral methods derived specially for this Taylor--Green vortex case \PS{Guillaume, c'est bien ça ? Ref ?}.
+
+      \paragraph{}
+      The mesh used here is the same for all computations: a regular Cartesian mesh made of $80^3$ cells.
+      We use the Spectral Difference method with the order $p = 4$.
+      Each computation is run on 308 CPU cores.
+      What interest us is that the result from the simulation matches reference data, and how much CPU time the computation took.
+      For each time integration method we want to try, we simulate the flow from the initial condition up to $20 t_c$.
+      We will work with the RKo6s, TVDRK(3, 3) and SSPRK(5, 4) methods as the already existing reference methods, and the exponential Rosenbrock--Euler and ExpRB32 methods as the newly implemented methods.
+      For the exponential Rosenbrock methods, we use Krylov subspaces of dimension 20 for the first stage, and of dimension 5 for the additional stages for the ExpRB32 method.
+      We use constant time steps in a simulation, and we try to find the highest time step compatible with the method.
+      However, after finding the largest acceptable time step value for the exponential Rosenbrock--Euler method, we tried to increase it.
+      To do so, we had to increase the dimension of the Krylov subspaces used to compute $\varphi$-functions.
+      By doing so, the computational cost of a single iteration is higher, but it reduces the error in the $\varphi$-functions evaluations and we hope this will help the time integration method.
+      Symmetrically, we tried to reduce the dimension of the Krylov subspaces.
+      It means that the method can not work with the same time step as before as it is now too high, but this reduces the iterations cost.
+      Here we wanted to see if making more iterations that are less expensive can be a good idea.
+      We will call ExpEuler($k$) method the exponential Rosenbrock--Euler method that uses a Krylov subspace of dimension $k$.
+
+      \paragraph{}
+      The result of all simulation is shown in figure \PS{TODO}.
+      As a simulation correspond to the computation with the largest time step for which the results are satisfying, this figure does not gives much information: all methods produce results that are close to reference data.
+      The interesting part is in table \PS{TODO}.
+
+      \begin{table}
+        \center
+        \begin{tabular}{c|cccc}
+          Method       & $\mathcal{N}_\textrm{CFL}$ & $N_\textrm{iterations}$ & Wall time/iteration (s) & Total time (hh:mm:ss) \\ \hline
+          RKo6s        & 0.28       & 50000      & 1.588                     & 22:03:20              \\
+          TVDRK(3, 3)  & 0.14       & 100000     & 0.833                     & 23:08:20              \\
+          SSPRK(5, 4)  & XXXX       & XXXXX      & XXXXX                     & XX:XX:XX              \\
+          ExpEuler(10) & 1.4        & 10000      & 3.803                     & 10:33:50              \\
+          ExpEuler(20) & 2.8        & 5000       & 8.144                     & 11:18:40              \\
+          ExpEuler(40) & 5.6        & 2500       & 19.491                    & 13:32:07              \\
+          ExpEuler(80) & 11.2       & 1250       & 52.792                    & 18:19:50              \\
+          ExpRB32      & 2.8        & 5000       & 10.391                    & 14:25:55              \\
+        \end{tabular}
+        \caption{\PS{TODO}}\label{tab:tgv}
+      \end{table}
+
+      \begin{table}
+        \center
+        \begin{tabular}{M{.15\textwidth}M{.3\textwidth}M{.4\textwidth}c}
+          \begin{tabular}{c|c}
+            \multicolumn{1}{c}{} \\ \multicolumn{1}{c}{} \\ \multicolumn{1}{c}{} \\ 0 \RKBar 1
+          \end{tabular} &
+          \begin{tabular}{c|cc}
+            \multicolumn{1}{c}{} \\ \multicolumn{1}{c}{} \\ 0 \\ 1/2 & 1/2 \RKBar 0 & 1
+          \end{tabular} &
+          \begin{tabular}{c|cccc}
+            0 \\ 1/2 & 1/2 \\ 1/2 & 0 & 1/2 \\ 1 & 0 & 0 & 1 \RKBar 1/6 & 1/3 & 1/3 & 1/6
+          \end{tabular} & \\[35pt]
+          RK1 & RK2 & RK4 & \\
+        \end{tabular}
+        \caption{Butcher tableau for the explicit Euler, Midpoint and RK4 methods.}\label{tab:rk_butcher}
+      \end{table}
+
 
 
     \subsection{Industrial application: LS89}

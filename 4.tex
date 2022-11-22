@@ -187,7 +187,7 @@
       \end{aligned}\right. \ .
     \end{equation}
     The Butcher tableau that we used to represent the Runge--Kutta methods is also used to represent the exponential Runge--Kutta methods.
-    For instance, the Butcher tableau of the exponential Rosenbrock--Euler method, which is a special simple case of exponential Runge--Kutta methods, is shown in table \ref{tab:exp_rb_butcher}.
+    For instance, the Butcher tableau of the exponential Rosenbrock--Euler method, which is a special simple case of exponential Runge--Kutta methods, is shown in table \ref{tab:exprb_butcher}.
 
     \paragraph{}
     Until now, we have not been exact when naming the methods we constructed here.
@@ -236,7 +236,7 @@
     They were developed as adaptive methods, but we will use them without the error estimate as standard methods.
     They are both 2-stage exponential Rosenbrock methods and achieve respectively a third and fourth order of accuracy.
     This shows the quality of exponential Rosenbrock methods.
-    Their Butcher tableaux are in table \ref{tab:exp_rb_butcher}.
+    Their Butcher tableaux are in table \ref{tab:exprb_butcher}.
     We decided to work with those two methods, along with the Rosenbrock--Euler method, as they are simple among exponential methods and are supposedly well suited for our problems.
     They give us methods with orders of accuracy from 2 to 4.
     But what is interesting to us is that on linear problems those methods are exact, or with an infinite order of accuracy.
@@ -256,7 +256,7 @@
         \end{tabular} & \\[20pt]
         Exponential Rosenbrock--Euler & ExpRB32 & ExpRB42 \\
       \end{tabular}
-      \caption{Butcher tableau for some exponential Rosenbrock integration methods}\label{tab:exp_rb_butcher}
+      \caption{Butcher tableau for some exponential Rosenbrock integration methods}\label{tab:exprb_butcher}
     \end{table}
 
 
@@ -440,7 +440,7 @@
 
     \paragraph{}
     To test the method, we decided to use a simple academic test case.
-    It is a 2D inviscid isentropic vortex that is convected in a periodic box.
+    It is a two-dimensional inviscid isentropic vortex that is convected in a periodic box.
     It is a \PS{calcul adimensionné (du coup je mets pas les unités ?)}, and the mesh is regular over a square of length $L = 20$, with $100^2$ cells.
     It is shown in figure \ref{fig:covo_cedre_mesh}.
     The vortex is convected in a flow at a Mach number of $\operatorname{Ma} = 0.5$, with the dimensioning parameters $P_\infty = 1$ and $T_\infty = 1$.

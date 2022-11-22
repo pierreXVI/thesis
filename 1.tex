@@ -54,7 +54,7 @@
     Therefore we need to discretise the continuous spatial domain into a finite number of cells, or elements.
     This is usually done with a mesh of the domain $\mathcal{D}$.
     First, we divide the domain $\mathcal{D}$ in a set of cells, called a mesh.
-    Those cells are small disjoints volumes in 3D, faces in 2D or segments in 1D, such as their union recovers the original domain.
+    Those cells are small disjoints volumes in 3D, faces in the two-dimensional space or segments in 1D, such as their union recovers the original domain.
     Interest quantities, such as the fluid velocity, density, \dots, are then stored at each node, averaged at the center of each cell or sometimes in a more complex fashion depending on the method.
     They are no longer mathematically represented by a function of the continuous physical domain $\xi: \mathcal{D} \rightarrow \mathbb{R}$ but by a finite-sized vector $\Xi$ gathering all the information across the discretised domain.
     For some simple discretisation methods, this vector consists of the quantity evaluated at the mesh nodes or averaged at the center of the cells.
@@ -731,7 +731,7 @@
   			\begin{subfigure}[t]{0.3\textwidth}
   				\centering
   				\includegraphics[width=\textwidth]{figures/GT01R.png}
-          \caption{GT01R: 2D inviscid flow in the inter-blade channel of a linear cascade turbine.}
+          \caption{GT01R: Two-dimensional inviscid flow in the inter-blade channel of a linear cascade turbine.}
   				\label{fig:sparse.GT01R}
   			\end{subfigure}
   			\hfill

@@ -24,7 +24,7 @@
 
         \paragraph{}
         Our first application is a typical aerodynamics test case.
-        It is a 2D simulation of the flow around an RAE 2822 wing profile.
+        It is a two-dimensional simulation of the flow around an RAE 2822 wing profile.
         The only fluid is standard air.
         The Mach number is taken equal to 0.75, the chord is equal to $1\si{\meter}$, the angle of attack is $0\si{\degree}$ and we use the atmospheric conditions at 10km.
         This gives a laminar Reynolds number of \num{6.5e6}.
@@ -32,7 +32,7 @@
         \paragraph{}
         We decided to use this first test case for multiple reasons.
         Firstly, it is a simple case in the field of computational fluid dynamics.
-        It is a standard aerodynamics case, with a small mesh in comparison to many other 3D cases.
+        It is a standard aerodynamics case, with a small mesh in comparison to many other three-dimensional cases.
         This allows us to test out methods inexpensively.
         Secondly, this case belongs to the tutorial suite of our solver.
         It means that it is already well mastered by the team.
@@ -166,7 +166,7 @@
         The RAE 2822 airfoil is often used for turbulence model validations, but computations in the field prefer to use a finer mesh to resolve the boundary layer.
         This is what we present next.
         The new mesh, shown in figure \ref{fig:rae_mesh_fine} is clearly different.
-        It is a 3D mesh, which is in fact a 2D mesh that was extruded on 6 cells in the $y$ direction.
+        It is a three-dimensional mesh, which is in fact a two-dimensional mesh that was extruded on 6 cells in the $y$ direction.
         We set a periodicity between the two sides of the domain.
         The mesh is made of 198144 cells whereas the previous RAE 2822 mesh was only made of 36541 cells.
         With these additional cells, this mesh is able to be fine on the wall boundary condition as is seen in figure \ref{fig:rae_mesh_fine}.
@@ -208,14 +208,14 @@
         \end{figure}
 
         \paragraph{}
-        The 2D mesh is shown in figure \ref{fig:sphere_mesh}.
+        The two-dimensional mesh is shown in figure \ref{fig:sphere_mesh}.
         It is a regular mesh made of quadrangles, with refinement in the radial direction at the wall boundary and at the expected shock location.
         The refinement at the wall boundary helps to compute more precisely the physical phenomena that happen at said boundary.
         The refinement at the shock is a requirement of the spatial discretisation methods.
         In order to get a clean and slim shock, the cells near the shock must have a high aspect ratio.
         Otherwise, artificial vorticity is created when going through the shock, which will give wrong results downstream. \PS{c'est bien pour ça ?}
         This expected shock location is obtained from a previous computation, made with a coarser mesh.
-        This mesh is used in a 2D axisymmetric computation to get the flow around a 3D solid sphere.
+        This mesh is used in a two-dimensional axisymmetric computation to get the flow around a three-dimensional solid sphere.
 
         \paragraph{}
         The solid sphere is modelled by an isothermal wall boundary condition.

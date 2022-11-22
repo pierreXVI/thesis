@@ -168,7 +168,7 @@
 
       \paragraph{}
       To analyse this strategy in the choice of $\varepsilon$, we do the following numerical experiment.
-      We consider the 1D Burgers' equation over a regular periodic mesh made of 10 cells (or segments in 1D).
+      We consider the one-dimensional Burgers' equation over a regular periodic mesh made of 10 cells (or segments in the one-dimensional space).
       The function $f$ is taken as the right-hand side of equation (\ref{eq:ode}) when solving the Burgers' equation, using a first-order Finite Volume method as the spatial discretisation method, itself using an exact Riemann solver (Godunov's scheme).
       This function was chosen because it is a nonlinear conservative equation, often viewed in computational fluid dynamics as a simplified version of Euler equations and it contains most aspects of nonlinear hyperbolic equations.
       The vectors $x$ and $v$ are $10 + r_1$ and $0.1 \left(2 r_2 - 1\right)$ where $r_1$ and $r_2$ are random vectors following a uniform distribution on $\left[0, 1\right[$, obtained with the Python package NumPy: \mintinline{python}{numpy.random.random}.
@@ -178,7 +178,7 @@
         \includegraphics[width=\textwidth]{figures/epsilon_Burgers_10.png}
         \caption{
           Error in the Jacobian matrix-vector product approximation as a function of $\varepsilon$, and in particular for the most popular choice $\varepsilon_\textrm{wp}$.
-          The function is the right-hand side of equation (\ref{eq:ode}) from a Finite Volume method using an exact Riemann solver for Burgers' equation, over a 10-cell 1D regular mesh.
+          The function is the right-hand side of equation (\ref{eq:ode}) from a Finite Volume method using an exact Riemann solver for Burgers' equation, over a 10-cell one-dimensional regular mesh.
         }
         \label{fig:epsilon_burgers_10}
       \end{figure}
@@ -234,7 +234,7 @@
       Therefore, the error level stays the same no matter the dimension.
 
       \paragraph{}
-      The same numerical experiment was made on a more complex case: the 1D Euler equations.
+      The same numerical experiment was made on a more complex case: the one-dimensional Euler equations.
       Here, the function $f$ corresponds to the right-hand side of equation (\ref{eq:ode}) given by a centred Finite Volume method used as the spatial discretisation method, in which the interface flux is defined as an average of left and right fluxes.
       This means the Riemann solver just averages the left and right fluxes.
       This spatial method is known for its instability when used in an actual solver, but it is useful in this experiment as the analytic Jacobian matrix is easy to derive, contrary to methods using more complex Riemann solvers.
@@ -248,7 +248,7 @@
         \includegraphics[width=\textwidth]{figures/epsilon_Euler.png}
         \caption{
           Error in the Jacobian matrix-vector product approximation as a function on $\varepsilon$ (left) and of the dimension $N$ (right).
-          The function is the right-hand side of equation (\ref{eq:ode}) from a Finite Volume method using a centred scheme for the Euler equations over a regular 1D mesh.
+          The function is the right-hand side of equation (\ref{eq:ode}) from a Finite Volume method using a centred scheme for the Euler equations over a regular one-dimensional mesh.
           On the left figure, coloured cross markers correspond to the values computed on a mesh of $10^1$, $10^2$, ... cells, and circle markers to the last value with $10^7$ cells.
           Grey cross markers on the left figure correspond to a mesh of $10^7$ cells.
         }
@@ -278,7 +278,7 @@
       But in order to do this analysis we need to be able to compute the relative error, and this means we need to be able to compute a Jacobian matrix-vector product analytically.
       Unfortunately, this is not possible for our applications.
       If it was, we would not even need to introduce the approximation (\ref{eq:matrix_free}) and therefore do this analysis.
-      Using Burgers' equation and 1D Euler equations with a simple Riemann solver was then a good compromise.
+      Using one-dimensional Burgers' equation and one-dimensional Euler equations with a simple Riemann solver was then a good compromise.
       Those equations share similarities with the ones we work with in our solver, as they are nonlinear hyperbolic equations, but they are still simple enough so that we can use them here.
 
 
