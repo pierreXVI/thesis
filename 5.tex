@@ -386,9 +386,16 @@
           P &= P_\infty \left(1 + \frac{\gamma \operatorname{Ma}^2}{16} \left(\cos\left(\frac{2x}{L}\right) + \cos\left(\frac{2y}{L}\right)\right) \left(\cos\left(\frac{2z}{L}\right) + 2\right) \right)
         \end{aligned}\right.
       \end{equation}
-      over the domain $\left(x, y, z\right) \in \left[-\pi L, \pi L\right]^3$, and can be seen in figure \PS{TODO}.
+      over the domain $\left(x, y, z\right) \in \left[-\pi L, \pi L\right]^3$, and can be seen in figure \ref{fig:tgv}.
       Even if $\vec{u}_z = 0$ at the initialisation, it becomes non-null afterwards and the problem is fully three-dimensional.
       The initial flow transition to turbulence: the initial large scales decay into smaller ones, that end up dissipated.
+
+      \begin{figure}
+        \centering
+        % \includegraphics{figures/tgv.png}
+        \caption{\PS{TODO}}
+        \label{fig:tgv}
+      \end{figure}
 
       \paragraph{}
       \PS{UNITÉS ?}
@@ -428,14 +435,25 @@
       Symmetrically, we tried to reduce the dimension of the Krylov subspaces.
       It means that the method can not work with the same time step as before as it is now too high, but this reduces the iterations cost.
       Here we wanted to see if making more iterations that are less expensive can be a good idea.
-      We will call ExpEuler($k$) method the exponential Rosenbrock--Euler method that uses a Krylov subspace of dimension $k$.
+      We will call ExpEuler($d$) method the exponential Rosenbrock--Euler method that uses a Krylov subspace of dimension $d$.
 
       \paragraph{}
-      The result of all simulation is shown in figure \PS{TODO}.
+      The result of all simulation is shown in figure \ref{fig:tgv_curves}.
       As a simulation correspond to the computation with the largest time step for which the results are satisfying, this figure does not gives much information: all methods produce results that are close to reference data.
+      There are some differences with the reference, but all JAGUAR computations are almost undistinguishable from one another.
+      \PS{The error from the spatial discretisation method is the origin of the difference between the reference and JAGUAR computaions.
+      For the selected method and CFL number pairs, all results are almost exacts, apart from this spatial discretisation error.
+      C'est bien ça ?}
       The ExpRB42 method is not shown, as it is similar to the ExpRB32 method.
       Indeed, we compare methods that give similar physical results, and what interest us is their statistics.
       As those two methods run at the same highest CFL number and have a similar iteration cost, they behave similarly in this analysis.
+
+      \begin{figure}
+        \centering
+        % \includegraphics{figures/tgv.png}
+        \caption{\PS{TODO}}
+        \label{fig:tgv_curves}
+      \end{figure}
 
       \begin{table}
         \center
@@ -464,6 +482,26 @@
       We note that the cost of one step of an explicit Runge--Kutta method is not proportional to the number of stages.
       Indeed, the implementation of the RKo6s method uses the fact that it is a low storage method to reduce the computational cost in terms of both time and memory.
       Nevertheless, the cost of an iteration of those explicit methods is much less than exponential methods.
+      As expected, the cost of the exponential Rosenbrock--Euler method is similar to $d^2$ where $d$ is the dimension of the Krylov subspace used for the Arnoldi iteration \PS{vérifier ça}.
+      As we explained, the ExpRB32 method does not cost a lot more than the exponential Rosenbrock--Euler method that uses Krylov subspace with the same dimension.
+      This is because the second stage use just small Krylov subspace, and this is what we see from the results in table \ref{tab:tgv}.
+      We can draw two important conclusions from this analysis.
+      First, we see that the exponential Rosenbrock methods are faster than the explicit Runge--Kutta methods available in JAGUAR.
+      For some of them, they are almost twice as fast.
+      Secondly, we see that the exponential Rosenbrock--Euler method can accurately simulate the Taylo--Green vortex at high CFL numbers.
+      Accurate explicit methods would not work with such high CFL numbers, and implicit methods that could would not be accurate enough to \PS{représenter} the small scales of the flow \PS{je peux dire ça ?}.
+      To reach high CFL numbers, we have to use larger Krylov subspaces, that make the method a lot slower.
+      The method we used here should not be used for actual applications: the goal was just to show feasability.
+      It seems that with exponential methods, we can increase the robustness by paying the price in terms of Krylov subspace dimension.
+
+      \paragraph{}
+      This unsteady test case shows that exponential methods are interesting for our applications.
+      We found a method that reduced the elapsed real time by two.
+      To a JAGUAR user, this is a great improvement.
+      We also showed that we could accurately simulate this flow while using high CFL numbers.
+      It means that we have more robust methods.
+      On other applications, exponential methods 
+
 
 
 
