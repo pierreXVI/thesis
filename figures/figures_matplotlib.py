@@ -477,6 +477,8 @@ def rae_residuals():
         ax21.set_xlabel('Iteration number', labelpad=10)
         ax22.set_xlabel('Iteration number', labelpad=10)
         fig.legend(*ax11.get_legend_handles_labels())
+        fig.align_ylabels([ax11, ax21])
+        fig.align_ylabels([ax12, ax22])
 
         fig.subplots_adjust(0.1, 0.15, 0.99, 0.85, 0.30, 0.1)
         fig.savefig('rae_residuals.png')

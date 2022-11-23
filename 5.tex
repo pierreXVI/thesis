@@ -433,23 +433,41 @@
       \paragraph{}
       The result of all simulation is shown in figure \PS{TODO}.
       As a simulation correspond to the computation with the largest time step for which the results are satisfying, this figure does not gives much information: all methods produce results that are close to reference data.
-      The interesting part is in table \PS{TODO}.
+      The ExpRB42 method is not shown, as it is similar to the ExpRB32 method.
+      Indeed, we compare methods that give similar physical results, and what interest us is their statistics.
+      As those two methods run at the same highest CFL number and have a similar iteration cost, they behave similarly in this analysis.
 
       \begin{table}
         \center
         \begin{tabular}{c|cccc}
-          Method       & $\mathcal{N}_\textrm{CFL}$ & $N_\textrm{iterations}$ & Wall time/iteration (s) & Total time (hh:mm:ss) \\ \hline
-          RKo6s        & 0.28       & 50000      & 1.588                     & 22:03:20              \\
-          TVDRK(3, 3)  & 0.14       & 100000     & 0.833                     & 23:08:20              \\
-          SSPRK(5, 4)  & XXXX       & XXXXX      & XXXXX                     & XX:XX:XX              \\
-          ExpEuler(10) & 1.4        & 10000      & 3.803                     & 10:33:50              \\
-          ExpEuler(20) & 2.8        & 5000       & 8.144                     & 11:18:40              \\
-          ExpEuler(40) & 5.6        & 2500       & 19.491                    & 13:32:07              \\
-          ExpEuler(80) & 11.2       & 1250       & 52.792                    & 18:19:50              \\
-          ExpRB32      & 2.8        & 5000       & 10.391                    & 14:25:55              \\
+          Method       & $\mathcal{N}_\textrm{CFL}$ & $N_\textrm{iterations}$ & Time / iteration (s) & Total time (hh:mm:ss) \\ \hline
+          RKo6s        & 0.28                       & 50000                   & 1.588                & 22:03:20              \\
+          TVDRK(3, 3)  & 0.14                       & 100000                  & 0.833                & 23:08:20              \\
+          SSPRK(5, 4)  & 0.28                       & 50000                   & 1.497                & 20:47:30              \\ \hline
+          ExpEuler(10) & 1.4                        & 10000                   & 3.803                & 10:33:50              \\
+          ExpEuler(20) & 2.8                        & 5000                    & 8.144                & 11:18:40              \\
+          ExpEuler(40) & 5.6                        & 2500                    & 19.491               & 13:32:07              \\
+          ExpEuler(80) & 11.2                       & 1250                    & 52.792               & 18:19:50              \\
+          ExpRB32      & 2.8                        & 5000                    & 10.391               & 14:25:55              \\
         \end{tabular}
-        \caption{\PS{TODO}}\label{tab:tgv}
+        \caption{
+          Statistics for various time integration methods.
+          Time corresponds to elapsed real time, or wall-clock time.
+          A computation corresponds to the simulation of the Taylor--Green vortex from equation (\ref{eq:tgv}) on time interval $\left[0, 20 t_c\right]$.}\label{tab:tgv}
       \end{table}
+
+      \paragraph{}
+      In table \ref{tab:tgv}, we show the statistics for each time integration method.
+      As the cost of the algorithms used in the time integration methods does not change between iterations, we can compute an average elapsed real time per iteration for each method.
+      Among the explicit methods, we see that the RKo6s and SSPRK(5, 4) methods run at a higher CFL number than the TVDRK(3, 3) method.
+      However, they have more stages per iteration so each iteration takes longer, and the total elapsed real time is similar between all three methods.
+      We note that the cost of one step of an explicit Runge--Kutta method is not proportional to the number of stages.
+      Indeed, the implementation of the RKo6s method uses the fact that it is a low storage method to reduce the computational cost in terms of both time and memory.
+      Nevertheless, the cost of an iteration of those explicit methods is much less than exponential methods.
+
+
+
+
 
 
     \subsection{Industrial application: LS89}
