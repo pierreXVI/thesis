@@ -506,3 +506,23 @@
 
 
     \subsection{Industrial application: LS89}
+
+      \paragraph{}
+      We decided to try exponential methods on a last test case.
+      Contrary to the previous two, we stepped out of the academic context with an industrial application.
+      It is a simulation of the flow inside the LS89 turbine blade cascade that was studied experimentally by the von Karman Institute \cite{ArtsLambertdeRouvroit1992}.
+      We choose this test case as it has already been done with several solvers, including JAGUAR recently \cite{BrunetCronerMinotEtAl2018}.
+      We use a two-dimensional unstructured mesh, made of \num{2374} cells, that was extruded over 20 cells for a length of $0.15 c$ with $c$ the chord of the turbine blade.
+      The final three-dimensional mesh made of \num{47480} cells is shown in figure \ref{fig:ls89_mesh}.
+      The mesh is periodic in the extruded direction and the vertical direction.
+      The boundary condition at the wall is isothermal, with $T_\textrm{wall} = 297.75 \si{\kelvin}$.
+      At inlet, the stagnation conditions are $P_0 = \num{184900}\si{\pascal}$ and $T_0 = 409.2\si{\kelvin}$.
+      We set the pressure at outlet at $P = \num{116487}\si{\pascal}$.
+
+
+      \begin{figure}
+        \centering
+        % \includegraphics{figures/ls89_mesh.png}
+        \caption{\PS{TODO}}
+        \label{fig:ls89_mesh}
+      \end{figure}
