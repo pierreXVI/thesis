@@ -467,7 +467,7 @@
           ExpEuler(40) & 5.6                        &                    2500 &               19.491 &             13:32:08  \\
           ExpEuler(80) & 11.2                       &                    1250 &               52.792 &             18:19:50  \\
           ExpRB32      & 2.8                        &                    5000 &               10.391 &             14:25:55  \\
-          ExpRB42      & 2.8                        &                    5000 &               19.787 &             27:28:55  \\ 
+          ExpRB42      & 2.8                        &                    5000 &               19.787 &             27:28:55  \\
         \end{tabular}
         \caption{
           Statistics for various time integration methods.
@@ -492,21 +492,17 @@
       Secondly, we see that the exponential Rosenbrock--Euler method can accurately simulate the Taylo--Green vortex at high CFL numbers.
       Accurate explicit methods would not work with such high CFL numbers, and implicit methods that could would not be accurate enough to \PS{représenter} the small scales of the flow \PS{je peux dire ça ?}.
       To reach high CFL numbers, we have to use larger Krylov subspaces, that make the method a lot slower.
-      The method we used here should not be used for actual applications: the goal was just to show feasability.
+      The method we used here should not be used for actual applications: the goal was just to show feasibility.
       It seems that with exponential methods, we can increase the robustness by paying the price in terms of Krylov subspace dimension.
+      We can think of ways to compute more accurately the $\varphi$-functions less expensively: by using restarted methods for instance, we can control the maximal dimension of the Krylov subspace.
+      However this was not tried during this thesis.
 
       \paragraph{}
       This unsteady test case shows that exponential methods are interesting for our applications.
-      We found a method that reduced the elapsed real time by two.
-      To a JAGUAR user, this is a great improvement.
+      We found a method that reduced the elapsed real time by two, which is a great improvement to a JAGUAR user.
       We also showed that we could accurately simulate this flow while using high CFL numbers.
-      It means that we have more robust methods.
-      On other applications, exponential methods
-
-
-
-
-
+      It means that we have added more robust methods than the already existing ones.
+      They could prove useful on applications where we are limited by the lack of stability of the explicit Runge--Kutta methods.
 
 
     \subsection{Industrial application: LS89}

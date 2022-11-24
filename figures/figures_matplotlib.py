@@ -886,6 +886,78 @@ def covo_exp():
     # plt.show()
 
 
+def tgv_curves():
+    fig = plt.figure(figsize=[5.78851, 5])
+    ax1 = fig.add_subplot(211)
+    ax2 = fig.add_subplot(212, sharex=ax1)
+    ax1.grid(True)
+    ax2.grid(True)
+    ax1.set_ylabel('Kinetic energy')
+    ax2.set_ylabel('Enstrophy')
+    ax1.tick_params(labelbottom=False)
+    ax2.set_xlabel('$t / t_c$')
+    fig.align_ylabels([ax1, ax2])
+    axins = ax2.inset_axes([0.025, 0.5, 0.3, 1])
+    axins.set_xlim(9.3, 9.6)
+    axins.set_ylim(9.2, 9.6)
+    axins.set_xticklabels([])
+    axins.set_yticklabels([])
+    ax2.indicate_inset_zoom(axins, edgecolor="black")
+
+    tabular = []
+
+    ref = jaguar_tools.ref_taylor_green_vortex()
+    ax1.plot(ref['Time'], ref['kinetic_energy'], 'k', lw=3, label='Reference')
+    ax2.plot(ref['Time'], ref['enstrophy'], 'k', lw=3)
+    axins.plot(ref['Time'], ref['enstrophy'], 'k')
+    tabular.append(r"{0:12s} & {1:26s} & {2:23s} & {3:20s} & {4:21s} \\"
+                   .format('Method', r'$\mathcal{N}_\textrm{CFL}$', r'$N_\textrm{iterations}$',
+                           'Time / iteration (s)', 'Total time (hh:mm:ss)'))
+
+    for case_path, label in zip((
+            '/visu/pseize/TGV/RK6LDLD/0.28',
+            '/visu/pseize/TGV/RK3SHU/0.14',
+            '/tmp_user/sator/pseize/TGV/RK4SHU/0.28',
+            '/visu/pseize/TGV/EXPEULER/1.4_FAST',
+            '/visu/pseize/TGV/EXPEULER/2.8',
+            '/visu/pseize/TGV/EXPEULER/5.6_SLOW',
+            '/visu/pseize/TGV/EXPEULER/11.2_SSLOW',
+            '/visu/pseize/TGV/EXPRB32/2.8',
+            '/tmp_user/sator/pseize/TGV/EXPRB42/2.8',
+    ), (
+            'RKo6s', 'TVDRK(3, 3)', 'SSPRK(5, 4)', 'ExpEuler(10)', 'ExpEuler(20)', 'ExpEuler(40)', 'ExpEuler(80)',
+            'ExpRB32', 'ExpRB42'
+    )):
+        data = jaguar_tools.read_integral_quantities(os.path.join(case_path, 'RUN_*'))
+        ax1.plot(data['Time'], data['kinetic_energy'], lw=1, label=label)
+        ax2.plot(data['Time'], data['enstrophy'], lw=1)
+        axins.plot(data['Time'], data['enstrophy'], lw=1)
+
+        with open(utils.fetch_file(os.path.join(case_path, 'RUN_1', 'input.txt'))[0]) as input_file:
+            for line in input_file:
+                if 'Last iteration:' in line:
+                    n_iter = int(line.split(':')[1])
+                    break
+        t_ite = utils.fetch_slurm_stats(utils.fetch_file(os.path.join(case_path, 'TIMER', 'slurm.*.out'))[0])[0] / 1000
+        t = t_ite * n_iter
+        hh = t // 3600
+        mm = (t - 3600 * hh) // 60
+        ss = t - 3600 * hh - 60 * mm
+        tabular.append(r"{0:12s} & {1:26s} & {2:23d} & {3:20.3f} & {4:>21s} \\"
+                       .format(label, case_path.split('/')[-1].split('_')[0], n_iter, t_ite,
+                               '{0:02.0f}:{1:02.0f}:{2:02.0f} '.format(hh, mm, ss)),
+                       )
+
+    blank = plt.Line2D([], [], c='none')
+    ax1.legend(handles=[*ax1.lines[1:4], blank, *ax1.lines[4:], blank, ax1.lines[0]],
+               ncol=3, loc='lower center', bbox_to_anchor=(0.5, 1))
+
+    fig.subplots_adjust(0.1, 0.1, 0.99, 0.78, 0, 0.05)
+    # fig.savefig('tgv.png')
+    # print('\n'.join([tabular[0] + r' \hline', *tabular[1:3], tabular[3] + r' \hline', *tabular[4:]]))
+    plt.show()
+
+
 if __name__ == '__main__':
     # rk_stab()
     # ab_stab()
@@ -901,4 +973,5 @@ if __name__ == '__main__':
     # covo_rk2_rk4()
     # covo_rk()
     # covo_exp()
+    # tgv_curves()
     pass
