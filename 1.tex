@@ -63,10 +63,14 @@
 
     \paragraph{}
     The partial differential equation (\ref{eq:pde}) transforms then into an ordinary differential equation:
-    \begin{equation}\label{eq:ode}
-      \frac{\mathrm{d} \Xi}{\mathrm{d} t} + \operatorname{G}\left(\Xi\right) = 0 \ .
+    \begin{equation}
+      \frac{\mathrm{d} \Xi}{\mathrm{d} t} - \operatorname{G}\left(\Xi\right) = 0 \ .
     \end{equation}
     The difference here is that the function $\operatorname{G}$ is a function of a discrete vector whereas $\operatorname{F}$ was a function of a continuous function, and therefore $\operatorname{G}$ does not use any spatial derivatives.
+    The negative sign is here so that this new equation is similar to the original partial differential equation (\ref{eq:pde}) and the new equation can be written in the form that corresponds to most of the literature:
+    \begin{equation}\label{eq:ode}
+      \frac{\mathrm{d} \Xi}{\mathrm{d} t} = \operatorname{G}\left(\Xi\right) \ .
+    \end{equation}
     Thanks to the spatial discretisation method, the only derivative remaining is with regard to time.
     The rest is then up to the temporal integration method, which is the main topic of this thesis.
     We will work from equation (\ref{eq:ode}) no matter where the function $\operatorname{G}$ comes from, but sometimes understanding the origin of this function can help so we will now introduce the spatial discretisation method used in our solver.
@@ -212,7 +216,7 @@
     After deciding on an initial value, the equation we now want to solve is:
     \begin{equation}\label{eq:init_value_ode}
       \left\{\begin{aligned}
-        & \frac{\mathrm{d} \Xi}{\mathrm{d}t} + \operatorname{G}\left(\Xi\right) = 0 \\
+        & \frac{\mathrm{d} \Xi}{\mathrm{d}t} = \operatorname{G}\left(\Xi\right) \\
         & \Xi\left(t_0\right) = \Xi_0
       \end{aligned}\right. \ .
     \end{equation}
@@ -269,7 +273,7 @@
         \paragraph{}
         To analyse the stability of a time integration method, we usually apply it on the ordinary differential equation with a linear right-hand side: the Dahlquist test equation \cite{HairerWanner1996}.
         The reason is that if we have a solution $\tilde{\Xi}$ of equation (\ref{eq:init_value_ode}), we can linearise $\operatorname{G}$ in $\tilde{\Xi}$.
-        With $y = \Xi - \tilde{\Xi}$ and $J = -\frac{\partial \operatorname{G}}{\partial \Xi}\left(\tilde{\Xi}\right)$, assumed constant, we then have:
+        With $y = \Xi - \tilde{\Xi}$ and $J = \frac{\partial \operatorname{G}}{\partial \Xi}\left(\tilde{\Xi}\right)$, assumed constant, we then have:
         \begin{equation}\label{eq:dahlquist}
           \frac{\mathrm{d} y}{\mathrm{d} t} = J y \ .
         \end{equation}
@@ -379,7 +383,7 @@
         Equivalently, it consists in replacing the time derivative $\frac{\mathrm{d} \Xi}{\mathrm{d} t}$ by a finite difference $\frac{\Xi_{n+1} - \Xi_n}{\Delta t}$ and evaluating $\operatorname{G}$ in $\Xi_n$.
         Then, the method gives:
         \begin{equation}
-          \Xi_{n+1} = \Xi_n - \Delta t \operatorname{G}\left(\Xi_n\right) \ .
+          \Xi_{n+1} = \Xi_n + \Delta t \operatorname{G}\left(\Xi_n\right) \ .
         \end{equation}
 
         \paragraph{}
@@ -396,7 +400,7 @@
         Supposing we know the value of $\Xi_n$ in $t_n$, we set the intermediates steps $t_{n, i} = t_n + c_i\Delta t$ for $1 \leq i \leq k$, with a fixed $k$.
         We can now integrate exactly between $t_n$ and $t_{n, i}$ equation (\ref{eq:init_value_ode}):
         \begin{equation}
-          \Xi\left(t_{n, i}\right) = \Xi_n - \Delta t \int_{t_n}^{t_{n,i}} \operatorname{G}\left(\Xi\left(t\right)\right) \mathrm{d}t\ .\
+          \Xi\left(t_{n, i}\right) = \Xi_n + \Delta t \int_{t_n}^{t_{n,i}} \operatorname{G}\left(\Xi\left(t\right)\right) \mathrm{d}t\ .\
         \end{equation}
         The integral on the right-hand side is then approximated with a \PS{quadrature} using the previously computed intermediate steps:
         \begin{equation}
@@ -408,8 +412,8 @@
         To sum up, a Runge--Kutta method iterates in the following way:
         \begin{equation}\label{eq:rk}
           \left\{\begin{aligned}
-            \Xi_{n+1} &= \Xi_n - \Delta t \sum_{i = 1}^k b_i \operatorname{G}\left(\Xi_{n,i}\right) \\
-            \textrm{with}\quad \Xi_{n,i} &= \Xi_n - \Delta t \sum_{j = 1}^{i-1} a_{ij} \operatorname{G}\left(\Xi_{n,j}\right)
+            \Xi_{n+1} &= \Xi_n + \Delta t \sum_{i = 1}^k b_i \operatorname{G}\left(\Xi_{n,i}\right) \\
+            \textrm{with}\quad \Xi_{n,i} &= \Xi_n + \Delta t \sum_{j = 1}^{i-1} a_{ij} \operatorname{G}\left(\Xi_{n,j}\right)
           \end{aligned}\right. \ .
         \end{equation}
 
@@ -465,8 +469,8 @@
         Equation (\ref{eq:rk}) becomes then:
         \begin{equation}
           \left\{\begin{aligned}
-            \Xi_{n+1} &= \Xi_n - \Delta t \sum_{i = 1}^k b_i \operatorname{G}\left(\Xi_{n,i}, t_n + c_i \Delta t\right) \\
-            \textrm{with}\quad \Xi_{n,i} &= \Xi_n - \Delta t \sum_{j = 1}^{i-1} a_{ij} \operatorname{G}\left(\Xi_{n,j}, t_n + c_j \Delta t\right)
+            \Xi_{n+1} &= \Xi_n + \Delta t \sum_{i = 1}^k b_i \operatorname{G}\left(\Xi_{n,i} \ ,\  t_n + c_i \Delta t\right) \\
+            \textrm{with}\quad \Xi_{n,i} &= \Xi_n + \Delta t \sum_{j = 1}^{i-1} a_{ij} \operatorname{G}\left(\Xi_{n,j} \ ,\  t_n + c_j \Delta t\right)
           \end{aligned}\right. \ .
         \end{equation}
 
@@ -535,8 +539,10 @@
         It is quite similar, as it consists in integrating equation (\ref{eq:init_value_ode}) assuming the function $\operatorname{G}$ is constant, but this time equal to $\operatorname{G}\left(\Xi_{n+1}\right)$.
         We then have:
         \begin{equation}
-          \Xi_{n+1} = \Xi_n - \Delta t \operatorname{G}\left(\Xi_{n+1}\right)
-          \Leftrightarrow \Xi_{n+1} - \Xi_n + \Delta t \operatorname{G}\left(\Xi_{n+1}\right) = 0
+          \begin{aligned}
+            & \phantom{{} \Leftrightarrow {}} \Xi_{n+1} = \Xi_n + \Delta t \operatorname{G}\left(\Xi_{n+1}\right) \\
+            &             \Leftrightarrow     \Xi_{n+1} - \Xi_n - \Delta t \operatorname{G}\left(\Xi_{n+1}\right) = 0
+          \end{aligned}
         \end{equation}
         and the next state $\Xi_{n+1}$ is given as the solution of a nonlinear problem, the root of a nonlinear function.
 
@@ -574,36 +580,54 @@
         Then, each step is given as an implicit problem using the already known steps and the next one.
         The difference is that instead of solving a full implicit system, we just need to solve each implicit step successively.
         This help drastically reduces the cost of the method.
-        Furthermore, if all quadrature coefficient $a_{ii}$ are all equals, as we invert at each step the matrix $\operatorname{Id} + a_{ii} \Delta t \frac{\mathrm{d} \operatorname{G}}{\mathrm{d} \Xi}\left(\Xi_n\right)$, this can help the linear solve.
+        Furthermore, if all quadrature coefficient $a_{ii}$ are all equals, as we invert at each step the matrix
+        \begin{equation}
+          \operatorname{Id} - a_{ii} \Delta t \frac{\mathrm{d} \operatorname{G}}{\mathrm{d} \Xi}\left(\Xi_n\right) \ ,
+        \end{equation}
+        this can help the linear solve.
         This variant is called Singly Diagonally Implicit Runge--Kutta methods (SDIRK) \cite{HairerWanner1996}.
 
         \paragraph{Rosenbrock methods}
         Rosenbrock methods are also called linearly implicit Runge--Kutta methods \cite{Rosenbrock1963}.
-        They correspond to the following scheme:
+        They start from the recurrence relation of a DIRK method:
+        \begin{equation}
+          \Xi_{n,i} = \Xi_n + \Delta t \sum_{j = 1}^{i-1} a_{ij} \operatorname{G}\left(\Xi_{n,j}\right) + \Delta t a_{ii} \operatorname{G}\left(\Xi_{n,i}\right)
+        \end{equation}
+        and then take its image by $\operatorname{G}$.
+        Instead of solving this nonlinear equation with a nonlinear solver as the DIRK method would do, they linearize the result:
+        \begin{equation}
+          \operatorname{G}_{n,i} = \operatorname{G}\left(\Xi_n + \Delta t \sum_{j = 1}^{i-1} a_{ij} \operatorname{G}_{n,j}\right)
+          + \Delta t a_{ii} \frac{\mathrm{d} \operatorname{G}}{\mathrm{d} \Xi}\left(\Xi_n + \Delta t \sum_{j = 1}^{i-1} a_{ij} \operatorname{G}_{n,j}\right) \operatorname{G}_{n,i}
+        \end{equation}
+        by noting $\operatorname{G}_{n,j} = \operatorname{G}\left(\Xi_{n,i}\right)$.
+        The recurrence equation for the integration scheme is no longer on the intermediate states but on the intermediate slopes.
+        Usually, the Jacobian matrix is kept constant throughout the stages, equal to the Jacobian matrix evaluated in $\Xi_n$.
+        Additional parameters $\gamma_{ij}$ are often to add more flexibility to the method \cite{Wanner1977}.
+        It gives the Rosenbrock--Wanner method:
         \begin{equation}
           \left\{\begin{aligned}
-            \Xi_{n+1} &= \Xi_n - \Delta t \sum_{i = 1}^k b_i \operatorname{G}_{n,i} \\
-            \textrm{with}\quad \operatorname{G}_{n,i} &= \operatorname{G}\left(\Xi_n - \Delta t \sum_{j = 1}^{i-1} \alpha_{ij} \operatorname{G}_{n,j}\right) - \frac{\mathrm{d} \operatorname{G}}{\mathrm{d} \Xi}\left(\Xi_n\right) \sum_{j = 1}^{i} \gamma_{ij} \operatorname{G}_{n,j}
+            \Xi_{n+1} &= \Xi_n + \Delta t \sum_{i = 1}^k b_i \operatorname{G}_{n,i} \\
+            \textrm{with}\quad \operatorname{G}_{n,i} &=
+              \operatorname{G}\left(\Xi_n + \Delta t \sum_{j = 1}^{i-1} a_{ij} \operatorname{G}_{n,j}\right)
+              + \Delta t \frac{\mathrm{d} \operatorname{G}}{\mathrm{d} \Xi}\left(\Xi_n\right) \sum_{j = 1}^{i} \gamma_{ij} \operatorname{G}_{n,j}
           \end{aligned}\right. \ .
         \end{equation}
-        They are derived from Diagonally Implicit Runge--Kutta methods, by constructing the intermediate slopes $\operatorname{G}_{n,j}$ instead of the intermediate states $\Xi_{n,j}$, and by linearising to make the Jacobian matrix appear.
-        It also introduces the additional parameters $\gamma_{ij}$ to add more flexibility to the method \cite{Wanner1977}.
-        To be more precise, this is sometimes called a Rosenbrock--Wanner method, and classical Rosenbrock methods corresponds to when all $\gamma_{ij}$ are null, except for the $\gamma_{ii}$, that correspond to the $a_{ii}$ from the DIRK method.
+        This corresponds to classical Rosenbrock methods when all $\gamma_{ij}$ are null, except for $\gamma_{ii}$ that correspond to the $a_{ii}$.
         However, the distinction is not made very often, and Rosenbrock--Wanner methods are simply called Rosenbrock methods.
-        The method is defined by the coefficients $\alpha_{ij, 1\leq j<i\leq k}$, $b_{i, 1\leq i\leq k}$ and $\gamma_{ij, 1\leq j\leq i\leq k}$.
-        If the problem is non-autonomous, the method is:
+        The method is defined by the coefficients $a_{ij, 1\leq j<i\leq k}$, $b_{i, 1\leq i\leq k}$ and $\gamma_{ij, 1\leq j\leq i\leq k}$.
+        If the problem is non-autonomous, the method is then:
         \begin{equation}
           \left\{\begin{aligned}
-            \Xi_{n+1} &=    \Xi_n - \Delta t \sum_{i = 1}^k b_i \operatorname{G}_{n,i} \\
+            \Xi_{n+1} &= \Xi_n + \Delta t \sum_{i = 1}^k b_i \operatorname{G}_{n,i} \\
             \textrm{with}\quad \operatorname{G}_{n,i} &=
-              \operatorname{G}\left(\Xi_n - \Delta t \sum_{j = 1}^{i-1} \alpha_{ij} \operatorname{G}_{n,j} \ ,\  t_n + c_i \Delta t\right)\\
-              &\phantom{= {}} -\frac{\partial \operatorname{G}}{\partial \Xi}\left(\Xi_n, t_n\right) \sum_{j = 1}^{i} \gamma_{ij} \operatorname{G}_{n,j} \\
-              &\phantom{= {}} -\frac{\partial \operatorname{G}}{\partial t}\left(\Xi_n, t_n)\right) \sum_{j = 1}^i \gamma_{ij} \Delta t
+              \operatorname{G}\left(\Xi_n + \Delta t \sum_{j = 1}^{i-1} a_{ij} \operatorname{G}_{n,j} \ ,\  t_n + c_i \Delta t\right)\\
+              &\phantom{= {}} +\Delta t \frac{\partial \operatorname{G}}{\partial \Xi}\left(\Xi_n, t_n\right) \sum_{j = 1}^{i} \gamma_{ij} \operatorname{G}_{n,j} \\
+              &\phantom{= {}} +\Delta t \frac{\partial \operatorname{G}}{\partial t}\left(\Xi_n, t_n\right) \sum_{j = 1}^i \gamma_{ij}
           \end{aligned}\right.
         \end{equation}
         with $c_i = \sum_{j = 1}^{i - 1} \alpha_{ij}$ as for other Runge--Kutta methods.
         If one takes all the $\gamma_{ii}$ equals to one another, then the matrix to invert at each step of the Rosenbrock method is the same.
-        This can help reduce the cost of the method by doing a single matrix inversion, or by using block Krylov subspace methods \cite{Gutknecht2006}.
+        This can help reduce the cost of the method by doing a single matrix inversion, or by recycling information between Krylov subspace methods \cite{Gaul2014}.
         Overall, even if they can achieve high-order and A-stability, Rosenbrock methods are still computationally expensive.
 
 
@@ -620,7 +644,7 @@
         This gives an implicit equation we need to solve to get $\Xi_{n+1}$.
         The name of those methods comes from the fact that if we use a constant time step between iterations, this equation can be written using the differentiating operator defined by $\nabla^0 \square_i = \square_i$ and $\nabla^{j+1} \square_i = \nabla^j \square_i - \nabla^j \square_{i-1}$:
         \begin{equation}
-          \sum_{i=1}^k \frac{1}{i} \nabla^i \Xi_{n+1} + \Delta t \operatorname{G}\left(\Xi_{n+1}\right) = 0
+          \sum_{i=1}^k \frac{1}{i} \nabla^i \Xi_{n+1} = \Delta t \operatorname{G}\left(\Xi_{n+1}\right)
         \end{equation}
 
         \paragraph{}
