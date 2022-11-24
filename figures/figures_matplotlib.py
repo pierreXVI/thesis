@@ -907,8 +907,8 @@ def tgv_curves():
     tabular = []
 
     ref = jaguar_tools.ref_taylor_green_vortex()
-    ax1.plot(ref['Time'], ref['kinetic_energy'], 'k', lw=3, label='Reference')
-    ax2.plot(ref['Time'], ref['enstrophy'], 'k', lw=3)
+    ax1.plot(ref['Time'], ref['kinetic_energy'], 'k', lw=3)
+    ax2.plot(ref['Time'], ref['enstrophy'], 'k', lw=3, label='Reference')
     axins.plot(ref['Time'], ref['enstrophy'], 'k')
     tabular.append(r"{0:12s} & {1:26s} & {2:23s} & {3:20s} & {4:21s} \\"
                    .format('Method', r'$\mathcal{N}_\textrm{CFL}$', r'$N_\textrm{iterations}$',
@@ -929,8 +929,8 @@ def tgv_curves():
             'ExpRB32', 'ExpRB42'
     )):
         data = jaguar_tools.read_integral_quantities(os.path.join(case_path, 'RUN_*'))
-        ax1.plot(data['Time'], data['kinetic_energy'], lw=1, label=label)
-        ax2.plot(data['Time'], data['enstrophy'], lw=1)
+        ax1.plot(data['Time'], data['kinetic_energy'], lw=1)
+        ax2.plot(data['Time'], data['enstrophy'], lw=1, label=label)
         axins.plot(data['Time'], data['enstrophy'], lw=1)
 
         with open(utils.fetch_file(os.path.join(case_path, 'RUN_1', 'input.txt'))[0]) as input_file:
@@ -949,10 +949,10 @@ def tgv_curves():
                        )
 
     blank = plt.Line2D([], [], c='none')
-    ax1.legend(handles=[*ax1.lines[1:4], blank, *ax1.lines[4:], blank, ax1.lines[0]],
-               ncol=3, loc='lower center', bbox_to_anchor=(0.5, 1))
+    ax2.legend(handles=[*ax2.lines[1:4], blank, *ax2.lines[4:], blank, ax2.lines[0]],
+               ncol=3, loc='upper center', bbox_to_anchor=(0.5, -0.25))
 
-    fig.subplots_adjust(0.1, 0.1, 0.99, 0.78, 0, 0.05)
+    fig.subplots_adjust(0.1, 0.3, 0.99, 0.99, 0, 0.05)
     # fig.savefig('tgv.png')
     # print('\n'.join([tabular[0] + r' \hline', *tabular[1:3], tabular[3] + r' \hline', *tabular[4:]]))
     plt.show()
@@ -973,5 +973,5 @@ if __name__ == '__main__':
     # covo_rk2_rk4()
     # covo_rk()
     # covo_exp()
-    # tgv_curves()
+    tgv_curves()
     pass

@@ -72,8 +72,6 @@
 
       \subsubsection{Analysis of the results}
 
-        \PS{Qu'est-ce qu'on peut regarder pour avoir une différence, flux de chaleur ? Frottement identique sans incidence}
-
         \paragraph{}
         We are now going to compare the results from the two different simulations.
         It is first worth noting that before trying the JFNK method, we need to start the computation using the traditional method.
@@ -156,7 +154,6 @@
 
 
     \subsection{Turbulent transonic airfoil with boundary layer resolution}
-    \PS{MAYBE ?}
 
       \subsubsection{Definition of the test case}
 
@@ -168,7 +165,7 @@
         The new mesh, shown in figure \ref{fig:rae_mesh_fine} is clearly different.
         It is a three-dimensional mesh, which is in fact a two-dimensional mesh that was extruded on 6 cells in the $y$ direction.
         We set a periodicity between the two sides of the domain.
-        The mesh is made of 198144 cells whereas the previous RAE 2822 mesh was only made of 36541 cells.
+        The mesh is made of \num{198144} cells whereas the previous RAE 2822 mesh was only made of \num{36541} cells.
         With these additional cells, this mesh is able to be fine on the wall boundary condition as is seen in figure \ref{fig:rae_mesh_fine}.
         This means that we do not need to use the turbulent wall model we used in the previous test case.
         We still use the Spalart--Allmaras one equation turbulence model.
@@ -183,8 +180,15 @@
 
         \paragraph{}
         The flight conditions are also modified to match some existing experimental conditions: the AGARD-AR-138 experimental database.
-        We take a Mach number equal to 0.729, and the angle of attack is $2.31\si{\degree}$ with a Reynolds number of \num{6.5e6}.
-        \PS{TODO}
+        We take a Mach number equal to 0.734, and the angle of attack is $2.54\si{\degree}$ with a Reynolds number of \num{6.5e6}.
+        This corresponds to \emph{Case 9} from the experimental conditions.
+        The parameters are not exactly the same as they are corrected to account for the effects of the wind tunnel \cite{HellstromDavidsonRizzi1994}.
+
+        \paragraph{}
+        We proceed as we did before: we start the computation from an initial state constant in the domain.
+        After some iterations, we can restart the computation with the traditional method on one side and with the matrix-free method on the other.
+        This time, we waited longer before restarting: \PS{pourquoi ?}.
+        We then look once again at the residuals.
 
 
     \subsection{Hypersonic reactive sphere}
