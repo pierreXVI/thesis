@@ -144,7 +144,6 @@
 
 
     \subsection{Strategy for the choice of \texorpdfstring{$\varepsilon$}{epsilon}}
-      \PS{Bouger cette partie ?}
 
       \paragraph{}
       When we introduced the approximation (\ref{eq:matrix_free}) we saw a new parameter $\varepsilon$.
@@ -284,40 +283,38 @@
 
     \subsection{Linear system normalisation}
 
-      \PS{$N$ était utilisé comme taille des vecteurs juste au dessus, tant pis ?}
-
       \paragraph{}
       An available option in BIBCEDRE for the linear solve is normalisation.
-      It consists in taking an invertible diagonal matrix $N$ and rewriting the linear system (\ref{eq:linear}) as:
+      It consists in taking an invertible diagonal matrix $\mathcal{N}$ and rewriting the linear system (\ref{eq:linear}) as:
       \begin{equation}
         \tilde{A}\tilde{x} = \tilde{b}
-        \quad\textrm{with}\quad \tilde{A} = N^{-1} A N,
-        \quad \tilde{x} = N^{-1} x
-        \quad\textrm{and}\quad \tilde{b} = N^{-1} b \
+        \quad\textrm{with}\quad \tilde{A} = \mathcal{N}^{-1} A \mathcal{N},
+        \quad \tilde{x} = \mathcal{N}^{-1} x
+        \quad\textrm{and}\quad \tilde{b} = \mathcal{N}^{-1} b \
       \end{equation}
       One can check that it is equivalent to the original linear system.
-      The diagonal coefficients of the matrix $N$ are the invert of an estimate of the order of magnitude of the corresponding degree of freedom. \PS{clair ? beaucoup de of}
+      The diagonal coefficients of the matrix $\mathcal{N}$ are the invert of an estimate of the order of magnitude of the corresponding degree of freedom. \PS{clair ? beaucoup de of}
       This estimation can be computed at each time step depending on the current state, or can simply be constant equal to some reference values, depending on the choice of the user.
       When working with Euler equations, for example, the numerical values corresponding to the energy degrees of freedom are usually many orders of magnitudes over other degrees of freedom.
       The goal of this normalisation is to bring back each vector component at the same level in the linear system.
-      It can also be seen as a combination of a left preconditioning by $N^{-1}$ and a right preconditioning by $N$.
+      It can also be seen as a combination of a left preconditioning by $\mathcal{N}^{-1}$ and a right preconditioning by $\mathcal{N}$.
       This normalisation is often used by our solver's users, so we need to ensure compatibility with our matrix-free method.
       We can adapt the approximation (\ref{eq:matrix_free}) to account for the normalisation as:
       \begin{equation}
-        \left( N^{-1} f'\left(x\right) N \right) v \approx N^{-1} \frac{f\left(x + \varepsilon N v\right) - f\left(x\right)}{\varepsilon} \ .
+        \left( \mathcal{N}^{-1} f'\left(x\right) \mathcal{N} \right) v \approx \mathcal{N}^{-1} \frac{f\left(x + \varepsilon N v\right) - f\left(x\right)}{\varepsilon} \ .
       \end{equation}
       We also need to adapt our strategy for the choice of $\varepsilon$.
-      With the normalisation, we see that $N \varepsilon$ sort of plays the role of $\varepsilon$.
-      It then makes sense to take $\norm{N \varepsilon}$ equal to the original choice of $\varepsilon$, and therefore we take:
+      With the normalisation, we see that $\varepsilon \mathcal{N}$ sort of plays the role of $\varepsilon$.
+      It then makes sense to take $\norm{\varepsilon \mathcal{N}}$ equal to the original choice of $\varepsilon$, and therefore we take:
       \begin{equation}
-        \varepsilon = \frac{\sqrt{\varepsilon_0 \left(1 + \norm{x}\right) }}{\norm{N} \norm{v}} \ .
+        \varepsilon = \frac{\sqrt{\varepsilon_0 \left(1 + \norm{x}\right) }}{\norm{\mathcal{N}} \norm{v}} \ .
       \end{equation}
       We take as a matrix norm the one induced by the vector norm.
       This means that:
       \begin{equation}
-        \norm{N} = \sup_{v \ne 0} \frac{\norm{Nv}}{\norm{v}} \ .
+        \norm{\mathcal{N}} = \sup_{v \ne 0} \frac{\norm{\mathcal{N}v}}{\norm{v}} \ .
       \end{equation}
-      When using the 2-norm, the corresponding norm is $\norm{N} = \max{N_{ii}}$ as N is diagonal with strictly positive coefficients.
+      When using the 2-norm, the corresponding norm is $\norm{\mathcal{N}} = \max{\mathcal{N}_{ii}}$ as $\mathcal{N}$ is diagonal with strictly positive coefficients.
       When using the scaled 2-norm discussed in the previous part, the corresponding norm is also the same.
       This is nice because whatever strategy we use in the choice of $\varepsilon$, it does not interfere with the handling of normalisation.
 
