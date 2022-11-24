@@ -406,7 +406,7 @@
 
         \paragraph{}
         To sum up, a Runge--Kutta method iterates in the following way:
-        \begin{equation}
+        \begin{equation}\label{eq:rk}
           \left\{\begin{aligned}
             \Xi_{n+1} &= \Xi_n - \Delta t \sum_{i = 1}^k b_i \operatorname{G}\left(\Xi_{n,i}\right) \\
             \textrm{with}\quad \Xi_{n,i} &= \Xi_n - \Delta t \sum_{j = 1}^{i-1} a_{ij} \operatorname{G}\left(\Xi_{n,j}\right)
@@ -459,9 +459,21 @@
         This is the most famous Runge--Kutta method, vastly used for explicit time integration of ordinary differential equations.
 
         \paragraph{}
+        We note that the coefficients $c_i$ do not appear in the definition from equation (\ref{eq:rk}).
+        It is because the differential equation (\ref{eq:ode}) is autonomous: the function $\operatorname{G}$ does not depends explicitly on the time.
+        If it did, the equation would then be non-autonomous, and $\operatorname{G}$ would be a function of two variables: the state vector $\Xi$ and the time $t$.
+        Equation (\ref{eq:rk}) becomes then:
+        \begin{equation}
+          \left\{\begin{aligned}
+            \Xi_{n+1} &= \Xi_n - \Delta t \sum_{i = 1}^k b_i \operatorname{G}\left(\Xi_{n,i}, t_n + c_i \Delta t\right) \\
+            \textrm{with}\quad \Xi_{n,i} &= \Xi_n - \Delta t \sum_{j = 1}^{i-1} a_{ij} \operatorname{G}\left(\Xi_{n,j}, t_n + c_j \Delta t\right)
+          \end{aligned}\right. \ .
+        \end{equation}
+
+        \paragraph{}
         It can be shown that the order $p$ of the method is less or equal to the number of steps $k$.
         Up to 4 steps, it is possible to choose the quadrature coefficients to have $p = k$.
-        Above that, getting a bound on the order depending on the number of steps is still an open problem as of today.
+        Above that, getting a lower bound on the order depending on the number of steps is still an open problem as of today.
         For a Runge--Kutta method of order $p$, the corresponding function used for the stability analysis is \cite{HairerWanner1996}:
         \begin{equation}
           g\left(z\right) = 1 + z + \frac{z^2}{2} + \dots + \frac{z^p}{p!} + O\left(z^{p+1}\right) \ .
@@ -571,12 +583,26 @@
         \begin{equation}
           \left\{\begin{aligned}
             \Xi_{n+1} &= \Xi_n - \Delta t \sum_{i = 1}^k b_i \operatorname{G}_{n,i} \\
-            \textrm{with}\quad \operatorname{G}_{n,i} &= \operatorname{G}\left(\Xi_n - \Delta t \sum_{j = 1}^{i-1} a_{ij} \operatorname{G}_{n,j}\right) - \frac{\mathrm{d} \operatorname{G}}{\mathrm{d} \Xi}\left(\Xi_n\right) \sum_{j = 1}^{i} \gamma_{ij} \operatorname{G}_{n,j}
+            \textrm{with}\quad \operatorname{G}_{n,i} &= \operatorname{G}\left(\Xi_n - \Delta t \sum_{j = 1}^{i-1} \alpha_{ij} \operatorname{G}_{n,j}\right) - \frac{\mathrm{d} \operatorname{G}}{\mathrm{d} \Xi}\left(\Xi_n\right) \sum_{j = 1}^{i} \gamma_{ij} \operatorname{G}_{n,j}
           \end{aligned}\right. \ .
         \end{equation}
         They are derived from Diagonally Implicit Runge--Kutta methods, by constructing the intermediate slopes $\operatorname{G}_{n,j}$ instead of the intermediate states $\Xi_{n,j}$, and by linearising to make the Jacobian matrix appear.
-        It also introduces the additional parameters $\gamma_{ij}$ to add more flexibility to the method.
-        If one takes all the $\gamma{ii}$ equals to one another, then the matrix to invert at each step of the Rosenbrock method is the same.
+        It also introduces the additional parameters $\gamma_{ij}$ to add more flexibility to the method \cite{Wanner1977}.
+        To be more precise, this is sometimes called a Rosenbrock--Wanner method, and classical Rosenbrock methods corresponds to when all $\gamma_{ij}$ are null, except for the $\gamma_{ii}$, that correspond to the $a_{ii}$ from the DIRK method.
+        However, the distinction is not made very often, and Rosenbrock--Wanner methods are simply called Rosenbrock methods.
+        The method is defined by the coefficients $\alpha_{ij, 1\leq j<i\leq k}$, $b_{i, 1\leq i\leq k}$ and $\gamma_{ij, 1\leq j\leq i\leq k}$.
+        If the problem is non-autonomous, the method is:
+        \begin{equation}
+          \left\{\begin{aligned}
+            \Xi_{n+1} &=    \Xi_n - \Delta t \sum_{i = 1}^k b_i \operatorname{G}_{n,i} \\
+            \textrm{with}\quad \operatorname{G}_{n,i} &=
+              \operatorname{G}\left(\Xi_n - \Delta t \sum_{j = 1}^{i-1} \alpha_{ij} \operatorname{G}_{n,j} \ ,\  t_n + c_i \Delta t\right)\\
+              &\phantom{= {}} -\frac{\partial \operatorname{G}}{\partial \Xi}\left(\Xi_n, t_n\right) \sum_{j = 1}^{i} \gamma_{ij} \operatorname{G}_{n,j} \\
+              &\phantom{= {}} -\frac{\partial \operatorname{G}}{\partial t}\left(\Xi_n, t_n)\right) \sum_{j = 1}^i \gamma_{ij} \Delta t
+          \end{aligned}\right.
+        \end{equation}
+        with $c_i = \sum_{j = 1}^{i - 1} \alpha_{ij}$ as for other Runge--Kutta methods.
+        If one takes all the $\gamma_{ii}$ equals to one another, then the matrix to invert at each step of the Rosenbrock method is the same.
         This can help reduce the cost of the method by doing a single matrix inversion, or by using block Krylov subspace methods \cite{Gutknecht2006}.
         Overall, even if they can achieve high-order and A-stability, Rosenbrock methods are still computationally expensive.
 
