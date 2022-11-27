@@ -953,9 +953,9 @@ def tgv_curves():
                ncol=3, loc='upper center', bbox_to_anchor=(0.5, -0.25))
 
     fig.subplots_adjust(0.1, 0.3, 0.99, 0.99, 0, 0.05)
-    # fig.savefig('tgv.png')
+    fig.savefig('tgv_curves.png')
     # print('\n'.join([tabular[0] + r' \hline', *tabular[1:3], tabular[3] + r' \hline', *tabular[4:]]))
-    plt.show()
+    # plt.show()
 
 
 if __name__ == '__main__':
@@ -973,5 +973,5 @@ if __name__ == '__main__':
     # covo_rk2_rk4()
     # covo_rk()
     # covo_exp()
-    tgv_curves()
+    # tgv_curves()
     pass
