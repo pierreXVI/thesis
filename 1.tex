@@ -39,10 +39,10 @@
           \nabla\cdot\left( \mat{\tau} \cdot \vec{u} \right)
       \end{aligned}\right.
     \end{equation}
-    with the \PS{relation de fermeture} $\rho E = \frac{p}{\gamma - 1} + \rho\frac{\vec{u} \cdot \vec{u}}{2}$.
+    with the closing relation $\rho E = \frac{p}{\gamma - 1} + \rho\frac{\vec{u} \cdot \vec{u}}{2}$.
     The deviatoric stress tensor $\tau$ accounts for the fluid's viscosity, and its computation depends on the model used.
     Without it, one recovers the Euler equations.
-    To this simple form can be added source terms from the reactive model, source terms from the turbulence model, divergence terms from a diffusive model \PS{diffusion des particules}, etc.
+    To this simple form can be added source terms from the reactive model, source terms from the turbulence model, divergence terms from a molecular diffusion model, etc.
     Yet it is clear that with a bit of rewriting, we can go back to the starting form (\ref{eq:pde}) and even the conservative form with source terms (\ref{eq:pde_conservative}).
     The quantity $\xi$ is no longer a scalar but a vector with the density $\rho$, each component of the momentum $\rho\vec{u}$ and the energy $\rho E$ as its components.
     Apart from this small change, the idea is the same.
@@ -99,7 +99,7 @@
       \begin{equation}
         \int_{\mathcal{V}_i} \frac{\partial \xi}{\partial t} \mathrm{d}v + \int_{\mathcal{V}_i} \nabla\cdot \vec{\operatorname{f}}\left(\xi\right) \mathrm{d}v = \int_{\mathcal{V}_i} \operatorname{S} \mathrm{d}v\ .
       \end{equation}
-      Then the Green--Ostrogradski theorem transforms the flux divergence into a \PS{bilan surfacique}:
+      Then the Green--Ostrogradski theorem transforms the flux divergence into a surface average:
       \begin{equation}
         \frac{\mathrm{d}}{\mathrm{d} t} \int_{\mathcal{V}_i} \xi\mathrm{d}v + \oint_{\partial\mathcal{V}_i} \vec{\operatorname{f}}\left(\xi\right) \cdot \vec{\mathrm{d}s} = \int_{\mathcal{V}_i} \operatorname{S} \mathrm{d}v\ .
       \end{equation}
@@ -111,8 +111,8 @@
       \paragraph{}
       As stated before, the spatial discretisation method does transform the partial differential equation into an ordinary differential equation.
       It tells us to store our quantities as the averaged values represented at the center of gravity of each cell as our vector $\Xi$.
-      It also tells us to compute the divergence from equation (\ref{eq:pde_conservative}) as a \PS{bilan surfacique de flux}.
-      The last thing to do is to decide how to compute this \PS{bilan surfacique de flux}.
+      It also tells us to compute the divergence from equation (\ref{eq:pde_conservative}) as a flux surface average.
+      The last thing to do is to decide how to compute this flux surface average.
       The cells from our meshes are polygons.
       Therefore they have a finite number of (planar) faces.
       The integral over the boundary of the cell can be decomposed by the faces, to get the approximation:
@@ -181,10 +181,10 @@
 
       \paragraph{}
       We briefly explained above the spatial discretisation method used in our solver, as it might help our analysis of the time integration part.
-      The Finite Volume method averages the partial differential equation over each cell of the mesh, which transforms the flux divergence into a \PS{bilan surfacique de flux}.
+      The Finite Volume method averages the partial differential equation over each cell of the mesh, which transforms the flux divergence into a flux surface average.
       A reconstruction method, the $k$-exact method or the Multislope method, is then used to get a higher-order representation of the solution so that the surface flux can be computed at each face.
       Slope limiters are used to prevent the formation of local extrema, which can be harmful to the computation.
-      The choices made for the spatial discretisation methods are motivated by the fact that CEDRE and in particular the fluid solver CHARME aim to work with \PS{general unstructured meshes}.
+      The choices made for the spatial discretisation methods are motivated by the fact that CEDRE and in particular the fluid solver CHARME aim to work with general unstructured meshes.
       It restricts the choices of algorithms, as handling general unstructured meshes can prove difficult for simple spatial discretisation methods.
       It means that the methods must be more robust, which often means less precise.
 
@@ -256,7 +256,7 @@
         We notice a difference between the two definitions: the error order of magnitude is $p+1$ for the temporal method and $p$ for the spatial one.
         This is due to the fact that the error we look at in the spatial case is global: it sums the error over the whole domain.
         It would correspond to counting the error on each step for the temporal integration.
-        To convince oneself, we could say that when solving the differential equation \PS{on/in} an interval $\left[0, T\right]$ with a fixed $T$, the global error of a $p$-order method would \PS{be of, in, behave like ?} $O\left(\Delta t^p\right)$ as it amounts to summing $T/\Delta t$ local errors of $O\left(\Delta t^{p+1}\right)$.
+        To convince oneself, we could say that when solving the differential equation on an interval $\left[0, T\right]$ with a fixed $T$, the global error of a $p$-order method would behave as $O\left(\Delta t^p\right)$ as it amounts to summing $T/\Delta t$ local errors of $O\left(\Delta t^{p+1}\right)$.
         We then get the coherency with the definition of the order for spatial discretisation methods.
         If this trick can help understand the difference between the two definitions, this is indeed just a mental trick and not a rigorous mathematical proof.
         To get this proof, more hypotheses on the method are required \cite{Iserles2008}.
@@ -677,8 +677,6 @@
 
 
   \section{Implicit methods framework}
-  \PS{Revoir structure}
-
 
     \subsection{Methodology of the implicit time integration}
 
@@ -711,7 +709,6 @@
           f\left(x_{i+1}\right) \approx f\left(x_i\right) + f'\left(x_i\right) \left( x_{i+1} - x_i \right) = 0
         \end{equation}
         This gives a linear problem in which $x_{i+1}$ is the solution.
-        \PS{Refs sur méthode de Newton ?}
 
 
       \subsubsection{\dots to a linear one}
@@ -770,7 +767,7 @@
       This size is quite large in our typical applications, but the linear system is sparse.
       This means that the coefficients of the matrix $A$ are mostly zeros.
       This is because a coefficient in the matrix $A$ corresponds to a link between two degrees of freedom.
-      For the spatial discretisation methods we use, a cell depends on a small number of neighbouring cells, and therefore a degree of freedom is not linked with most of the others \PS{(c'est clair ?)}.
+      For the spatial discretisation methods we use, a cell only depends on a small number of neighbouring cells, and therefore a degree of freedom is not linked with most of the others \PS{(c'est clair ?)}.
       Such sparse matrices can be seen in figure \ref{fig:sparse}.
       Using the sparsity of the matrix is essential, as it would not be possible to store it as a dense matrix in the memory of a computer.
       Instead, we use some clever formats such as the Compressed Sparse Row format \cite{Saad2003}.
@@ -852,7 +849,7 @@
       \paragraph{}
       There are many Krylov subspace methods that can solve a linear problem, characterised by the choice of $\mathcal{L}_n$.
       The minimal residual condition gives the Generalized Minimal Residual method or GMRES \cite{SaadSchultz1986}, vastly used in computational fluid dynamics \cite{FrancoCamierAndrejEtAl2020} and other fields of numerical simulations \cite{ErnstGander2012, Mercier2015}.
-      Its main advantage is that even if its iterations may be slightly more expensive than other methods such as the Bi-CGSTAB method \cite{Vorst1992, TrefethenBau1997}, the residual norm is minimised and the error is then decreasing as the method iterates \PS{phrase pas claire ?}.
+      Its main advantage is that even if its iterations may be slightly more expensive than other methods such as the Bi-CGSTAB method \cite{Vorst1992, TrefethenBau1997}, the residual norm is minimised and the error is then decreasing as the method iterates.
       This allows for some control of the residual norm.
       With the Bi-CGSTAB method for example, also available in our solver, the residual norms do not have to be decreasing, which can lead to chaotic convergence.
       The GMRES method already exists in our solver and is often used.
@@ -940,7 +937,7 @@
       One of the most unsophisticated preconditioners is the Jacobi one.
       It is the one used in the example above: the preconditioning matrix is the invert of the diagonal part of $A$.
       Its advantage resides in its simplicity.
-      It is inexpensive and easily \PS{parallélisables}.
+      It is inexpensive and easily scalable.
       On the other hand, it lacks efficiency, and that is why many preconditioners were developed in the literature.
       A slight variation consists in taking the diagonal blocs instead of the diagonal elements.
       This makes sense for our matrices, as they can be divided into blocs, each block corresponding to the degrees of freedom in a cell.
@@ -949,7 +946,9 @@
       \paragraph{}
       Others preconditioners exist in our solver.
       One consists in using the invert of the cell volumes as a diagonal matrix: the preconditioning matrix is a diagonal matrix, where each diagonal element is the inverse of the corresponding mesh cell volume.
-      This was originally conceived to preserve the conservative properties through the GMRES solve \PS{clair ?}.
+      This was originally conceived to preserve the conservative properties through the GMRES solve.
+      Indeed, as GMRES produces an approximation of the linear problem solution, the overall scheme may not be conservative.
+      This preconditioner makes sure it is.
       As it is even simpler than the Jacobi preconditioner, it shows poor performance.
       Some work was done towards Polynomial preconditioning: the preconditioning matrix $P$ is equal to the partial Neumann series of $\operatorname{Id} - A$, as it approximates $A^{-1}$ \cite{DuboisGreenbaumRodrigue1979}.
       Its major drawback is its computational cost, as it requires multiple matrix-vector products.
@@ -989,7 +988,6 @@
       Their idea is to recycle the spectral information acquired at the end of the cycle onto the next cycle.
       Recycling spectral information could even be done throughout multiple linear solve, during a nonlinear solve for example \cite{Gaul2014}.
       Those techniques look promising but we did not have time to try them in our solver, as we focused on other points.
-      \PS{Je peux dire ça ?}
 
 
     \subsection{Evaluating the Jacobian matrices}
@@ -1016,7 +1014,6 @@
       Another advantage is that the given Jacobian is supposedly exact, contrary to some alternatives we will discuss later.
       For those reasons, Automatic Differentiation is today being used in actual computational fluid dynamics software \cite{BilanceriBeuxElmahiEtAl2011, KenwayMaderHeEtAl2019}.
       In our software, using Automatic Differentiation did seem too hard and therefore we looked at other methods instead.
-      \PS{Plus justifier ? Reformuler ?}
 
       \paragraph{}
       A possible idea is to use an approximation of the Jacobian matrix that is inexpensive to compute.
@@ -1040,7 +1037,7 @@
       \begin{equation}
         f'\left(x\right) v \approx \frac{f\left(x + \varepsilon v\right) - f\left(x - \varepsilon v\right)}{2\varepsilon}
       \end{equation}
-      that gives a smaller error in \PS{article (in, of, ...)} $o\left(\varepsilon^2\right)$, but it requires two $f$ evaluations, so it is twice as expensive as the first-order approximation.
+      that gives a smaller error of $o\left(\varepsilon^2\right)$, but it requires two $f$ evaluations, so it is twice as expensive as the first-order approximation.
       Therefore, we will use the first-order approximation.
 
       \paragraph{}

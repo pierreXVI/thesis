@@ -113,8 +113,11 @@
         The blue curve corresponding to the traditional method struggles to converge and seems to oscillate periodically.
         In comparison, the oscillation of the orange curve is dampened: this corresponds to convergence.
         The scale of the oscillation seen in figure \ref{fig:rae_coefficients} is not significant physically speaking, as it is negligible.
-        It shows, however, an issue with the traditional implicit method of the solver CEDRE: it fails to reach proper convergence but it oscillates around the solution.
+        It shows an issue with the traditional implicit method of the solver CEDRE: it fails to reach proper convergence but it oscillates around the solution.
         The new JFNK method however achieves proper convergence.
+        We use this figure to show an advantage of the new method, but this result is almost meaningless as the oscillation of the blue curve is numerically insignificant.
+        We need to look at other data to properly conclude on the convergence of the two methods.
+
 
         \paragraph{}
         In order to find out if our method did help the convergence of the solver, we need to look at the residuals.
