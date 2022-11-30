@@ -148,7 +148,7 @@ def covo_cedre_fields():
     plotter.register_plot("/visu/pseize/COVO/BASE/RUN_1/_ENSIGHT_/archive_CHARME.volu.ins.case", 'P', contour=50,
                           r_gas=1, label='Base')
 
-    view1 = plotter.create_view(pvs.CreateRenderView, InteractionMode='2D')
+    view1 = pvs.CreateRenderView(InteractionMode='2D')
     for k, s in pvs.GetSources().items():
         if 'Contour' in k[0]:
             force_time = pvs.ForceTime(s, ForcedTime=0)
@@ -172,7 +172,7 @@ def covo_cedre_fields():
     view3 = plotter.get_views("/visu/pseize/COVO/BASE/RUN_1/_ENSIGHT_/archive_CHARME.volu.ins.case")[0]
     view4 = plotter.get_views("/visu/pseize/COVO/BASE/RUN_2/_ENSIGHT_/archive_CHARME.volu.ins.case")[0]
     view5 = plotter.get_views("/visu/pseize/COVO/BASE/RUN_RK4/_ENSIGHT_/archive_CHARME.volu.ins.case")[0]
-    view_bar = plotter.create_view(pvs.CreateRenderView)
+    view_bar = pvs.CreateRenderView()
 
     layout = pvs.CreateLayout()
     id_1 = layout.SplitVertical(0, 0.9)
