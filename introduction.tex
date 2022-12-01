@@ -2,41 +2,43 @@
 \addcontentsline{toc}{chapter}{Introduction}
 
 
-  \section*{Contexte}
+  \section*{General context}
 
     \paragraph{}
-    Ce travail s'ancre dans le domaine de la simulation numérique de la dynamique des fluides, appliquée à l'énergétique.
-    Ce domaine regroupe de nombreux acteurs industriels (Ariane group, DGA, Safran, Airbus, ...) ainsi qu'académiques (ONERA, CERFACS, DLR, universités, ...).
-    Il s'intéresse à la manière de simuler avec un calculateur un écoulement fluide en essayant de représenter fidèlement la réalité physique.
-    Les différents acteurs de ce domaine ont besoin de pouvoir accéder à certaines grandeurs physiques associées à des phénomènes et à des régimes de fonctionnement bien particuliers.
-    Il arrive souvent que ces régimes ne soient pas réalisables à notre échelle, en raison de limitations matérielles ou financières.
-    On peut prendre comme exemple l’étude du givrage qui a lieu sur la voilure d’un avion, qui est réalisable expérimentalement mais représente un budget imposant pour l’avionneur, ou bien l’étude des transferts thermiques d’une capsule de rentrée atmosphérique, bien plus difficile à réaliser expérimentalement.
-    Pour contourner ces limitations, la simulation numérique est la meilleure option, car elle permet de modéliser un tel cas d’étude par l’exécution d’un programme informatique, et d’obtenir un ensemble important de données qui seront analysées par la suite pour répondre aux questions souhaitées.
-    L'analyse de la physique produit en général un ensemble d'équations, souvent des équations aux dérivées partielles, représentant le système réel que l'on souhaite étudier.
-    Des algorithmes sont alors nécessaires pour déterminer l'écoulement fluide à partir de ces équations, dans le domaine de travail, en fonction du temps.
-    Ainsi, pour obtenir les grandeurs souhaitées, le système physique est intégré temporellement à l'aide d'algorithmes mathématiques afin d'obtenir son évolution dans le temps.
-    Souvent, le résultat attendu n'est pas l'évolution temporelle complète du système, mais seulement l'obtention de son état d'équilibre.
-    On parle alors de simulation stationnaire, en opposition aux simulations instationnaires, qui cherchent à décrire correctement l'évolution temporelle du système.
+    This work is rooted in the field of numerical simulation of fluid dynamics, applied to \PS{energy/energetics}.
+    This field gathers many industrial actors (the French Directorate General of Armaments, ArianeGroup, Safran, Airbus, etc) as well as academics (ONERA, CERFACS, DLR, VKI, universities, etc).
+    It is interested in how to simulate a fluid flow with a computer, trying to represent the physical reality faithfully.
+    The various actors in this field need to be able to access certain physical quantities associated with specific phenomena and operating regimes.
+    These regimes are often not feasible on our scale, due to material or financial limitations.
+    Examples include the study of icing on the wing of an aircraft, which is experimentally feasible but represents an imposing budget for the aircraft manufacturer, or the study of heat transfer in an atmospheric reentry capsule, which is much more difficult to achieve experimentally.
+    To overcome these limitations, numerical simulation is the best option, as it allows such a case study to be modelled by the execution of a computer program, and to obtain a large set of data that will be analysed afterwards to answer the desired questions.
 
     \paragraph{}
-    Pour l'ensemble de ces acteurs, l'enjeu le plus crucial est de parvenir à obtenir un bon compromis entre temps de calcul et fidélité du résultat.
-    En effet, un calcul rapide à tendance à être peu fidèle à la physique, alors qu'un calcul fidèle tend à utiliser plus de ressources informatiques que celles à disposition.
-    Pour un calcul stationnaire, la rapidité correspond au fait d'obtenir la solution \emph{convergée} à un faible coût de calcul et humain.
-    Cela ce traduit alors par un compromis entre une simulation très coûteuse en ressources informatiques, prenant un temps long, et qui donne des résultats précis et proches de la physique, et une simulation rapide, économe en ressources, mais pour laquelle les résultats ne sont pas significatifs.
-    La nécessité de ce compromis vient du fait des algorithmes utilisés dans ces simulations, ainsi que des paramètres donnés à ces algorithmes.
-    Une personne développant un outil de simulation numérique doit donc choisir les algorithmes à utiliser pour obtenir un compromis qu'il estime satisfaisant.
-    L'intérêt final pour un acteur dans la simulation numérique de la dynamique des fluides est donc d'avoir un résultat suffisamment précis et suffisamment peu cher à obtenir.
-    Un résultat précis est nécessaire pour répondre aux questions qui ont nécessité la simulation.
-    La recherche d'un résultat peu cher à obtenir est motivée par des questions d'économies en coût de calcul.
-    Ce coût englobe le coût en temps de la simulation, payé par l'utilisateur (et indirectement par l'employeur au travers du salaire) et le coût en ressources informatiques payé par l'employeur, c'est à dire en électricité et en investissement dans des machines plus performantes.
+    The analysis of physics usually produces a set of equations, often partial differential equations, representing the real system that one wishes to study.
+    Algorithms are then required to determine the fluid flow from these equations, in the working domain, as a function of time.
+    Thus, to obtain the desired quantities, the physical system is integrated in time using mathematical algorithms to obtain its evolution in time.
+    Often, the expected result is not the complete temporal evolution of the system, but only its equilibrium state.
+    This is called a steady numerical simulation or steady computation.
+    Steady computations are opposed to unsteady computations that aim to accurately describe the system temporal evolution.
 
     \paragraph{}
-    En fonction du problème que l'on souhaite résoudre, il existe des algorithmes et des méthodes plus ou moins adaptées.
-    Dans le cas des problèmes d'énergétique et de multi-physique, les méthodes issues de l'aérodynamique plus traditionnelle sont limitées par le couplage entre les différentes physiques qui possèdent leurs temps caractéristiques distincts.
-    Ainsi, les algorithmes utilisés pour la simulation numérique de la dynamique des fluides classique, c'est à dire concentrée sur la résolution des équations de Navier--Stokes, ne sont pas forcément les plus adaptés à une simulation dans le domaine de l'énergétique.
-    La mise en jeu plusieurs phénomènes physiques distincts impose en effet des contraintes sur le choix et l'utilisation des algorithmes.
-    En conséquence, il serait bon d'adapter ou de remplacer les algorithmes intervenant dans l'intégration temporelle pour les problèmes multi-physiques.
+    For all computational fluid dynamics users, the most crucial issue is to achieve a satisfying compromise between computational cost and accuracy of the results.
+    Indeed, a quick and inexpensive computation tends to be not very faithful to physics, while an accurate computation tends to use more computational ressources and time.
+    For steady computations, speed corresponds to getting the final steady state at a low time cost, for both computational time and the time it actually took to a user.
+    It results in a compromise between methods that are expensive in terms of computational ressources and take a long time but give accurate results that are close to the physical reality, and faster methods that saves ressources but give lesser quality results.
+    A software developer working on a numerical simulation tool needs to choose methods and algorithms to obtain a compromise that he considers satisfactory.
+    The final interest for a player in computational fluid dynamics is therefore to have a result that is sufficiently precise and inexpensive enough to obtain.
+    An accurate result is needed to answer the questions that required the simulation.
+    The search for a result that is inexpensive to obtain is motivated by questions of savings in computational cost.
+    This cost is applied to the user, while he wait for the simulation to end, and to its company through the cost in computer ressources, electricity, investments in more efficient machines, etc.
 
+    \paragraph{}
+    Depending on the problem to be solved, there are more or less suitable algorithms and methods.
+    Performant methods were originally developed to answer needs from the aerodynamics community.
+    In the case of energetic and multi-physics problems, the methods issued from the more traditional aerodynamics are limited by the coupling  between the different physics which have their distinct characteristic times.
+    Thus, the algorithms used for the numerical simulation of classical fluid dynamics, i.e. concentrated on the resolution of the Navier--Stokes equations, are not necessarily the most adapted to a simulation in the energetic domain.
+    The involvement of several distinct physical phenomena imposes constraints on the choice and use of algorithms.
+    Consequently, it would be advisable to adapt or replace the algorithms involved in the time integration for multiphysics problems.
 
   \section*{Études}
 
