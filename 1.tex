@@ -116,7 +116,7 @@
       It tells us to store our quantities as the averaged values represented at the center of gravity of each cell as our vector $\Xi$.
       It also tells us to compute the divergence from equation (\ref{eq:pde_conservative}) as a flux surface average.
       The last thing to do is to decide how to compute this flux surface average.
-      The cells from our meshes are polygons.
+      The cells from our meshes are polygons.\LM{polyhedron? Mais est-ce vraiment le cas?}
       Therefore they have a finite number of (planar) faces.
       The integral over the boundary of the cell can be decomposed by the faces, to get the approximation:
       \begin{equation}
@@ -136,7 +136,7 @@
       On the interfaces between two cells, we know the left and right quantities $\xi_L$ and $\xi_R$, and we need to compute the corresponding flux.
       It is possible here to use a reconstruction method to get a better approximation of the quantities left and right of the interface, and therefore we end up using the left and right quantities $\xi_L^*$ and $\xi_R^*$.
       The idea is now to compute the flux going through the face as a function of $\xi_L^*$, $\xi_R^*$ and the surface vector $\vec{s}$.
-      From the interface point of view, there are two possible different states, one from each side: this is what is called a Rienamm problem.
+      From the interface point of view, there are two possible different states, one from each side: this is what is called a Riemann problem.
       A Riemann problem is an initial value problem applied to a conservation equation, where the initial solution is piecewise constant with a single possible discontinuity.
       By working with the equation and deriving the jump condition, it is possible to compute the quantity from a possibly discontinuous state at the interface.
       Then it is possible to evaluate the flux associated with this state going through the surface.
