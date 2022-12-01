@@ -215,6 +215,59 @@ def covo_cedre_fields():
     pvs.SaveScreenshot("covo_cedre_fields.png", layout)
 
 
+def tgv_fields():
+    pvs.Connect(input("Enter Paraview Server: "))
+
+    views = {}
+    for n, label in zip((0, 3000, 6000, 9000), ('$t = 0$', r'$t = 6$', r'$t = 12$', '$t = 18$')):
+        views[n] = pvs.CreateRenderView()
+        reader = pvs.OpenDataFile('/visu/pseize/TGV/VISU/sol_{0:08d}/sol_{0:08d}.pvtu'.format(n))
+        pvs.Show(reader, views[n], Representation='Outline')
+        pvs.Show(pvs.Text(Text=label), views[n], 'TextSourceRepresentation', WindowLocation='Upper Left Corner',
+                 FontSize=24, FontFamily='File', FontFile='/usr/share/fonts/lyx/cmsy10.ttf')
+        calc = pvs.Calculator(reader, ResultArrayName='Norm_U', Function='sqrt(u*u + v*v + w*w)')
+        ctr = pvs.Contour(calc, ContourBy=['POINTS', 'qcrit'], Isosurfaces=[0.1, ])
+        display = pvs.Show(ctr, views[n], ColorArrayName=['POINTS', 'Norm_U'])
+        display.SetScalarBarVisibility(views[n], True)
+
+    view_bar = pvs.CreateRenderView()
+
+    layout = pvs.CreateLayout()
+    id_1 = layout.SplitVertical(0, 0.9)
+    layout.AssignView(id_1 + 1, view_bar)
+    id_1 = layout.SplitVertical(id_1, 0.5)
+    id_3 = layout.SplitHorizontal(id_1 + 1, 0.5)
+    id_1 = layout.SplitHorizontal(id_1, 0.5)
+    layout.AssignView(id_1, views[0])
+    layout.AssignView(id_1 + 1, views[3000])
+    layout.AssignView(id_3, views[6000])
+    layout.AssignView(id_3 + 1, views[9000])
+    layout.SetSize((1157, 1157))
+
+    transfert_function = pvs.GetColorTransferFunction('qcrit')
+    transfert_function.RescaleTransferFunction(0.0, 1.2)
+    for n in views:
+        view = views[n]
+        pvs.GetScalarBar(transfert_function, views[n]).Visibility = 0
+        view.CameraPosition = [17, 7, 7]
+        view.CameraViewUp = [0, 0, 1]
+        view.CameraParallelScale = 5
+
+    view_bar.OrientationAxesVisibility = 0
+    color_bar = pvs.GetScalarBar(transfert_function, view_bar)
+    color_bar.WindowLocation = 'Lower Center'
+    color_bar.Title = r'Velocity norm'
+    color_bar.ComponentTitle = ''
+    color_bar.Orientation = 'Horizontal'
+    color_bar.TitleFontSize = 24
+    color_bar.LabelFontSize = 20
+    color_bar.ScalarBarLength = 0.5
+    color_bar.RangeLabelFormat = '%.4g'
+
+    pvs.GetAnimationScene().GoToLast()
+    pvs.SaveScreenshot("tgv_fields.png", layout)
+
+
 if __name__ == '__main__':
     # rae_mesh()
     # rae_field()
@@ -222,4 +275,5 @@ if __name__ == '__main__':
     # rae_mesh_fine()
     # covo_cedre_mesh()
     # covo_cedre_fields()
+    # tgv_fields()
     pass
