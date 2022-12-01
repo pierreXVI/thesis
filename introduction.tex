@@ -40,66 +40,60 @@
     The involvement of several distinct physical phenomena imposes constraints on the choice and use of algorithms.
     Consequently, it would be advisable to adapt or replace the algorithms involved in the time integration for multiphysics problems.
 
-  \section*{Études}
+
+  \section*{Context of this thesis}
 
     \paragraph{}
-    Si la simulation numérique s'est grandement développée dans le domaine l'aéronautique, elle ne s'est pas tant adaptée au domaine de la multi-physique, et de nombreux codes industriels se contentent de réutiliser les mêmes algorithmes.
-    C'est l'exemple du code CEDRE, développé à l'ONERA par le Département Multi-Physique pour l'Énergétique.
-    Ce code constitue une plateforme regroupant plusieurs solveurs pour intégrer plusieurs physiques : chaque solveur est dédié à son modèle physique.
-    On compte alors un solveur pour la résolution des écoulements compressibles, multi-fluides, réactifs et turbulents, deux solveurs pour le calcul de phase dispersée (gouttes, cristaux, particules) en approche eulérienne et lagrangienne respectivement, un solveur dédié au calcul des films liquides, un solveur dédié au rayonnement, ...
-    Des travaux on été fais pour mettre en place une intégration temporelle adaptée aux problèmes résolus par CEDRE.
-    C'est par exemple le cas de \cite{Selva1998}.
-    Un travail sur l'intégration temporelle a mené au développement de méthodes d'intégrations implicites pour l'intégration des problèmes stationnaires, et au développement d'une méthode GMRES pour la résolution des systèmes linéaires.
-    Ainsi, CEDRE constitue en fait un solveur global adapté aux problèmes multi-physiques.
-    L'utilisateur peut choisir parmi un panel de méthodes d'intégrations pour obtenir une méthode adaptée à son problème.
-    Cependant, la couplage faible entre solveurs entache la convergence vers l'état stationnaire et le choix dans les méthodes d'intégration est limité, en comparaison à ce qu'on peut trouver dans la littérature.
-    C'est du moins l'avis des acteurs du code CEDRE, c'est à dire ses développeurs et ses utilisateurs, qui aimeraient des méthodes plus robustes pour pouvoir utiliser CEDRE sur des problèmes plus raides, et convergeant plus vite pour économiser en coût de calcul.
-
-    \paragraph{}\PS{TODO}
-    Du coté de la recherche, cependant, de nombreux efforts ont été réalisés dans le sens de la multi-physique, mais ne sont pas encore sorti du cadre académique.
-    C'est par exemple le cas de \cite{WongKwokHorneEtAl2019}, qui se sont intéressés à l'intégration temporelle d'équations couplées.
-    Ils ont conçu une méthode d'intégration adaptée aux équations couplées, qui est une évolution d'une méthode du point fixe avec en plus une étape d'une méthode de Newton.
-    Ils ont ensuite comparés cette méthode à la méthode du point fixe standard, plus généralement utilisée pour une résolution couplée.
-    En mettant en place leur méthode sur deux problèmes de couplage simple, ils ont enfin montré l’intérêt de leur méthode par rapport à la méthode de base.
-    Si cette méthode se prête bien à leur calculs, elle n'est cependant mise en place que pour des problèmes simples, moins complexes que les problèmes multi-physiques que CEDRE souhaite résoudre.
-    De plus, les tests réalisés sont sur des problèmes à l'échelle académique, et non industrielle.
+    This thesis was conducted at ONERA, the French Aerospace Lab, in the multiphysics for energetics department.
+    Although numerical simulation has been greatly developed in the aeronautical field, it has not been so well adapted to the multiphysics field, and many industrial codes are content to reuse the same algorithms.
+    This is the example of the software system CEDRE, developed at ONERA by the multiphysics for energetics department \cite{ReflochCourbetMurroneEtAl2011}.
+    This software system constitutes a platform grouping several solvers to integrate several physics: each solver is dedicated to its physical model.
+    There is a solver for the resolution of compressible, multifluid, reactive and turbulent flows, two solvers for the calculation of dispersed phase (drops, crystals, particles) in Eulerian and Lagrangian approach respectively, a solver dedicated to the calculation of liquid films, a solver dedicated to radiation, etc.
+    Thus, CEDRE is in fact a global solver adapted to multiphysics problems.
+    Older work has been done to set up a time integration adapted to the problems solved by CEDRE \cite{Selva1998}.
+    Work on time integration has led to the development of implicit integration methods for the integration of steady problems, and to the development of a GMRES method for the solution of linear systems.
+    Users can choose from a panel of integration methods to obtain methods adapted to their problems.
+    However, the weak coupling between solvers hampers the convergence to the steady state and the choice in integration methods is limited, compared to what can be found in the literature.
+    This is at least the opinion of the actors of the CEDRE code, i.e. its developers and users, who would like more robust methods to be able to use CEDRE on steeper problems, and converging faster to save on computational cost.
 
     \paragraph{}
-    Parallèlement, des outils utilisés dans le cadre de la simulation aérodynamique pourraient s'avérer intéressants pour des problèmes multi-physiques.
-    La méthode JFNK est déjà bien utilisée dans la simulation numérique des équations de Navier-Stokes.
-    Dans \cite{ParkNourgalievMartineauEtAl2009}, un mécanisme d'intégration temporelle est mis en place autour d'une formulation JFNK.
-    Un préconditionnement basé sur la physique est développé pour résoudre plus précisément le problème linéaire.
-    Cette intégration temporelle est ensuite testée sur un problème de cavitée carée thermiquement entrainée.
-    Cependant, cette méthode ne s'intéresse seulement aux équations de Navier-Stokes et n'est pas directement appliquable aux problèmes plus généraux de l'énergétique.
-    De plus, elle n'est testée que sur un problème académique 2D.
-
-    \PS{TODO: quand parler de la distinction CEDRE / CHARME, placer \cite{ReflochCourbetMurroneEtAl2011}}
-
-  \section*{Bilan général}
+    On the research side, however, many efforts have been made in the direction of multiphysics, but have not yet left the academic framework.
+    This is for example the case of \cite{WongKwokHorneEtAl2019}, who were interested in the temporal integration of coupled equations.
+    They designed an integration method adapted to coupled equations, which is an evolution of a fixed point method with the addition of a step of a Newton method.
+    They then compared this method to the standard fixed point method, which is more commonly used for coupled solution.
+    By implementing their method on two simple coupling problems, they finally showed the interest of their method compared to the more standard method.
+    If this method is well fitted for their calculations, it is however only implemented for simple problems, less complex than the multiphysics problems that CEDRE wishes to solve.
+    Moreover, the tests carried out are on problems on an academic scale, and not on an industrial scale.
 
     \paragraph{}
-    On voit donc que des méthodes numériques sont déjà disponibles pour résoudre des problèmes de simulation numérique.
-    En particulier, il existe déjà des solveurs capables de résoudre les problèmes stationnaire multi-physiques d'échelle industrielle.
-    D'un autre coté, d'autres méthodes développées dans un cadre académique ont montré leur intérêt sur des problèmes multi-physiques simples.
+    At the same time, tools used in aerodynamic simulation could prove interesting for multiphysics problems.
+    The Jacobian-Free Newton--Krylov method, or JFNK, is already well used in the numerical simulation of the Navier--Stokes equations.
+    In \cite{ParkNourgalievMartineauEtAl2009}, a time integration mechanism is implemented around a JFNK formulation.
+    A physics-based preconditioning is developed to solve the linear problem more precisely.
+    This time integration is then tested on a thermally driven cavity problem.
+    However, this work is only concerned with the Navier--Stokes equations and is not extended to more general energetics problems.
+    Finally, it is only tested on a two-dimensional academic problem.
+    In \cite{ContentOuttierCinnella2013}, is was also used on academic problems for the turbulent Navier--Stokes equations.
+    The Jacobian-Free Newton--Krylov method seems to be well fitted to problems that couple multiple physics.
+    It was used in \cite{Turpault2003} on applications coupling radiative transfer with hydrodynamics.
+    It could prove interesting as a time integration method for CEDRE multiphysic problems.
 
-    Enfin, des méthodes améliorant la résolution des problèmes d'aérodynamique pourraient s'avérer intéressantes pour des problèmes multi-physiques.
 
-    Enfin, certaines méthodes récentes ont permis ...
-
-    Les solveurs déjà existants utilisent des méthodes anciennes, ou peu adaptées aux problèmes multi-physiques.
-    Les méthodes plus performantes ne sont utilisées que sur des problèmes simplifiés, ou dans des calculs d'échelle académique.
-
-    Il semblerait maintenant intéressant d'adapter ces nouvelles méthodes pour la résolution des problèmes multi-physiques dans un code industriel.
-
-    \vspace{1cm}\hrule\vspace{1cm}
-
-  \section*{C'est ce qui justifie cette étude ...}
+  \section*{General overview and motivations}
 
     \paragraph{}
-    ..., elle consiste à améliorer la convergence, la rapidité et la robustesse de l'intégration temporelle de la plateforme CEDRE sur les problèmes stationnaires multi-physiques en ajoutant des méthodes numériques non utilisées dans la simulation numérique industrielle.
+    It can therefore be seen that numerical methods are already available to solve computational fluid dynamics problems.
+    In particular, there are already solvers capable of solving steady multiphysics problems of industrial scales.
+    However, such solver use methods inherited from the aerodynamic context, that are not always adapted to handle the difficulties arising from the multiphysic properties of our problems.
+    It is at least the case for out solver CEDRE.
+    On the other hand, other methods developed in an academic context have shown their interest on simple multiphysics problems.
+    It would now seem interesting to adapt these new methods for the resolution of multiphysics problems in an industrial code.
+    This is the reason for this study.
+    It consists in improving the convergence, speed and robustness of the time integration of the CEDRE platform on steady multiphysics problems by adding numerical methods not used in industrial numerical simulation.
+    The aim of this work is to improve the current performances of our solver by using such more recent methods.
 
 
-  \section*{Démarche}
+  \section*{Outline}
 
     \paragraph{}
     L'objectif du chapitre 1 a été de développer une formulation JFNK pour AMÉLIORER QUOI DE l'intégration temporelle dans le code CEDRE.

@@ -1023,7 +1023,7 @@
       We said that the function $\operatorname{G}$ comes from the second order or higher Finite Volume method used as the spatial discretisation method.
       We can take the function $\operatorname{G}_1$ given by the first-order corresponding method, and use its Jacobian matrix instead.
       Indeed, computing $\operatorname{G}_1$ is inexpensive in comparison to $\operatorname{G}$, and the same goes for the corresponding Jacobian matrices.
-      Going further, we could also approximate the Jacobian matrix of $\operatorname{G}_1$: when $\operatorname{G}$ uses some complex models such as turbulence models, it is often decided to not include those models' contributions to the Jacobian matrix, for complexity and stability reasons \PS{ref ici}.
+      Going further, we could also approximate the Jacobian matrix of $\operatorname{G}_1$: when $\operatorname{G}$ uses some complex models such as turbulence models, it is often decided to not include those models' contributions to the Jacobian matrix, for complexity and stability reasons \cite{ContentOuttierCinnella2013}.
       This is what is done originally in our in-house solver: using a cheap low-order approximation of the Jacobian matrix.
 
       \paragraph{}
