@@ -96,25 +96,49 @@
   \section*{Outline}
 
     \paragraph{}
-    L'objectif du chapitre 1 a été de développer une formulation JFNK pour AMÉLIORER QUOI DE l'intégration temporelle dans le code CEDRE.
-    JUSTIFICATION
-    Pour cela, l'idée a été d'adapter la méthode d'intégration en s'inspirant de la bibliographie en fonction de certains critères.
-    L'idée suivante a été de développer une méthode de Newton afin de résoudre le problème non linéaire sachant que celui ci est produit par les méthodes d'intégration implicites utilisées lors de la résolution des problèmes stationnaires.
-    L'idée suivante a été de développer une formulation sans matrice du système afin de mieux former les systèmes linéaires et permettre un couplage fort des solveurs de CEDRE.
-    L'idée suivante a été d'adapter la résolution du système linéaire en utilisant des méthodes plus modernes que la méthode actuelle, en s'inspirant de la bibliographie, afin de résoudre plus précisément le système linéaire.
-    On a alors obtenu une méthodologie d'intégration temporelle utilisable pour résoudre des problèmes multi-physique stationaires.
-    A ce stade, cette méthode fonctionne au sens où elle permet d'obtenir un résultat à un problème de simulation numérique, mais elle n'est pas encore caractérisée.
+    This document is divided into two parts.
+    The first part, consisting of Chapters 1, 2 and 3, describe the work we did with the solver CEDRE, around the Jacobian-Free Newton--Krylov method.
+    Some of it was presented at the 2022 Aviation Forum \cite{SeizeMatuszewskiPuigt}.
+    The second part, consisting of Chapters 4 and 5, focuses on exponential time integration methods, initially investigated in CEDRE then in an other solver: JAGUAR.
+    \PS{Guillaume tu veux publier ?}
 
     \paragraph{}
-    L'idée du chapitre 2 a été d'évaluer la robustesse et la convergence de la formulation JFNK sur des problèmes stationnaire en multi-physiques au sein du code CEDRE.
-    Pour cela, l'idée a été de sélectionner des cas tests de complexité croissante afin de représenter un ensemble de problèmes multi-physiques.
-    L'idée suivante a été de mettre en place une méthode d'évaluation des performances de l'intégration temporelle afin de caractériser sa robustesse et sa vitesse de convergence.
-    L'idée suivante a été de montrer que sur ces cas la formulation améliore la robustesse et la convergence afin de valider la pertinance du choix de la méthode.
-    On estime qu'on a alors développé une méthode d'intégration temporelle "efficace", c'est à dire rendant l'intégration temporelle de CEDRE plus robuste et convergeant plus rapidement sur un ensemble de problèmes multi-physiques.
-    On pourrait aller plus loin mais on va plutôt regarder l'intérêt de la formulation JFNK sur des problèmes autres pouvant en tirer profit : les problèmes instationnaires à grand pas de temps.
+    The objective of Chapter 1 is to identify, from the literature, methods that we think can improve CEDRE performances, meaning speed, accuracy and robustness.
+    We will introduce time integration methods and the mathematical tools we need to analyse them.
+    We will go into more details for implicit time integration methods by describing each step involved in its implementation.
+    Those details will lead us from the differential equation to the algebraic solver used to solve linear systems.
+    This chapter also describes what already existed in CEDRE before this thesis.
+    It shows the strengths and the weaknesses of the traditional time integration methodology.
+    The idea is then to work on those weaknesses by using previously identified methods.
+    Indeed, we will look at the literature and chose new methods to implement that goes well with what we want to keep, in place of what we want to discard.
+    At this stage, we will have identified methods that we hope will improve our solver performances.
 
     \paragraph{}
-    L'idée du chapitre 3 est d'analyser la formulation JFNK sur les problèmes instationnaires à grand pas de temps.
-    Pour cela, l'idée a été d'identifier une classe de problèmes sortant du cadre initial de la thèse mais pouvant bénéficier de la formulation JFNK, afin d'y démontrer l'intérêt de la formulation.
-    L'idée suivante a été de concevoir un cas d'étude afin de de mettre en valeur l'intérêt de la formulation JFNK.
-    L'idée suivante a été de montrer l’intérêt la formulation sur ce cas.
+    Chapter 2 aims to present the implementation of the new methods in CEDRE.
+    To do so, we will briefly describe the structure of the solver, and its different parts.
+    We will then go into more details and explain some implementation choices.
+    Finally, we will justify those choices and show they are indeed valid to accomplish what set out to do.
+    After this, we have a method that we need to test to see if it improve our solver performances.
+
+    \paragraph{}
+    The goal of Chapter 3 is to evaluate the robustness, accuracy and speed of the previously implemented method, and compare those performances to those of previously existing methods.
+    The idea is to select representative test cases, that correspond to typical CEDRE applications.
+    We will present at first simple aerodynamic test cases, and we will increase the complexity of the physical model as we go.
+    On each of those test cases, we will compare the newly implemented method to the older one.
+    This will justify the choices made in Chapter 1, and their implementation from Chapter 2.
+    Finally, we will use the newly implemented method on an also newly implemented fluid model, and show that this lead to some benefits for the solver users.
+
+    \paragraph{}
+    In Chapter 4, we will step out of the context of steady problem and extend our work to unsteady computations that use larger time steps.
+    The objective of this chapter is to introduce a new category of time integration methods, and give some of their characteristics.
+    Then, we will show on a simple analytic test case why those new methods may be of interest for our computational fluid dynamics applications.
+    We will also see that we need to use another solver to study properly those methods.
+
+    \paragraph{}
+    Chapter 5 aims to show the potential of this new class of time integration methods in our field.
+    To do so, we use an other solver, as it was recommended in the previous chapter.
+    After introducing the novelties of this other solver, we will define a set of methods we want to compare to one another, made of previously existing and newly added methods.
+    Then, we describe several test cases to characterise and compare those methods.
+
+    \paragraph{}
+    Finally, we will conclude on this thesis and give perspectives that can continue this work further.
