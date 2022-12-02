@@ -216,15 +216,15 @@ def covo_cedre_fields():
 
 
 def tgv_fields():
-    pvs.Connect(input("Enter Paraview Server: "))
+    pvs.Connect('localhost')
 
     views = {}
-    for n, label in zip((0, 3000, 6000, 9000), ('$t = 0$', r'$t = 6$', r'$t = 12$', '$t = 18$')):
+    for n, label in zip((0, 3000, 6000, 9000), ('$t$ = 0', r'$t$ = 6', r'$t$ = 12', '$t$ = 18')):
         views[n] = pvs.CreateRenderView()
         reader = pvs.OpenDataFile('/visu/pseize/TGV/VISU/sol_{0:08d}/sol_{0:08d}.pvtu'.format(n))
         pvs.Show(reader, views[n], Representation='Outline')
         pvs.Show(pvs.Text(Text=label), views[n], 'TextSourceRepresentation', WindowLocation='Upper Left Corner',
-                 FontSize=24, FontFamily='File', FontFile='/usr/share/fonts/lyx/cmsy10.ttf')
+                 FontSize=24, FontFamily='File', FontFile='/usr/share/fonts/lyx/cmr10.ttf')
         calc = pvs.Calculator(reader, ResultArrayName='Norm_U', Function='sqrt(u*u + v*v + w*w)')
         ctr = pvs.Contour(calc, ContourBy=['POINTS', 'qcrit'], Isosurfaces=[0.1, ])
         display = pvs.Show(ctr, views[n], ColorArrayName=['POINTS', 'Norm_U'])
@@ -249,7 +249,8 @@ def tgv_fields():
     for n in views:
         view = views[n]
         pvs.GetScalarBar(transfert_function, views[n]).Visibility = 0
-        view.CameraPosition = [17, 7, 7]
+        view.CameraPosition = [17.7, 6, 6.2]
+        view.CameraFocalPoint = [0.7, -1, -0.8]
         view.CameraViewUp = [0, 0, 1]
         view.CameraParallelScale = 5
 
@@ -260,7 +261,11 @@ def tgv_fields():
     color_bar.ComponentTitle = ''
     color_bar.Orientation = 'Horizontal'
     color_bar.TitleFontSize = 24
+    color_bar.TitleFontFamily = 'File'
+    color_bar.TitleFontFile = '/usr/share/fonts/lyx/cmr10.ttf'
     color_bar.LabelFontSize = 20
+    color_bar.LabelFontFamily = 'File'
+    color_bar.LabelFontFile = '/usr/share/fonts/lyx/cmr10.ttf'
     color_bar.ScalarBarLength = 0.5
     color_bar.RangeLabelFormat = '%.4g'
 
