@@ -1,4 +1,18 @@
-\chapter{Exponential integration methods in JAGUAR}
+\chapter{Analysis of exponential integration methods in JAGUAR}
+
+\begin{tcolorbox}[title=Résumé du chapitre : analyse des méthodes d'intégration exponentielles dans JAGUAR, colframe=black!50!white]
+  \paragraph{}
+  Le but de ce chapitre est de comparer les méthodes exponentielles aux méthodes d'intégration classiques de JAGUAR pour valider leur intérêt.
+
+  \paragraph{}
+  Nous avons montré dans le chapitre précédent que CEDRE n'était pas le contexte idéal afin d'analyser des méthodes d'intégration temporelles très précises comme celles qui nous intéressent.
+  Nous utilisons donc le solveur JAGUAR, basé sur la méthode des Differences Spectrales, que nous présentons au début de ce chapitre.
+
+  \paragraph{}
+  Nous analysons ensuite les méthodes exponentielles ajoutées à JAGUAR grâce à l'utilisation de la librairie SLEPc sur un cas simple, afin de constater l'ordre de ces méthodes à travers l'erreur globale en fin de simulation.
+  Sur un autre cas académique, nous comparons ensuite notre ensemble de méthodes en regardant le temps d'execution qu'il leur est nécessaire afin de réaliser une même simulation.
+  Pour finir, nous utilisons les méthodes exponentielles sur un cas plus significatif car proche d'une application réelle du sulveur: une aube de turbine.
+\end{tcolorbox}
 
   \paragraph{}
   We want to analyse time exponential integration methods in a framework that gives us access to high-order spatial discretisation methods.

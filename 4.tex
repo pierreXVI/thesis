@@ -1,4 +1,25 @@
-\chapter{Analysis of a new type of time integration methods}
+\chapter{Introduction to a new type of time integration methods}
+
+\begin{tcolorbox}[title=Résumé du chapitre : Introduction d'un nouveau type de méthodes d'intégration temporelle, colframe=black!50!white]
+  \paragraph{}
+  Le but de ce chapitre est de d'introduire un nouveau type de méthodes d'intégration temporelle.
+
+  \paragraph{}
+  Les méthodes utilisées dans la résolution des problèmes stationnaires sont souvent réutilisées dans la résolution de problèmes instationnaires intégrés avec de grands pas de temps.
+  Nous présentons dans ce chapitre le principe des méthodes d'intégration exponentielles, qui sortent de la dichotomie explicite/implicite.
+  Nous décrivons ensuite plus en détail la famille des méthodes Rosenbrock exponentielles, qui seront utilisées par la suite.
+  Nous réalisons également une brève analyse théorique ce ces méthodes.
+
+  \paragraph{}
+  Comme leur nom l'indique, ces méthodes reposent sur l'exponentielle.
+  Leur difficulté vient du fait qu'elles nécessitent de calculer des exponentielles de matrices, de très grande taille dans nos applications.
+  Nous détaillons donc comment ce calcul est réalisé en utilisant des sous-espaces de Krylov.
+
+  \paragraph{}
+  Finalement, nous essayons une méthode exponentielle développée dans CEDRE sur un cas analytique simple.
+  Nous montrons alors la pertinence de cette nouvelle méthode au vu de ses performances sur ce cas.
+\end{tcolorbox}
+
 
   \paragraph{}
   In this thesis, we were interested in finding solutions to steady problems.

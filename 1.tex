@@ -1,5 +1,25 @@
 \chapter{Analysis of existing methods}
 
+\begin{tcolorbox}[title=Résumé du chapitre : Analyse des méthodes existantes, colframe=black!50!white]
+  \paragraph{}
+  Le but de ce chapitre est d'identifier les méthodes qui serviront pour la suite.
+
+  \paragraph{}
+  Tout d'abord, nous introduisons un contexte mathématique et ses notations.
+  Nous décrivons ensuite comment un solveur passe d'une équation aux dérivées partielles, issue du modèle physique, à une équation différentielle ordinaire, purement numérique.
+  Nous introduisons donc brièvement les méthodes de discrétisation spatiale, et en particulier les deux principales du solveur CEDRE.
+  Grâce à ces méthodes et à l'utilisation d'un maillage, nous arrivons donc à l'équation différentielle ordinaire qu'il nous faut intégrer avec des méthodes d'intégration temporelle.
+
+  \paragraph{}
+  Nous introduisons ensuite des outils pour caractériser de telles méthodes, en définissant les notions d'ordre et de stabilité.
+  Nous rappelons les méthodes d'intégrations que l'on trouve classiquement dans la littérature, en soulignant la dichotomie explicite/implicite.
+
+  \paragraph{}
+  Puisque nous nous intéressons aux méthodes d'intégration implicites, pour des raisons que nous rappelons dans ce chapitre, nous détaillons les différents éléments intervenant dans sa mise en place : le solveur non-linéaire, le solveur linéaire, et en particulier le passage de l'un à l'autre.
+  Ce passage étant jugé insatisfaisant pour notre solveur, nous présentons la méthode JFNK, ou plus généralement une formulation sans matrice, qui s'appuie sur des parties déjà présentes de CEDRE et corrige, à priori, ce défaut.
+\end{tcolorbox}
+
+
   \paragraph{}
   As we aim to enhance the performances of the solver CEDRE on steady problems, we first have to define some notions.
   In particular, we need to explain what performance means.

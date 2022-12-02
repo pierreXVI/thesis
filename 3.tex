@@ -1,4 +1,27 @@
-\chapter{Analyse de la méthode JFNK dans CEDRE}
+\chapter{Analysis of the Jacobian-Free Newton--Krylov method in CEDRE}
+
+\begin{tcolorbox}[title=Résumé du chapitre : Analyse de la méthode JFNK dans CEDRE, colframe=black!50!white]
+  \paragraph{}
+  Le but de ce chapitre est de vérifier les gains apportés par l'ajout de la méthode JFNK dans le solveur CEDRE.
+
+  \paragraph{}
+  Pour cela, nous comparons tout d'abord la méthode JFNK avec la méthode préexistante.
+  Cette comparaison se traduit principalement par la comparaison de la convergence des deux méthodes à travers la norme des résidus.
+  Ainsi, nous réalisons cette comparaison sur une succession de cas tests, de complexité croissante, sélectionnés car ils représentent différentes facettes du solveur.
+
+  \paragraph{}
+  Nous commençons par un calcul purement aérodynamique d'un profil d'aile en deux dimensions dans un écoulement turbulent, qui utilise une modélisation des effets turbulents de la couche limite.
+  Puis, nous utilisons le même profil mais cette fois en incidence, avec un maillage bien plus fin qui capture les effets de couche limite turbulente, plutôt que de la modéliser.
+
+  \paragraph{}
+  Nous regardons ensuite un cas de rentrée atmosphérique avec une sphère placée dans un écoulement à haute énergie.
+  Cela se traduit par un très fort choc, ainsi qu'une zone de déséquilibre thermodynamique où ont lieu d'intenses réactions chimiques.
+  Dans un premier temps, nous regardons comme précédemment les deux méthodes pour comparer leur convergence.
+  Pour finir, nous utilisons un modèle de fluide récemment ajouté au solveur afin de représenter le déséquilibre thermodynamique.
+  Avec les développements réalisés actuellement sur ce nouveau modèle, il n'est pas possible d'utiliser la méthode implicite préexistante, et les utilisateurs sont forcés d'employer des méthodes explicites.
+  Nous montrons donc que la méthode JFNK peut elle être utilisée en l'état, sans nécessiter de développements supplémentaires, et permet d'accélérer les calculs ainsi que d'obtenir une meilleure convergence.
+\end{tcolorbox}
+
 
   \paragraph{}
   In a previous chapter, we identified some methods from the literature that we wanted to use in our solver CEDRE, and some others from CEDRE that we wanted to improve.
