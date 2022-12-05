@@ -50,7 +50,7 @@ A Krylov method already exists in CEDRE for the inversion of linear systems: the
 We use the fact that it does not explicitly need the matrix to invert it and implement a JFNK method.
 The aim is to improve the accuracy of the Jacobian matrix used, in hope that this will improve the overall accuracy of the time integration.
 This is justified by the fact that prior to this thesis the Jacobian matrix used is very approximate, especially with respect to many of the fine modelling features of the solver, such as turbulent source terms, as well as reconstruction methods, such as the MUSCL one.
-An formulation of the matrix-free method is generically implemented so that any CEDRE solver can use this formulation.
+A formulation of the matrix-free method is generically implemented so that any CEDRE solver can use this formulation.
 This also opens the door to coupled implicit solving, something not allowed with the current CEDRE structure.
 
 The JFNK method is compared to pre-existing CEDRE methods on typical applications of increasing complexity chosen to represent the functionality of the solver.
