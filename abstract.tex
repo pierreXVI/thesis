@@ -1,10 +1,12 @@
 \section{Résumé}
 
-\paragraph{}
+  \subsection{Résumé de la thèse en français}
+
+    \paragraph{}
 Cette thèse s'intéresse aux performances de l'intégration temporelle du solveur CEDRE sur des problèmes stationnaires.
 Il s'agit d'une plateforme logicielle visant la résolution des problèmes multi-fluides pour des applications en énergétique à échelle industrielle.
-CEDRE est composé de différents solveurs, chacun dédié à un ensemble de phénomènes physique.
-Plus précisément, nous regardons comment améliorer la rapidité, robustesse et convergence de la chaine d’intégration temporelle.
+CEDRE est composé de plusieurs solveurs, chacun dédié à un ensemble de phénomènes physique.
+Plus précisément, nous regardons comment améliorer la rapidité, robustesse et convergence de l’intégration temporelle.
 Pour des raisons de stabilité nous nous intéressons à des méthodes implicites, en particulier à la méthode d'Euler implicite.
 Ces méthodes nécessitent la résolution de problèmes non-linéaires, qui nécessitent à leur tour la résolution de problèmes linéaires.
 Le passage de l'un à l'autre se fait par la présence de la Jacobienne de fonctions du problème non-linéaire.
@@ -13,7 +15,7 @@ Nous utilisons le fait qu'elle n'a pas explicitement besoin de la matrice pour l
 Le but est d'améliorer la précision de la matrice Jacobienne utilisée, en espérant que cela améliorera la précision globale de l'intégration temporelle.
 Ceci est justifié par le fait qu'avant cette thèse la Jacobienne utilisée est très approximée et néglige beaucoup des modélisations fines du solveur, comme les reconstruction MUSCL, les termes sources turbulents ou chimiques, ainsi que les relations de fermetures thermodynamiques qui peuvent être complexes dans CEDRE.
 Une implémentation d'une méthode sans-matrice est mise en place de manière générique de sorte que tout solveur de CEDRE puisse utiliser cette formulation.
-Cela ouvre de plus la porte à une résolution implicite couplée de solveurs, chose non permise avec la structure actuelle de CEDRE.
+Cela ouvre de plus la porte à une résolution implicite couplée des solveurs, chose non permise avec la structure actuelle de CEDRE.
 
 La méthode JFNK est comparée aux méthodes préexistantes de CEDRE sur des applications typiques de complexité croissantes choisies afin de représenter les fonctionnalités du solveur.
 Nous nous intéressons d'abord à un profil d'aile sans incidence dans un écoulement transsonique turbulent pour lequel la couche limite est modélisée au niveau de la paroi.
@@ -31,3 +33,39 @@ Nous montrons qu'en plus d'améliorer la convergence, la méthode JFNK permet d'
 Dans un second temps, nous élargissons le contexte en nous intéressant aux méthodes d'intégration exponentielles, cette fois avec le solveur JAGUAR.
 Ce changement de solveur est justifié par la plus grande précision apportée par la méthode des Différences Spectrales qu'il utilise comme schéma de discrétisation spatiale, nécessaire à l'analyse de ces nouveaux schémas temporels très précis.
 Nous choisissons, implémentons et analysons un ensemble de méthodes exponentielles, en comparaison à des méthodes déjà présentes, sur plusieurs cas pour montrer leur intérêt.
+
+
+  \subsection{Résumé de la thèse en anglais}
+
+
+    \paragraph{}
+This thesis focuses on the performance of the time integration of the CEDRE solver on steady problems.
+It is a software platform aimed at solving multi-fluid problems for industrial scale energetic applications.
+CEDRE is composed of several solvers, each dedicated to a set of physical phenomena.
+More precisely, we are looking at how to improve speed, robustness and convergence of the time integration.
+For stability reasons we are interested in implicit methods, in particular the implicit Euler method.
+These methods require the solution of non-linear problems, which in turn require the solution of linear problems.
+The transition from one to the other is made by the presence of the Jacobian of functions from the non-linear problem.
+A Krylov method already exists in CEDRE for the inversion of linear systems: the GMRES method.
+We use the fact that it does not explicitly need the matrix to invert it and implement a JFNK method.
+The aim is to improve the accuracy of the Jacobian matrix used, in the hope that this will improve the overall accuracy of the time integration.
+This is justified by the fact that prior to this thesis the Jacobian matrix used is very approximate and neglects many of the fine modelling features of the solver, such as MUSCL reconstruction, turbulent or chemical source terms, as well as thermodynamic closing relations which can be complex in CEDRE.
+An implementation of a matrix-free method is generically implemented so that any CEDRE solver can use this formulation.
+This also opens the door to coupled implicit solving, something not allowed with the current CEDRE structure.
+
+The JFNK method is compared to pre-existing CEDRE methods on typical applications of increasing complexity chosen to represent the functionality of the solver.
+We first look at an airfoil without incidence in a turbulent transonic flow for which the boundary layer is modelled at the wall.
+We then look at the same airfoil with incidence with a finer mesh to capture the turbulent boundary layer.
+We look at the norm of the residuals to show that the method using a more accurate matrix converges better as it more accurately accounts for all the physical models.
+
+We then consider a solid sphere in a hypersonic flow to represent the CEDRE atmospheric re-entry applications.
+Due to the high energy of the case, strong chemical reactions take place downstream of the shock.
+The same approach is used to show that the JFNK method allows a better convergence of the calculation.
+Then, we use another recently developed physical model to represent the thermodynamic disequilibrium.
+As this model is new, its Jacobian matrix is not available, so the implicit methods are not available either.
+The JFNK method is however available, and is therefore compared to an explicit method, which is the only solution available to users to perform calculations with this model.
+We show that in addition to improving convergence, the JFNK method improves the computation time on these applications.
+
+In a second step, we broaden the context by looking at exponential integration methods, this time with the JAGUAR solver.
+This change of solver is justified by the higher accuracy brought by the Spectral Difference method that it uses as a spatial discretization scheme, necessary to analyze these new very accurate temporal methods.
+We select, implement and analyse a set of exponential methods, in comparison to existing methods, on several cases to show their interest.
