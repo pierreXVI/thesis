@@ -70,22 +70,6 @@ def rae_field():
     # pvs.SaveScreenshot("rae_field.png", view)
 
 
-def rae_cp():
-    plotter = pvlib.CpPlotter(view_size=(800, 600), xlabel='$x/c$', ylabel='',
-                              title=r'$C_p = \frac{{ P - P_\infty }}'
-                                    r'{{ \frac{{1}}{{2}} P_\infty \gamma \operatorname{{Ma}}^2 }} $')
-    plotter.view.ChartTitleFontSize = 24
-    plotter.view.LeftAxisLabelFontSize = 16
-    plotter.view.BottomAxisLabelFontSize = 16
-    plotter.view.LegendFontSize = 24
-    plotter.register_plot("/scratchm/pseize/RAE_2822/BASE/RUN_1/ENSIGHT/archive_CHARME.surf.ins.case",
-                          p_inf=26500, gamma=1.4, mach=0.75, block_name=['Intrados', 'Extrados'], label='Base')
-    plotter.register_plot("/scratchm/pseize/RAE_2822/MF/RUN_1/ENSIGHT/archive_CHARME.surf.ins.case", marker=1,
-                          p_inf=26500, gamma=1.4, mach=0.75, block_name=['Intrados', 'Extrados'], label='MF')
-    plotter.draw(duration=0, block=True)
-    # pvs.SaveScreenshot("rae_cp.png", plotter.view)
-
-
 def rae_mesh_fine():
     filename = "/scratchm/pseize/RAE_2822_FINE/BASE/INIT/ENSIGHT/archive_CHARME.volu.ins.case"
     plotter = pvlib.Plotter()
@@ -276,7 +260,6 @@ def tgv_fields():
 if __name__ == '__main__':
     # rae_mesh()
     # rae_field()
-    # rae_cp()
     # rae_mesh_fine()
     # covo_cedre_mesh()
     # covo_cedre_fields()

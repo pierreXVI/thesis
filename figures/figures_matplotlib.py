@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import scipy.linalg
 import scipy.special
-from postprocess import bibarch, utils, jaguar_tools
+from postprocess import bibarch, utils, jaguar_tools, pvlib
 
 plt.rcParams.update({
     'xtick.labelsize': 8,
@@ -410,6 +410,33 @@ def fig_eps():
         fig2.savefig('epsilon_Burgers.png')
         fig.savefig('epsilon_Euler.png')
         # plt.show()
+
+
+def rae_cp():
+    fig = plt.figure(figsize=[4.6, 3.5])
+    ax = fig.add_subplot(111)
+    ax.grid(True)
+    ax.set_xlabel('$x/c$')
+    ax.set_title(r'$C_p = \frac{{ P - P_\infty }}{{ \frac{{1}}{{2}} P_\infty \gamma \operatorname{{Ma}}^2 }} $')
+
+    plotter = pvlib.Plotter()
+
+    def cp(pressure):
+        return ((pressure / 26500) - 1) * 2 / (1.4 * 0.75 ** 2)
+
+    reader, _, _ = plotter.load_data("/scratchm/pseize/RAE_2822/BASE/INIT/ENSIGHT/archive_CHARME.surf.ins.case", ['P'])
+    coord, p = pvlib.get_point_data(reader, 'P', plotter.find_blocks(reader, ['Intrados', 'Extrados']))
+    ax.plot(coord[:, 0], cp(p), 'x', label='Traditional method')
+
+    reader, _, _ = plotter.load_data("/scratchm/pseize/RAE_2822/MF/RUN_1/ENSIGHT/archive_CHARME.surf.ins.case", ['P'])
+    coord, p = pvlib.get_point_data(reader, 'P', plotter.find_blocks(reader, ['Intrados', 'Extrados']))
+    ax.plot(coord[:, 0], cp(p), '+', label='JFNK method')
+    ax.invert_yaxis()
+    ax.legend()
+
+    fig.subplots_adjust(0.1, 0.12, 0.99, 0.88)
+    fig.savefig('rae_cp.png')
+    # plt.show()
 
 
 def rae_coefficients():
@@ -964,6 +991,7 @@ if __name__ == '__main__':
     # bdf_stab()
     # preconditioning()
     # fig_eps()
+    # rae_cp()
     # rae_coefficients()
     # rae_residuals()
     # sd_discontinuous()

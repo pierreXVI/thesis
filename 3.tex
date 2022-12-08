@@ -112,7 +112,7 @@
 
         \begin{figure}
           \centering
-          \includegraphics[width=0.7\textwidth]{figures/rae_cp.png}
+          \includegraphics{figures/rae_cp.png}
           \caption{Pressure coefficient around the airfoil for the traditional method (blue) and the JFNK method (orange).}
           \label{fig:rae_cp}
         \end{figure}
@@ -297,7 +297,7 @@
         Even if this case looks simplistic, it should not be taken lightly.
         When using unfit spatial discretisation methods, we ended up with a well-known problem of a such simulation called carbuncle \cite{MacCormack2013}.
         This phenomenon does not come from physics but is solely due to numerical methods.
-        It is shown in figure \ref{fig:sphere_carbuncle}.
+        It is shown in figure \ref{fig:sphere_carbuncle} from some of our earlier computations that were using a different mesh.
         Simply put, it creates a recirculation bubble downstream of the shock, near the stagnation point.
         This bubble tends to push the shock farther from the sphere, and modify greatly the heat flux at this location.
         The choice of the Riemann solver ended up being the key element to getting rid of this undesirable effect: there is no recirculation with the AUSM+ scheme.
