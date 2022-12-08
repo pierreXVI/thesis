@@ -113,6 +113,52 @@ def rae_mesh_fine():
     # pvs.SaveScreenshot("rae_mesh_fine.png", layout)
 
 
+def sphere_carbuncle():
+    path = "/tmp_user/sator/pseize/SPHERE_LOBB/CARBUNCLE/RUN_{0}/_ENSIGHT_/archive_CHARME.volu.ins.case"
+    plotter = pvlib.SpherePlotter()
+    plotter.register_plot(path.format('KO'), 'P', stream=10)
+    plotter.register_plot(path.format('OK'), 'P', stream=10)
+    view1 = plotter.get_views(path.format('KO'))[0]
+    view2 = plotter.get_views(path.format('OK'))[0]
+    view_bar = pvs.CreateRenderView()
+
+    for view in (view1, view2):
+        color_bar = pvs.GetScalarBar(pvs.GetColorTransferFunction('P'), view)
+        color_bar.Visibility = 0
+        view.CameraPosition = [-0.007, 0.0019, 1]
+        view.CameraFocalPoint = [-0.007, 0.0019, 0]
+        view.CameraParallelScale = 0.002
+
+    view_bar.OrientationAxesVisibility = 0
+    color_bar = pvs.GetScalarBar(pvs.GetColorTransferFunction('P'), view_bar)
+    color_bar.WindowLocation = 'Lower Center'
+    color_bar.Title = r'$P \quad \left( \operatorname{Pa} \right)$'
+    color_bar.ComponentTitle = ''
+    color_bar.Orientation = 'Horizontal'
+    color_bar.TitleFontSize = 24
+    color_bar.LabelFontSize = 20
+    color_bar.ScalarBarLength = 0.7
+    color_bar.RangeLabelFormat = '%.0f'
+    color_bar.AutomaticLabelFormat = 0
+    color_bar.LabelFormat = '%.1E'
+
+    layout = pvs.CreateLayout()
+    id_1 = layout.SplitVertical(0, 0.8)
+    layout.AssignView(id_1 + 1, view_bar)
+    id_1 = layout.SplitHorizontal(id_1, 0.5)
+    layout.AssignView(id_1 + 0, view1)
+    layout.AssignView(id_1 + 1, view2)
+    layout.SetSize(1157, 500)
+
+    print("Please set the OrientationAxis manually in both top views")
+    view1.OrientationAxesInteractivity = 1
+    view2.OrientationAxesInteractivity = 1
+    plotter.draw(0, True)
+
+    pvs.GetAnimationScene().GoToLast()
+    pvs.SaveScreenshot("sphere_carbuncle.png", layout)
+
+
 def covo_cedre_mesh():
     filename = "/visu/pseize/COVO/EXP/RUN_1/_ENSIGHT_/archive_CHARME.volu.ins.case"
     plotter = pvlib.Plotter()
@@ -261,6 +307,7 @@ if __name__ == '__main__':
     # rae_mesh()
     # rae_field()
     # rae_mesh_fine()
+    # sphere_carbuncle()
     # covo_cedre_mesh()
     # covo_cedre_fields()
     # tgv_fields()
