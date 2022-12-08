@@ -152,6 +152,53 @@ def bdf_stab():
     # plt.show()
 
 
+def steady_solve():
+    fig = plt.figure(figsize=[5.78851, 3.4365710256410256])
+    lx, ly = fig.get_size_inches()
+
+    transform = fig.dpi_scale_trans
+    r = np.sqrt(lx * lx + ly * ly) / 16
+    x = np.array([1, 3, 5, 7, 1, 3, 5, 7]) * lx / 8
+    y = ly - r - np.array([1, 2, 3, 4, 8, 9, 10, 11]) * ly / 16
+
+    p = {'transform': transform, 'ec': 'k'}
+    fig.add_artist(plt.Circle((x[0], y[0]), r, fc='tab:green', alpha=0.4, **p))
+    fig.add_artist(plt.Circle((x[1], y[1]), r, fc='tab:green', alpha=0.4, **p))
+    fig.add_artist(plt.Circle((x[2], y[2]), r, fc='tab:green', **p))
+    fig.add_artist(plt.Circle((x[3], y[3]), r, fc='tab:green', **p))
+    fig.add_artist(plt.Circle((x[4], y[4]), r, fc='tab:blue', alpha=0.4, **p))
+    fig.add_artist(plt.Circle((x[5], y[5]), r, fc='tab:blue', **p))
+    fig.add_artist(plt.Circle((x[6], y[6]), r, fc='tab:blue', **p))
+    fig.add_artist(plt.Circle((x[7], y[7]), r, fc='tab:blue', **p))
+
+    p = {'transform': transform, 'va': 'center', 'ha': 'center'}
+    fig.add_artist(plt.Text(x[0], y[0], "Physical\nmodel", alpha=0.7, **p))
+    fig.add_artist(plt.Text(x[1], y[1], "Spatial\ndiscretisation\nmethod", alpha=0.7, **p))
+    fig.add_artist(plt.Text(x[2], y[2], "Implicit\ntime\nintegration\nmethod", **p))
+    fig.add_artist(plt.Text(x[3], y[3], "Linearisation", **p))
+    fig.add_artist(plt.Text(x[4], y[4], "Partial\ndifferential\nequation", alpha=0.7, **p))
+    fig.add_artist(plt.Text(x[5], y[5], "Ordinary\ndifferential\nequation", **p))
+    fig.add_artist(plt.Text(x[6], y[6], "Nonlinear\nproblem", **p))
+    fig.add_artist(plt.Text(x[7], y[7], "Linear\nproblem", **p))
+
+    alpha = (y[1] - y[0]) / (x[1] - x[0])
+    dx = np.sqrt(r ** 2 / (1 + alpha ** 2))
+    dy = alpha * dx
+
+    p = {'transform': transform, 'length_includes_head': True, 'head_width': 0.1}
+    arrow = matplotlib.patches.FancyArrow
+    fig.add_artist(arrow(x[4] + dx, y[4] + dy, x[5] - x[4] - 2 * dx, y[5] - y[4] - 2 * dy, fc="grey", ec="grey", **p))
+    fig.add_artist(arrow(x[5] + dx, y[5] + dy, x[6] - x[5] - 2 * dx, y[6] - y[5] - 2 * dy, fc='k', **p))
+    fig.add_artist(arrow(x[6] + dx, y[6] + dy, x[7] - x[6] - 2 * dx, y[7] - y[6] - 2 * dy, fc='k', **p))
+    fig.add_artist(arrow(x[0], y[0] - r, x[4] - x[0], y[4] - y[0] + 2 * r, fc="grey", ec="grey", **p))
+    fig.add_artist(arrow(x[1], y[1] - r, x[5] - x[1], y[5] - y[1] + 2 * r, fc="grey", ec="grey", **p))
+    fig.add_artist(arrow(x[2], y[2] - r, x[6] - x[2], y[6] - y[2] + 2 * r, fc='k', **p))
+    fig.add_artist(arrow(x[3], y[3] - r, x[7] - x[3], y[7] - y[3] + 2 * r, fc='k', **p))
+
+    fig.savefig("steady_solve.png")
+    # plt.show()
+
+
 def preconditioning():
     from scipy.sparse.linalg import gmres as gmres_scipy
 
@@ -989,6 +1036,7 @@ if __name__ == '__main__':
     # rk_stab()
     # ab_stab()
     # bdf_stab()
+    # steady_solve()
     # preconditioning()
     # fig_eps()
     # rae_cp()
