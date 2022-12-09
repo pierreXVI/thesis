@@ -113,6 +113,61 @@ def rae_mesh_fine():
     # pvs.SaveScreenshot("rae_mesh_fine.png", layout)
 
 
+def sphere_fields():
+    plotter = pvlib.SpherePlotter()
+    reader, _, _ = plotter.load_data(
+        "/tmp_user/sator/pseize/SPHERE_LOBB/MF/RUN_2/_ENSIGHT_/archive_CHARME.volu.ins.case", ['P', 'T', 'Y_NO', 'Y_e'])
+
+    view = pvs.CreateRenderView(InteractionMode='2D')
+    pvs.Show(reader, view, Representation='Wireframe', ColorArrayName=[])
+
+    views = [view]
+    for var, label, fmt in zip(
+            ('P', 'T', 'Y_NO', 'Y_e'),
+            (r'$P\quad\left(\operatorname{Pa}\right)$', r'$T\quad\left(\operatorname{K}\right)$',
+             r'$NO$ mass fraction', r'$e$ mass fraction'),
+            ('%.0f', '%.0f', '%.2g', '%.2g')):
+        view = pvs.CreateRenderView(InteractionMode='2D')
+        view.OrientationAxesVisibility = 0
+        display = pvs.Show(reader, view, Representation='Surface', ColorArrayName=['CELLS', var])
+        pvs.ColorBy(display, var, separate=True)
+        display.RescaleTransferFunctionToDataRange(True, False)
+        display.SetScalarBarVisibility(view, True)
+        color_bar = pvs.GetScalarBar(pvs.GetColorTransferFunction(var, display, separate=True), view)
+        color_bar.WindowLocation = 'Lower Center'
+        color_bar.Title = label
+        color_bar.Orientation = 'Horizontal'
+        color_bar.TitleFontSize = 24
+        color_bar.LabelFontSize = 20
+        color_bar.ScalarBarLength = 0.5
+        color_bar.RangeLabelFormat = fmt
+        views.append(view)
+
+    layout = pvs.CreateLayout()
+    id_1 = layout.SplitHorizontal(0, 0.33)
+    id_2 = layout.SplitHorizontal(id_1 + 1, 0.5)
+    id_3 = layout.SplitVertical(id_2 + 1, 0.5)
+    id_2 = layout.SplitVertical(id_2, 0.5)
+    layout.AssignView(id_1, views[0])
+    layout.AssignView(id_2, views[1])
+    layout.AssignView(id_2 + 1, views[2])
+    layout.AssignView(id_3, views[3])
+    layout.AssignView(id_3 + 1, views[4])
+    layout.SetSize(1157, 1000)
+
+    views[0].CameraPosition = [-0.0053, 0.0049, 1]
+    views[0].CameraFocalPoint = [-0.0053, 0.0049, 0]
+    views[0].CameraParallelScale = 0.0055
+    for view in views[1:]:
+        view.CameraPosition = [-0.0037, 0.0045, 1]
+        view.CameraFocalPoint = [-0.0037, 0.0045, 0]
+        view.CameraParallelScale = 0.007
+
+    pvs.SaveScreenshot("sphere_fields.png", layout)
+
+    pvs.SaveState('/d/pseize/pythonstate.pvsm')
+
+
 def sphere_carbuncle():
     path = "/tmp_user/sator/pseize/SPHERE_LOBB/CARBUNCLE/RUN_{0}/_ENSIGHT_/archive_CHARME.volu.ins.case"
     plotter = pvlib.SpherePlotter()
@@ -307,6 +362,7 @@ if __name__ == '__main__':
     # rae_mesh()
     # rae_field()
     # rae_mesh_fine()
+    sphere_fields()
     # sphere_carbuncle()
     # covo_cedre_mesh()
     # covo_cedre_fields()
