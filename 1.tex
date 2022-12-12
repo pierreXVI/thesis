@@ -390,6 +390,12 @@
         As we said before, we would like to use large time steps to quickly find the steady state of our applications, and that is why we look for A-stability in our methods.
 
 
+      \paragraph{}
+      Having defined the concepts of stability and order of time integration methods, we are now equipped to analyse them.
+      We see from the literature that time integration methods are usually split into two groups: explicit and inplicit methods.
+      We can now look at methods from this literature, starting with the simpler explicit methods.
+
+
     \subsection{Explicit methods}
 
       \paragraph{}
@@ -1117,3 +1123,12 @@
       It means that we do not expect the method to enhance the robustness of the solver, but we hope that because it uses a better Jacobian matrix than the one already in use it will help the convergence.
       And once again, the second advantage is that the matrix-free method would allow us to do coupled implicit time integration.
       We will come back on the third advantage later in the applications part.
+
+
+    \paragraph{}
+    In this section, we described how an implicit method operates: the method itself produces one or several nonlinear problems at each time step.
+    Those problems are solved with a nonlinear solver that uses linearisation to transform them into linear systems, that are then solved with a linear solver like a preconditioned GMRES method in the case of our solver.
+    We explained that this linearisation in CEDRE is done by using Jacobian matrices that are poorly approximates.
+    It means that we do not solve the correct linear systems, which hinders the nonlinear solve and the time integration method ends up finding an incorrect increment.
+    The Jacobian-Free Newton--Krylov method, that is compatible with other algorithms already available in CEDRE such as the GMRES method,  should rectify this issue.
+    For this reason, we will continue this work with this method for our time integration method.
