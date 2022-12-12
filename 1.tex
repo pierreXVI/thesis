@@ -2,7 +2,8 @@
 
 \begin{tcolorbox}[title=Résumé du chapitre : Analyse des méthodes existantes, colframe=black!50!white]
   \paragraph{}
-  Le but de ce chapitre est d'identifier les méthodes qui serviront pour la suite.
+  Le but de ce chapitre est de choisir les méthodes numériques qui serviront pour la suite.
+  Il s'agit d'identifier les faiblesses de l'intégration temporelle de CEDRE, et d'exhiber des méthodes pouvant les corriger tout en étant compatibles avec l'existant.
 
   \paragraph{}
   Tout d'abord, nous introduisons un contexte mathématique et ses notations.
@@ -16,7 +17,8 @@
 
   \paragraph{}
   Puisque nous nous intéressons aux méthodes d'intégration implicites, pour des raisons que nous rappelons dans ce chapitre, nous détaillons les différents éléments intervenant dans sa mise en place : le solveur non-linéaire, le solveur linéaire, et en particulier le passage de l'un à l'autre.
-  Ce passage étant jugé insatisfaisant pour notre solveur, nous présentons la méthode JFNK, ou plus généralement une formulation sans matrice, qui s'appuie sur des parties déjà présentes de CEDRE et corrige, à priori, ce défaut.
+  Ce passage étant jugé insatisfaisant pour notre solveur, nous présentons la méthode JFNK, ou plus généralement une formulation sans matrice, qui s'appuie sur des parties déjà présentes de CEDRE.
+  Ce choix est motivé par le fait que la Jacobienne traditionnellement utilisée est très approximée car elle ne prend pas en compte les méthodes de reconstruction du schéma MUSCL et les modèles physiques plus complexes comme la turbulence.
 \end{tcolorbox}
 
 
