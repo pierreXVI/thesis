@@ -113,7 +113,7 @@
       This method is particularly well fitted for conservative equations such as equation (\ref{eq:pde_conservative}).
       A such equation has the property that the quantity $\xi$ is conserved: without source terms, the variation of the total quantity $\xi$ over the domain $\mathcal{D}$ is equal to the flux $f\left(\xi\right)$ coming through the boundary $\partial\mathcal{D}$.
       In the case of the Navier--Stokes equations (\ref{eq:ns}), the density, the momentum and the energy are conserved throughout time, apart from what comes in and out of the domain.
-      In a close domain where nothing comes in or out, they are indeed conserved.
+      In a closed domain where nothing comes in or out, they are indeed conserved.
       The main interest of the Finite Volume method is that this property stays true through the spatial discretisation step.
 
       \paragraph{}
@@ -327,7 +327,7 @@
         For the numerical values suggested here, this amount to an error as large as $10^6$ for $n = 5$ and $10^{28}$ for $n = 10$.
         The explosion of the error comes from the fact that the positive eigenvalue of $J$ amplifies the roundoff error.
         This phenomenon has nothing to do with the time integration scheme, but with the equation.
-        Finally, this is why we study equation (\ref{eq:dahlquist}) assuming the eigenvalues of $J$ are negative.
+        Finally, this is why we study equation (\ref{eq:dahlquist}) assuming the eigenvalues of $J$ are negative. \LM{On comprend bien ce que tu veux dire, mais, n'y a-t-il pas un terme plus précis pour qualifier la solution $\tilde{\Xi}$, du genre qu'elle est linéairement stable, ou autre chose? Si non, ben tant pis c'est pas grave... }
 
 
         \paragraph{Single step methods}
@@ -380,7 +380,7 @@
         \end{equation}
 
         \paragraph{}
-        The key property resulting in the stability analysis of time integration methods is the \emph{A-stability} \cite{Dahlquist1963}.
+        The key property resulting in the stability analysis of time integration methods is the \emph{A-stability} \cite{Dahlquist1963}. \LM{Point de déta  il, mais ici tu ne t'embarrasse pas à considérer les valeurs propres de J, ni à décomposer $y$ en vecteurs propres, faut-il l'évoquer , juste pour bien lier $z$ et valeur propre de $\Delta t J$?}
         A time integration method is A-stable if its stability region contains the left half complex plane.
         Simply put, a method is A-stable if it converges to 0 when it should, and does not diverge due to numerical errors.
         The A-stability is interesting to us, as an A-stable method is also said to be unconditionally stable, whereas a method that is not is conditionally stable.
