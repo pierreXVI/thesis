@@ -5,8 +5,8 @@
   \section*{General context}
 
     \paragraph{}
-    This work is rooted in the field of numerical simulation of fluid dynamics, applied to \PS{energy/energetics}.
-    This field gathers many industrial actors (the French Directorate General of Armaments, ArianeGroup, Safran, Airbus, etc) as well as academics (ONERA, CERFACS, DLR, VKI, universities, etc).
+    This work is rooted in the field of numerical simulation of fluid dynamics, applied to aeronautics, defense, and space industries.
+    This field gathers many industrial actors (the French Direction Générale de l'Armement, ArianeGroup, Safran, Airbus, etc) as well as academics (ONERA, CERFACS, DLR, VKI, universities, etc).
     It is interested in how to simulate a fluid flow with a computer, trying to represent faithfully the physical reality.
     The various actors in this field need to be able to access certain physical quantities associated with specific phenomena and operating regimes.
     These regimes are often not feasible on our scale, due to material or financial limitations.
@@ -16,7 +16,7 @@
     \paragraph{}
     The analysis of physics usually produces a set of equations, often partial differential equations, representing the real system that one wishes to study.
     Algorithms are then required to determine the fluid flow from these equations, in the working domain, as a function of time.
-    Thus, to obtain the desired quantities, the physical system is integrated in time using mathematical algorithms to obtain its evolution in time.
+    Thus, to obtain the desired quantities, the physical system is integrated \PS{using mathematical algorithms to obtain its evolution in time}.
     Often, the expected result is not the complete temporal evolution of the system, but only its equilibrium state.
     This is called a steady numerical simulation or steady computation.
     Steady computations are opposed to unsteady computations that aim to accurately describe the system's temporal evolution.
@@ -26,7 +26,7 @@
     Indeed, a quick and inexpensive computation tends to be not very faithful to physics, while an accurate computation tends to use more computational resources and time.
     For steady computations, speed corresponds to getting the final steady state at a low time cost, for both computational time and the time it actually took to a user.
     It results in a compromise between methods that are expensive in terms of computational resources and take a long time but give accurate results that are close to the physical reality, and faster methods that save resources but give lesser quality results.
-    A software developer working on a numerical simulation tool needs to choose methods and algorithms to obtain a compromise that he considers satisfactory.
+    A software developer working on a numerical simulation tool needs to choose methods and algorithms to obtain a compromise that is considered satisfactory.
     The final interest for a player in computational fluid dynamics is therefore to have a result that is sufficiently precise and inexpensive enough to obtain.
     An accurate result is needed to answer the questions that required the simulation.
     The search for a result that is inexpensive to obtain is motivated by questions of savings in computational cost.
@@ -35,8 +35,8 @@
     \paragraph{}
     Depending on the problem to be solved, there are more or less suitable algorithms and methods.
     Performant methods were originally developed to answer the needs of the aerodynamics community.
-    In the case of energetic and multi-physics problems, the methods issued from the more traditional aerodynamics are limited by the coupling  between the different physics which have their distinct characteristic times.
-    Thus, the algorithms used for the numerical simulation of classical fluid dynamics are focused on the resolution of the Navier--Stokes equations, and are not necessarily the most adapted to a simulation in the energetic domain.
+    In the case of energetics and multiphysics problems, the methods issued from the more traditional aerodynamics are limited by the coupling  between the different physics which have their distinct characteristic times.
+    Thus, the algorithms used for the numerical simulation of classical fluid dynamics are focused on the resolution of the Navier--Stokes equations, and are not necessarily the most adapted to a simulation in the field of energetics.
     The involvement of several distinct physical phenomena imposes constraints on the choice and use of algorithms.
     Consequently, it would be advisable to adapt or replace the algorithms involved in the time integration for multiphysics problems.
 
@@ -48,13 +48,13 @@
     Although numerical simulation has been greatly developed in the aeronautical field, it has not been so well adapted to the multiphysics field, and many industrial codes are content to reuse the same algorithms.
     This is the example of the software system CEDRE, developed at ONERA by the multiphysics for energetics department \cite{ReflochCourbetMurroneEtAl2011}.
     This software system constitutes a platform grouping several solvers to integrate several physics: each solver is dedicated to its physical model.
-    There is a solver for the resolution of compressible, multifluid, reactive and turbulent flows, two solvers for the calculation of dispersed phase (drops, crystals, particles) in the Eulerian and Lagrangian approach respectively, a solver dedicated to the calculation of liquid films, a solver dedicated to radiation, etc.
-    Thus, CEDRE is in fact a global solver adapted to multiphysics problems.
+    There is a solver for the resolution of compressible, multifluid, reactive, and turbulent flows, two solvers for the calculation of dispersed phase (drops, crystals, particles) in the Eulerian and Lagrangian approach respectively, a solver dedicated to the calculation of liquid films, a solver dedicated to radiation, etc.
+    Thus, CEDRE is in fact a global platform adapted to multiphysics problems.
     Older work has been done to set up a time integration adapted to the problems solved by CEDRE \cite{Selva1998}.
     Work on time integration has led to the development of implicit integration methods for the integration of steady problems, and to the development of a GMRES method for the solution of linear systems.
     Users can choose from a panel of integration methods to obtain methods adapted to their problems.
     However, the weak coupling between solvers hampers the convergence to the steady state and the choice in integration methods is limited, compared to what can be found in the literature.
-    This is at least the opinion of the actors of the CEDRE code, i.e. its developers and users, who would like more robust methods to be able to use CEDRE on steeper problems and converge faster to save on computational cost.
+    This is at least the opinion of the actors of the CEDRE code, i.e. its developers and users, who would like more robust methods to use CEDRE on steeper problems and converge faster to save on computational costs.
 
     \paragraph{}
     On the research side, however, many efforts have been made in the direction of multiphysics, but have not yet left the academic framework.
@@ -97,10 +97,12 @@
 
     \paragraph{}
     This document is divided into two parts.
-    The first part, consisting of Chapters 1, 2 and 3, describes the work we did with the solver CEDRE, around the Jacobian-Free Newton--Krylov method.
+    The first part, consisting of Chapters 1, 2, and 3, describes the work we did with the solver CEDRE, around the Jacobian-Free Newton--Krylov method.
     Some of it was presented at the 2022 Aviation Forum \cite{SeizeMatuszewskiPuigt}.
     The second part, consisting of Chapters 4 and 5, focuses on exponential time integration methods, initially investigated in CEDRE and then in another solver: JAGUAR.
-    \PS{Guillaume tu veux publier ?}
+    The exponential time integrator shares many ingredients with the JFNK method but is dedicated to unsteady flows.
+    The novelty of the present part is the association of exponential integration and an advanced discretization technique called the Spectral Difference method.
+    We plan to submit an article just after the defense on this research line.
 
     \paragraph{}
     The objective of Chapter 1 is to identify, from the literature, methods that we think can improve CEDRE performances, meaning speed, accuracy and robustness.
