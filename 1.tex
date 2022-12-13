@@ -352,7 +352,7 @@
         \begin{equation}
           \left\{ \, z \in \mathbb{C} \; \mid \; \left| g\left(z\right) \right| < 1 \, \right\} \ .
         \end{equation}
-        When each eigenvalue of $J$ falls in the stability region, then the method is stable.
+        When each eigenvalue of $\Delta t J$ falls in the stability region, then the method is stable.
 
         \paragraph{}
         If an eigenvalue is not in the stability region, the associated eigendirection will be amplified and a numerical instability will lead to the divergence of the computation.
@@ -380,9 +380,10 @@
           \left\{ \, z \in \mathbb{C} \; \mid \; \parbox{25em}{all roots of $X^k - \sum_{i=0}^{k-1}g_i\left(z\right)X^i$ are of modulus less or equal to 1, strictly less to 1 for roots with multiplicity}
            \, \right \} \ .
         \end{equation}
+        Once again, if all eigenvalue of $\Delta t J$ falls in the stability region, then the method is stable.
 
         \paragraph{}
-        The key property resulting in the stability analysis of time integration methods is the \emph{A-stability} \cite{Dahlquist1963}. \LM{Point de déta  il, mais ici tu ne t'embarrasse pas à considérer les valeurs propres de J, ni à décomposer $y$ en vecteurs propres, faut-il l'évoquer , juste pour bien lier $z$ et valeur propre de $\Delta t J$?}
+        The key property resulting in the stability analysis of time integration methods is the \emph{A-stability} \cite{Dahlquist1963}.
         A time integration method is A-stable if its stability region contains the left half complex plane.
         Simply put, a method is A-stable if it converges to 0 when it should, and does not diverge due to numerical errors.
         The A-stability is interesting to us, as an A-stable method is also said to be unconditionally stable, whereas a method that is not is conditionally stable.
