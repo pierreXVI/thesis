@@ -655,7 +655,7 @@
               &\phantom{= {}} +\Delta t \frac{\partial \operatorname{G}}{\partial t}\left(\Xi_n, t_n\right) \sum_{j = 1}^i \gamma_{ij}
           \end{aligned}\right.
         \end{equation}
-        with $c_i = \sum_{j = 1}^{i - 1} \alpha_{ij}$ as for other Runge--Kutta methods. \LM{Du coup, j'ai du rater la définition des $\alpha_{ij}$, ou c'est une typo?}
+        with $c_i = \sum_{j = 1}^{i - 1} a_{ij}$ as for other Runge--Kutta methods.
         If one takes all the $\gamma_{ii}$ equals to one another, then the matrix to invert at each step of the Rosenbrock method is the same.
         This can help reduce the cost of the method by doing a single matrix inversion, or by recycling information between Krylov subspace methods \cite{Gaul2014}.
         Overall, even if they can achieve high-order and A-stability, Rosenbrock methods are still computationally expensive.
@@ -799,7 +799,7 @@
       This size is quite large in our typical applications, but the linear system is sparse.
       This means that the coefficients of the matrix $A$ are mostly zeros.
       This is because a coefficient in the matrix $A$ corresponds to a link between two degrees of freedom.
-      For the spatial discretisation methods we use, a cell only depends on a small number of neighbouring cells, and therefore a degree of freedom is not linked with most of the others \PS{(c'est clair ?)} \LM{Il me semble... Enfin, j'ai compris quoi...}.
+      For the spatial discretisation methods we use, a cell only depends on a small number of neighbouring cells, and therefore a degree of freedom is not linked with most of the others.
       Such sparse matrices can be seen in figure \ref{fig:sparse}.
       Using the sparsity of the matrix is essential, as it would not be possible to store it as a dense matrix in the memory of a computer.
       Instead, we use some clever formats such as the Compressed Sparse Row format \cite{Saad2003}.
@@ -856,7 +856,7 @@
       Another class of iterative methods is becoming the standard for computational fluid dynamics: the Krylov subspace methods.
       A Krylov subspace method projects the linear problem (\ref{eq:linear}) on a smaller linear subspace called Krylov subspace.
       The obtained smaller system is then solved, much more easily.
-      The cleverness resides in the fact that those Krylov subspaces are \PS{emboités} \LM{nested (one in another)?}, and each iteration reuses the information obtained in the previous ones.
+      The cleverness resides in the fact that those Krylov subspaces are nested, and each iteration reuses the information obtained in the previous ones.
 
       \paragraph{}
       In the following, we note at iteration $n$ the residual $r_n = b - A x_n$.
@@ -918,7 +918,7 @@
       To handle it in the analysis of the convergence, one must not look at the spectrum but the pseudospectrum \cite{Trefethen1991, Trefethen1999}.
       This analysis is quite complex and is mostly done in an analytical context, not an industrial one.
       Using Krylov subspace methods with nonnormal matrices and the study of their convergence is no simple task \cite{LiesenTichy2004, Huhtanen2005}.
-      As the matrices we encounter in our computational fluid dynamics problems are \PS{quelconques} \LM{arbitrary ?}, meaning \PS{à priori non-normales}\LM{mostly nonnormals ?}, we decided not to study finely the spectrum of the operator.
+      As the matrices we encounter in our computational fluid dynamics problems are arbitrary, meaning mostly nonnormal, we decided not to study finely the spectrum of the operator.
 
       \paragraph{}
       Even if we will not look deeply into the spectrum of the matrix, we still help the linear solver with preconditioning.
@@ -966,7 +966,7 @@
 
       \paragraph{}
       We need to use preconditioners when solving the linear system (\ref{eq:linear}) with GMRES.
-      One of the most unsophisticated \LM{(less sophisticated ?)}preconditioners is the Jacobi one.
+      One of the less sophisticated preconditioners is the Jacobi one.
       It is the one used in the example above: the preconditioning matrix is the invert of the diagonal part of $A$.
       Its advantage resides in its simplicity.
       It is inexpensive and easily scalable.
