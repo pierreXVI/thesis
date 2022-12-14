@@ -217,18 +217,21 @@
       \subsubsection{Analysis of the results}
 
         \paragraph{}
-        We proceed as we did before: we start the computation from an initial state constant in the domain.
-        We make some iterations with the first-order Finite Volume method and the traditional implicit Euler method.
+        We proceed as we did before: we start the computation from an initial state constant in the domain and we use the first-order Finite Volume method.
+        Then we continue the computation for a few more iterations with the traditional implicit Euler method.
+        We do this to reach a state close enough of the steady solution more quickly before analysing the convergence of our methods.
         After that, we can restart the computation with the traditional method on one side and with the matrix-free method on the other.
         We then look once again at the residuals in figure \ref{fig:rae_residuals_fine}.
-        Overall, it is a lor harder to decrease residual norms on this test case compared to the previous one.
+        Overall, it takes much more iterations to decrease residual norms on this test case compared to the previous one.
         It is due to the larger number of cells, and the presence of small flattened cells in the boundary layer.
 
+        \PS{TODO: MF a un $\Delta t$ 10 fois plus grand.}
+
         \paragraph{}
-        The reduction in residual norms with the standard method is not satisfying.
-        Users usually expect the solver to reduce the order of magnitude of the residuals more than what our solver does.
-        As for the previous case, we see that very few iterations are needed for the matrix-free method to quiclky reduce the residual norm.
-        After that, the method finds a solution with smaller residuals: it converges better than the traditional method.
+        We see in figure \ref{fig:rae_residuals_fine} that the reduction in residual norms with the standard method is not satisfying.
+        Users usually expect the solver to reduce the order of magnitude of the residuals by 4 or 5, which is more than what our solver does.
+        In contrast, the matrix-free method reduces the residual norm much more efficiently, and converges to a more precise solution.
+        The quality of the solution computed by the matrix-free method is then better.
 
         \begin{figure}
           \centering
@@ -520,8 +523,15 @@
         As we will run our computations each time in the same parallel environment, with a fixed number of CPU cores, the elapsed time is proportional to the CPU time.
         The $x$-axis will then be the CPU time: the actual time it took to get to the current residual.
 
+        \begin{figure}
+          \centering
+          \includegraphics{figures/sphere_mte_residuals.png}
+          \caption{Residual norms for the electron mass fraction, vertical momentum, \ce{N_2} vibrational energy and total energy for the Multi-TEmperature model computation.}
+          \label{fig:sphere_mte_residuals}
+        \end{figure}
+
         \paragraph{}
-        Figure \PS{TODO} shows the residual norms for the two computations.
+        Figure \ref{fig:sphere_mte_residuals} shows the residual norms for the two computations.
         The leftmost black curve corresponds to the initialisation: a few iterations of the explicit time integration method.
         From then we can continue the computation with the Midpoint method on one side and the Jacobian-Free Newton--Krylov method on the other.
         We see that the residual norm obtained with the JFNK method is lower than its explicit counterpart.
