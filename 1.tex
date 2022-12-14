@@ -325,12 +325,6 @@
         The explosion of the error comes from the fact that the positive eigenvalue of $J$ amplifies the roundoff error.
         This phenomenon has nothing to do with the time integration scheme, but with the equation.
         Finally, this is why we study equation (\ref{eq:dahlquist}) assuming the eigenvalues of $J$ are negative.
-        \footnote{
-          \LM{On comprend bien ce que tu veux dire, mais, n'y a-t-il pas un terme plus précis pour qualifier la solution $\tilde{\Xi}$, du genre qu'elle est linéairement stable, ou autre chose? Si non, ben tant pis c'est pas grave...}
-          \GP{Je ne crois pas qu'on puisse faire mieux, sauf à passer sur les notions de stabilité générales, comme expliqué dans la thèse de Muscat https://cerfacs.fr/wp-content/uploads/2019/05/CFD-MUSCAT-PHD.pdf en page 16}
-          \PS{Je ne vois pas ce que dont tu parles dans la thèse de Laurent}
-        }
-
 
         \paragraph{Single-step methods}
         To compute the solution at the next time step, some methods need only to know the current solution.
@@ -911,7 +905,7 @@
       with $\lambda_{\min}$ and $\lambda_{\max}$ the eigenvalue of $A$ with the smallest and largest modulus.
       If this helps picture what the condition number stands for, this is only true for normal matrices: matrices that commute with their conjugate transpose.
       However, the matrices we face in our field have no reasons to be normal matrices.
-      An amusing\footnote{\GP{funny} \PS{Pourquoi pas amusing ?}} result is found in \cite{GreenbaumPtakStrakos1996}.
+      An intriguing result is found in \cite{GreenbaumPtakStrakos1996}.
       For a given decreasing convergence curve and a given spectrum, it is possible to construct a linear problem such as the convergence of GMRES follows the given curve and the matrix has the given spectrum.
       In other words, there are ill-conditioned matrices for which GMRES converges quickly and well-conditioned matrices for which GMRES will be slow.
       In particular, we can find a matrix with the best condition number possible, meaning 1, on which GMRES will make no progress until the last iteration.
@@ -1037,11 +1031,7 @@
       The underlying algorithm is hard to fully understand and write, and the numerical evaluation is usually expensive.
       Furthermore, our software keeps evolving, and models are constantly added and modified.
       It would require constant work to maintain the Jacobian matrix computation.
-      \PS{Finding an algorithm that computes the exact Jacobian matrix analytically would amount to too much work in our industrial software.} \footnote{
-        \GP{Of course, the definition of the Jacobian can always be performed by an exact differenciation of the source code, as provided by the Algorithmic Differentiation tool called Tapenade \cite{HascoeetPascual2012}.
-        But for efficiency, such a procedure requires revisiting the main structures of the solver, something impossible to tackle in three years because of the number of lines of codes to treat.}
-        \PS{C'est pas ce que je voulais dire}
-      }
+      Computing by hand the exact Jacobian matrix would amount to too much work in our industrial software.
       We must use other alternatives to get the Jacobian matrix we need for Newton's method.
 
       \paragraph{}
