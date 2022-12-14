@@ -48,11 +48,11 @@
     \begin{itemize}
       \item ASSEMBLAGE acts as the conductor by handling the overall simulation, telling the solvers what to do and when to do it, when to exchange data and with which other coupled solver
       \item BIBCEDRE contains tools for geometrical operations, linear algebra methods, mesh handling, parallel communications and other general functionalities
-      \item THERMOLIB is used to compute the different thermophysical properties such as heat capacities, chemical reaction rates, etc. \PS{Lionel je dis pas de bêtise sur les coefficients de réaction chimique ?}
+      \item THERMOLIB is used to compute the different thermophysical properties such as heat capacities, chemical reaction rates, etc. \PS{Lionel je dis pas de bêtise sur les coefficients de réaction chimique ?} \LM{Si! La thermolib n'est directement appelée par la chimie que pour l'évaluation éventuelle des constantes de réactions inverses via la constante d'équilibre... Mais c'est anecdotique par rapport à son usage principal qui est la fermeture $\rho(P,T,Y_i)$ et $e(P,T,Y_i)$}
     \end{itemize}
     Those libraries are the main engines of the solver.
     When we do a computation with CHARME, it is in fact ASSEMBLAGE that tells CHARME when to initialise itself, to do a step of the time integration method, etc.
-    When CHARME needs to compute the ordinary differential equation function, it is BIBCEDRE that does the MUSCL reconstruction \PS{c'est bien ça ?} so that the Riemann solver can compute the interface flux.
+    When CHARME needs to compute the ordinary differential equation function, it is BIBCEDRE that does the MUSCL reconstruction \PS{c'est bien ça ?} \LM{En fait BIBCEDRE évalue les gradients ou les pentes, mais l'interpolation aux faces est faite par le solveur...} so that the Riemann solver can compute the interface flux.
     When CHARME needs to compute the primitive variables such as the pressure and temperature from the conservative variables, it is THERMOLIB that solves a nonlinear problem with Newton's method to compute the result.
 
     \paragraph{}
