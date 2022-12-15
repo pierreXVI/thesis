@@ -48,11 +48,11 @@
     \begin{itemize}
       \item ASSEMBLAGE acts as the conductor by handling the overall simulation, telling the solvers what to do and when to do it, when to exchange data and with which other coupled solver
       \item BIBCEDRE contains tools for geometrical operations, linear algebra methods, mesh handling, parallel communications and other general functionalities
-      \item THERMOLIB is used to compute the different thermophysical properties such as heat capacities, chemical reaction rates, etc. \PS{Lionel je dis pas de bêtise sur les coefficients de réaction chimique ?} \LM{Si! La thermolib n'est directement appelée par la chimie que pour l'évaluation éventuelle des constantes de réactions inverses via la constante d'équilibre... Mais c'est anecdotique par rapport à son usage principal qui est la fermeture $\rho(P,T,Y_i)$ et $e(P,T,Y_i)$}
+      \item THERMOLIB is used to compute the different thermophysical properties such as heat capacities, or to compute the closure relations that can be complex in our applications.
     \end{itemize}
     Those libraries are the main engines of the solver.
     When we do a computation with CHARME, it is in fact ASSEMBLAGE that tells CHARME when to initialise itself, to do a step of the time integration method, etc.
-    When CHARME needs to compute the ordinary differential equation function, it is BIBCEDRE that does the MUSCL reconstruction \PS{c'est bien ça ?} \LM{En fait BIBCEDRE évalue les gradients ou les pentes, mais l'interpolation aux faces est faite par le solveur...} so that the Riemann solver can compute the interface flux.
+    When CHARME needs to compute the ordinary differential equation function, it is BIBCEDRE that does the higher-order polynomial reconstruction of the solution so that the Riemann solver can compute the interface flux.
     When CHARME needs to compute the primitive variables such as the pressure and temperature from the conservative variables, it is THERMOLIB that solves a nonlinear problem with Newton's method to compute the result.
 
     \paragraph{}
@@ -108,12 +108,12 @@
     integer,        intent(in)    :: i_ap
 \end{minted}
       that takes three arguments: the \mintinline{fortran}{type_sys} instance, an index identifying the vector to multiply and an index identifying the vector where to put the result.
-      As we explained when we introduces Krylov subspace methods, GMRES uses the linear system matrix through this matrix vector product routine.
+      As we explained when we introduced Krylov subspace methods, GMRES uses the linear system matrix through this matrix vector product routine.
       Classically, a client solver such as CHARME fills the matrix coefficients and then lets BIBCEDRE solve the linear system.
       In order to use the matrix-free approximation from equation (\ref{eq:matrix_free}), we only need to replace this routine with a new one that computes the approximation.
       Unfortunately, the approximation uses a function that belongs to the client solver.
       The library BIBCEDRE does not know this function and how to compute it, as it is part of CHARME or any other client solver.
-      As we said, we want to write generic solutions, and so merging the library BIBCEDRE with the solver CHARME is not a good solution.
+      As we said, we want to write generic solutions, and so merging the library BIBCEDRE with the solver CHARME is not a good way to proceed.
       What we need here is to allow BIBCEDRE to use a callback from the client solver.
       We did that using the Fortran 2003 feature: polymorphism.
       The Fortran 2003 standard is almost ten years old as of today, and many may consider that the functionalities added to the previous Fortran 95 standard are therefore not that innovative.
@@ -239,7 +239,7 @@
       Figure \ref{fig:epsilon_burgers} shows the result of this experiment.
       On the left, we see that the shape of the relative error as a function of $\varepsilon$ when $N = 10^7$ is similar to when $N = 10$, albeit the roundoff error-dominated region is more regular.
       In particular, the ideal trade-off between the two error types did not move a lot.
-      We see that as expected, the value of $\varepsilon_\textrm{wp}$ decreases: this translate as the fact that the blue dot moved to the left.
+      We see that as expected, the value of $\varepsilon_\textrm{wp}$ decreases: this translates as the fact that the blue dot moved to the left.
       When looking at the error as a function of the dimension $N$, we can even recover the $-1/4$ expected slope.
       In the right figure, we see in fact a $1/4$ slope but the error is inversely proportional to the value of $\varepsilon$ so if the error behaves as $N^{1/4}$, then $\varepsilon_\textrm{wp}$ behaves as $N^{-1/4}$.
       Because of the shape of the error as a function of $\varepsilon$, if $\varepsilon_\textrm{wp}$ changes with $N$ it will eventually end up increasing the error.
@@ -308,7 +308,7 @@
         \quad\textrm{and}\quad \tilde{b} = \mathcal{N}^{-1} b \
       \end{equation}
       One can check that it is equivalent to the original linear system.
-      The diagonal coefficients of the matrix $\mathcal{N}$ are the invert of an estimate of the order of magnitude of the corresponding degree of freedom. \PS{clair ? beaucoup de of}
+      The diagonal coefficients of the matrix $\mathcal{N}$ are estimates of the order of magnitude of the corresponding degrees of freedom.
       This estimation can be computed at each time step depending on the current state, or can simply be constant equal to some reference values, depending on the choice of the user.
       When working with Euler equations, for example, the numerical values corresponding to the energy degrees of freedom are usually many orders of magnitudes over other degrees of freedom.
       The goal of this normalisation is to bring back each vector component at the same level in the linear system.
@@ -316,7 +316,7 @@
       This normalisation is often used by our solver's users, so we need to ensure compatibility with our matrix-free method.
       We can adapt the approximation (\ref{eq:matrix_free}) to account for the normalisation as:
       \begin{equation}
-        \left( \mathcal{N}^{-1} f'\left(x\right) \mathcal{N} \right) v \approx \mathcal{N}^{-1} \frac{f\left(x + \varepsilon N v\right) - f\left(x\right)}{\varepsilon} \ .
+        \left( \mathcal{N}^{-1} f'\left(x\right) \mathcal{N} \right) v \approx \mathcal{N}^{-1} \frac{f\left(x + \varepsilon \mathcal{N} v\right) - f\left(x\right)}{\varepsilon} \ .
       \end{equation}
       We also need to adapt our strategy for the choice of $\varepsilon$.
       With the normalisation, we see that $\varepsilon \mathcal{N}$ sort of plays the role of $\varepsilon$.

@@ -34,6 +34,7 @@
 
 
   \section{Comparaison entre la matrice jacobienne explicite et la formulation sans matrice}
+  \GP{Comparison between full-Jacobian and matrix-free formulations}
 
     \paragraph{}
     From our analysis and implementation, the main addition to the solver is the Jacobian-Free Newton--Krylov method, and in particular the matrix-free approach.
@@ -59,7 +60,7 @@
         We decided to use this first test case for multiple reasons.
         Firstly, it is a simple case in the field of computational fluid dynamics.
         It is a standard aerodynamics case, with a small mesh in comparison to many other three-dimensional cases.
-        This allows us to test out methods inexpensively.
+        This allows us to test our methods inexpensively.
         Secondly, this case belongs to the tutorial suite of our solver.
         It means that it is already well mastered by the team.
         Thirdly, even if it is only a standard aerodynamics case it still has some stiff features, such as turbulence modelling and a shock.
@@ -92,7 +93,7 @@
         It is because this computation uses turbulence wall modelling.
         Such models are known to be troublesome with some more complex turbulence models such as the $k-\epsilon$ model but are used with others such as the one we use here.
         Turbulence wall modelling may be nonconventional in aerodynamic simulations but it is a commonly used feature of our solver, so it is interesting to see how our new method behaves on such test cases.
-        The spatial discretisation method is a second-order Finite Volume method, using the HLLC Riemann solver and Multislope method with a Van--Leer slope limiter.
+        The spatial discretisation method is a second-order Finite Volume method, using the HLLC Riemann solver and Multislope method\footnote{\GP{Citer le papier de Le Touze, Murrone et Guillard sur JCP?}\PS{C'est déjà fait quand j'introduis les méthodes de reconstructions, je peux la remettre}} with a Van--Leer slope limiter.
         We also use local time-stepping to speed up the convergence.
 
 
@@ -102,7 +103,7 @@
         We are now going to compare the results from the two different simulations.
         It is first worth noting that before trying the JFNK method, we need to start the computation using the traditional method.
         As we explained before, the matrix-free approximation is not ideal to handle discontinuities such as shocks, and a shock is indeed present in this computation.
-        Only some iterations are needed, just to start the development of the no-slip boundary layer and approximately place the shock.
+        Only some iterations are needed, just to start the development of the boundary layer and approximately place the shock.
         After that, we can restart the computation with the traditional method on one side and with the new method on the other.
 
         \begin{figure}
@@ -187,7 +188,7 @@
       \subsubsection{Definition of the test case}
 
         \paragraph{}
-        The previous case uses a mesh that is too coarse to resolve the boundary layer but instead uses a turbulent wall mode.
+        The previous case uses a mesh that is too coarse to resolve the boundary layer but instead uses a turbulent wall model.
         It is representative of CEDRE applications, but not of actual applications from the aerodynamic community.
         The RAE 2822 airfoil is often used for turbulence model validations, but computations in the field prefer to use a finer mesh to resolve the boundary layer.
         This is what we present next.
@@ -267,7 +268,10 @@
         The refinement at the wall boundary helps to compute more precisely the physical phenomena that happen at said boundary.
         The refinement at the shock is a requirement of the spatial discretisation methods.
         In order to get a clean and slim shock, the cells near the shock must have a high aspect ratio.
-        Otherwise, artificial vorticity is created when going through the shock, which will give wrong results downstream. \PS{c'est bien pour ça ?}
+        The mesh takes this into account and is made according to CEDRE best practices.
+        \GP{Je ne mettrais pas ça :
+        Otherwise, artificial vorticity is created when going through the shock, which will give wrong results downstream.}
+        \PS{Tu reformulerais ou tu enlèverais ?}
         This expected shock location is obtained from a previous computation, made with a coarser mesh.
         This mesh is used in a two-dimensional axisymmetric computation to get the flow around a three-dimensional solid sphere.
 
@@ -307,7 +311,7 @@
         This bubble tends to push the shock farther from the sphere, and modify greatly the heat flux at this location.
         The choice of the Riemann solver ended up being the key element to getting rid of this undesirable effect: there is no recirculation with the AUSM+ scheme.
         There are other pitfalls regarding this test case in CEDRE.
-        For example, the user can choose whether to interpolate the mass fraction $y_i$ for the species at the cell interfaces for the MUSCL scheme or the \PS{mass concentration} $\rho y_i$.
+        For example, the user can choose whether to interpolate the mass fraction $y_i$ for the species at the cell interfaces for the MUSCL scheme or the mass concentration $\rho y_i$.
         Choosing the default option leads to nonconverging residuals no matter the time integration method.
         Indeed, this default option is recommended when running simulations with multiple phases, with significant variations in the density.
         Because CEDRE is made to solve a large variety of problems, it has a lot of methods that come with a lot of parameters, so even a simple simulation such as this one requires a lot of knowledge if a good convergence is required.
@@ -340,8 +344,11 @@
         The results are displayed in figure \PS{TODO}.
         \PS{A VERIFIER MAIS DE MEMOIRE :}
         Unfortunately, there is not much difference to be seen between the two methods: they both produce the same heat transfer coefficient.
+        \GP{This is perhaps a consequence of the fact that the convergence rate is enough with the standard implicit method to reach the steady state.}
+        \GP{Faudra-t-il laisser cela ???
         We also see an issue: the heat flux should be maximum at the stagnation point, but we see in figure \PS{TODO} that it is not, and the slope of the heat transfer coefficient is not null at the stagnation point in both of our simulations.
         This shows an inaccuracy of the solver.
+        }
         However, as we will show next, the time integration is able to find the correct converged steady solution.
         Therefore this inaccuracy comes from the spatial discretisation method.
         The results are not accurate from a physical analysis perspective, but for us, the methods both work fine: they find the expected steady solution, albeit it is not the expected physical one.
@@ -414,7 +421,8 @@
       \end{itemize}
 
       \paragraph{}
-      To account for the disequilibrium, the Navier--Stokes equations (\ref{eq:ns}) are modified into the following, in conservative form.
+      To account for the disequilibrium, the Navier--Stokes equations (\ref{eq:ns}) are modified into the following=\GP{Il faut virer ce qui suit car la formulation est non conservative..., in conservative form.}
+      \PS{Virer que "in conservative form" ou virer toute l'équation ?}
       \begin{equation}
         \left\{\begin{alignedat}{5}
           &\partial_t\left(  \rho_s  \right) &&+ \nabla\cdot\left(  \rho_s \vec{u}  \right) &&=
@@ -509,7 +517,7 @@
         The spatial discretisation method used is the Multislope method, as it appears more robust than the $k$-exact method with the Multi-TEmperature model.
 
         \paragraph{}
-        The goal of this thesis is not the physical analysis of this test case so it will be left out, but according to the MTE model users, the results are in agreement with the literature. \PS{Ca va ?}
+        The goal of this thesis is not the physical analysis of this test case so it will be left out, but according to the MTE model users, the results are in agreement with the literature.
         We show in figure \PS{TODO} the various temperatures along the symmetry axis.
         This justifies the use of the Multi-Temperature model: the region downstream of the shock is indeed in a thermodynamic non-equilibrium state.
         \PS{Hypothétique : Comparaison AET MTE}
