@@ -1,0 +1,59 @@
+\part*{Appendices}
+\addcontentsline{toc}{part}{Appendices}
+\appendix
+
+  \chapter{Conservative preconditioning}
+  \label{appendix:conservative_preconditioning}
+
+    \paragraph{}
+    Let us consider the ordinary differential equation:
+    \begin{equation}
+      M \frac{\mathrm{d}Q}{\mathrm{d} t} = \operatorname{F}\left(Q\left(t\right)\right) .
+    \end{equation}
+    This equation comes from the Finite Volume discretisation, where $Q$ is the vector of the conservative variables and $\operatorname{F}$ a conservative right-hand side.
+    To keep this simple, we consider that there is a single conservative variable, so that the dimension of $Q$ is equal to the number of cells.
+    This is only to simplify the notations, but everything can be adapted to use more conservative variables.
+    The mass matrix $M$ is a diagonal matrix where the $i$th diagonal coefficient corresponds to the volume of the $i$th cell.
+    We note by $S$ the vector of the same dimension as $Q$ made of ones and transposed.
+    This way, multiplying on the left a vector by $S$ amount to sum a vector components.
+    The conservation property of the equation means that $S \operatorname{F}\left(Q\right) = 0$ or equivalently that the sum of the conservative variable over the domain $SMQ$ is constant.
+
+    \paragraph{}
+    When solving this equation with the explicit Euler method, we have at the $n$th step that:
+    \begin{equation}
+      M\delta Q_n = \Delta t \operatorname{F}\left(Q_n\right)
+    \end{equation}
+    with $\delta Q_n = Q_{n+1} - Q_n$.
+    Is is clear that $SMQ_{n+1} = SMQ_n$, and so the explicit Euler method preserves the conservation property.
+
+    \paragraph{}
+    When using the implicit Euler method with a single linearisation, we need the Jacobian matrix $J_n$ of the function $\operatorname{F}$ evaluated in $Q_n$.
+    Since $J_n = \operatorname{F}'\left(Q_n\right)$ and $S\operatorname{F}\left(Q_n\right) = 0$, we have $SJ_n = 0$ also.
+    The method gives the increment $\delta Q_n$ as the solution of:
+    \begin{equation}
+      \left(M - \Delta t J_n\right) \delta Q_n = \Delta t \operatorname{F}\left(Q_n\right) .
+    \end{equation}
+    Multiplying this relation on the left by $S$ and using that $SJ_n = S\operatorname{F}\left(Q_n\right) = 0$, we have $SM\delta Q_n = 0$, which means this method also preserves the conservation property.
+
+    \paragraph{}
+    However, we do not usually use the exact solution of the linear problem but the solution of a subspace Krylov method.
+    Let us consider that we use $k$ steps of a Krylov subspace method with a zero initial guess.
+    Then, the increment belongs to the corresponding Krylov subspace:
+    \begin{equation}
+      \delta Q_n \in \operatorname{Vect}\left( \left(M - \Delta t J_n\right)^i \operatorname{F}\left(Q_n\right) \right)_{0\leq i < k} .
+    \end{equation}
+    Now, there are no reasons for $SM\delta Q_n$ to be equal to zero.
+    For example, the solution computed with the smallest Krylov subspace dimension ($k = 1$) is parallel to $\operatorname{F}\left(Q_n\right)$, and then $SM\delta Q_n \propto SM\operatorname{F}\left(Q_n\right)$ and therefore is not null.
+
+    \paragraph{}
+    With preconditioning however, we can recover the conservation property.
+    If we use the invert of the mass matrix as a preconditioner, either a left or a right one, we have that:
+    \begin{equation}
+      \delta Q_n \in \operatorname{Vect}\left(v_i\right)_{0\leq i < k} \quad\textrm{with}\quad v_i = \left(\operatorname{Id} - \Delta t M^{-1} J_n \right)^i M^{-1} \operatorname{F}\left(Q_n\right) .
+    \end{equation}
+    We can verify by recurrence that $SMv_i = 0$:
+    \begin{itemize}
+      \item $SMv_0 = SMM^{-1}\operatorname{F}\left(Q_n\right) = S\operatorname{F}\left(Q_n\right) = 0$
+      \item if $SMv_i = 0$, then $SMv_{i+1} = SM \left(\operatorname{Id} - \Delta t M^{-1} J_n \right) v_i = SMv_i - \Delta t S J_n v_i = 0$ as $SJ_n = 0$.
+    \end{itemize}
+    Then, we have that $SM\delta Q_n = 0$ which means the preconditionned method preserves the conservation property.

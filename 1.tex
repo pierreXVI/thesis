@@ -974,9 +974,9 @@
       Others preconditioners exist in our solver.
       One consists in using the invert of the cell volumes as a diagonal matrix: the preconditioning matrix is a diagonal matrix, where each diagonal element is the inverse of the corresponding mesh cell volume.
       This was originally conceived to preserve the conservative properties through the GMRES solve.
-      \GP{Tu ne dis pas pourquoi... Quelques mots pourraient suffire pour expliquer d'où ça vient...}
       Indeed, as GMRES produces an approximation of the linear problem solution, the overall scheme may not be conservative.
       This preconditioner makes sure it is.
+      More explanations on this statement can be found in appendix \ref{appendix:conservative_preconditioning}.
       As it is even simpler than the Jacobi preconditioner, it shows poor performance.
       Some work was done towards Polynomial preconditioning: the preconditioning matrix $P$ is equal to the partial Neumann series of $\operatorname{Id} - A$, as it approximates $A^{-1}$ \cite{DuboisGreenbaumRodrigue1979}.
       Its major drawback is its computational cost, as it requires multiple matrix-vector products.
