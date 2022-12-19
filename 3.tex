@@ -255,12 +255,27 @@
           \label{fig:rae_residuals_fine_linf}
         \end{figure}
 
+        \PS{
+        \paragraph{}
+        In figure \ref{fig:rae_field_fine} we see the value of $\tilde{\nu}$ on the profile for both computations.
+        The top views show the upper part of the airfoil, and we see a discontinuity due to the shock, as expected.
+        The bottom views show the lower part of the airfoil.
+        The views on the right correspond to the JFNK computation, whereas the ones on the left to the computation with the traditional method.
+        We see that this method produces a solution of lower quality, as the pattern we see is not physical.
+        In particular, there are cells on the wall for which $\tilde{\nu}$ is null, which should not happen with our standard Spalart--Allmaras model.
+        We see in figure \ref{fig:rae_residuals_fine_linf} that the $\infty$-norm of the residual on the conservative variable $\rho \tilde{\nu}$ is near $10^2$ \PS{pas d'unité ?}, so we highlight on figure \ref{fig:rae_field_fine} cells for which the residual is higher than $10^{1.8}$.
+        We see that those cells correspond to the ones for which $\tilde{\nu} = 0$.
+        It shows a default of the standard time integration method, as it has non-physical features in the solution that prevent the residual convergence.
+        Tn contrast, it shows the quality of the JFNK method on this application.
+        }
+
         \begin{figure}
           \centering
           \includegraphics[width=\textwidth]{figures/rae_field_fine.png}
           \caption{
             $\tilde{\nu}$ \PS{(ça a un nom ?)} on the RAE 2822 wing profile for the traditional method (left) and the JFNK method (right).
             The top views show the profile from above, and the bottom views from below.
+            The highlighted region in green corresponds to cells where the absolute value of the residual on $\rho \tilde{\nu}$ is higher than $10^{1.8}$.
           }
           \label{fig:rae_field_fine}
         \end{figure}
