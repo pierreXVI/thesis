@@ -1,5 +1,6 @@
-import paraview.simple as pvs
+import os.path
 
+import paraview.simple as pvs
 from postprocess import pvlib
 
 
@@ -71,7 +72,7 @@ def rae_field():
 
 
 def rae_mesh_fine():
-    filename = "/scratchm/pseize/RAE_2822_FINE/BASE/INIT/ENSIGHT/archive_CHARME.volu.ins.case"
+    filename = "/tmp_user/sator/pseize/RAE_2822/MF/RUN_8/ENSIGHT/archive_CHARME.volu.ins.case"
     plotter = pvlib.Plotter()
     reader, _, _ = plotter.load_data(filename, [])
 
@@ -111,6 +112,80 @@ def rae_mesh_fine():
     view1.OrientationAxesInteractivity = 1
     plotter.draw(0, True)
     # pvs.SaveScreenshot("rae_mesh_fine.png", layout)
+
+
+def rae_field_fine():
+    plotter = pvlib.Plotter()
+
+    views = [pvs.CreateRenderView() for _ in range(4)]
+
+    for file, i in zip(('BASE/RUN_3_1e-4', 'MF/RUN_8'), (0, 2)):
+        reader, _, _ = plotter.load_data(
+            os.path.join("/tmp_user/sator/pseize/RAE_2822", file, "ENSIGHT/archive_CHARME.volu.ins.case"),
+            ['NuTilde', 'Residu~RhoNuTilde~'])
+        pvs.Show(reader, views[i]).SetScalarBarVisibility(views[i], True)
+        pvs.Show(reader, views[i + 1]).SetScalarBarVisibility(views[i + 1], True)
+        threshold = pvs.Threshold(reader, Scalars=['CELLS', 'Residu~RhoNuTilde~'],
+                                  ThresholdMethod='Above Upper Threshold', UpperThreshold=1.8)
+        pvs.Show(threshold, views[i], Representation='Feature Edges', ColorArrayName=None, AmbientColor=[0, 1, 0],
+                 LineWidth=3)
+        pvs.Show(threshold, views[i + 1], Representation='Feature Edges', ColorArrayName=None, AmbientColor=[0, 1, 0],
+                 LineWidth=3)
+
+    for view in views[::2]:
+        view.CameraPosition = [-1, -1.5, 1]
+        view.CameraFocalPoint = [1, -0.1, -0.5]
+        view.CameraViewUp = [0.5, 0.16, 0.85]
+        view.CameraParallelScale = 21
+        pvs.GetScalarBar(pvs.GetColorTransferFunction('NuTilde'), view).Visibility = 0
+        view.OrientationAxesInteractivity = 1
+    for view in views[1::2]:
+        view.CameraPosition = [-1, 0.3, -1]
+        view.CameraFocalPoint = [-0.02, -0.25, -0.25]
+        view.CameraViewUp = [0.5, -0.2, -0.85]
+        view.CameraParallelScale = 21
+        pvs.GetScalarBar(pvs.GetColorTransferFunction('NuTilde'), view).Visibility = 0
+        view.OrientationAxesInteractivity = 1
+
+    space_view = pvs.CreateRenderView()
+    space_view.UseColorPaletteForBackground = 0
+    space_view.Background = [1, 1, 1]
+    space = 0.499
+
+    view_bar = pvs.CreateRenderView()
+    view_bar.OrientationAxesVisibility = 0
+    color_bar = pvs.GetScalarBar(pvs.GetColorTransferFunction('NuTilde'), view_bar)
+    color_bar.WindowLocation = 'Lower Center'
+    color_bar.Title = r'$\tilde{\nu} \quad \left( \operatorname{m}^2 / \operatorname{s} \right)$'
+    color_bar.ComponentTitle = ''
+    color_bar.Orientation = 'Horizontal'
+    color_bar.TitleFontSize = 24
+    color_bar.LabelFontSize = 18
+    color_bar.ScalarBarLength = 0.5
+
+    layout = pvs.CreateLayout()
+    id_1 = layout.SplitVertical(0, 0.8)
+    layout.AssignView(id_1 + 1, view_bar)
+
+    id_1 = layout.SplitHorizontal(id_1, space)
+    id_bar = layout.SplitHorizontal(id_1 + 1, (1 - 2 * space) / (1 - space))
+    id_1 = layout.SplitVertical(id_1, 0.5)
+    id_3 = layout.SplitVertical(id_bar + 1, 0.5)
+    layout.AssignView(id_bar, space_view)
+    layout.AssignView(id_1, views[0])
+    layout.AssignView(id_1 + 1, views[1])
+    layout.AssignView(id_3, views[2])
+    layout.AssignView(id_3 + 1, views[3])
+    layout.SetSize(1157, 512)
+
+    transfert_function = pvs.GetColorTransferFunction('NuTilde')
+    transfert_function.RescaleTransferFunction(0, 3e-5)
+    transfert_function.EnableOpacityMapping = 1
+    pvs.GetOpacityTransferFunction('NuTilde').Points = [3e-5, 1, 0.5, 0, 3e-5, 0, 0.5, 0]
+
+    print("Please set the OrientationAxis manually in all views")
+    plotter.draw(0, True)
+    # pvs.SaveScreenshot("rae_field_fine.png", layout)
 
 
 def sphere_fields():
@@ -362,7 +437,8 @@ if __name__ == '__main__':
     # rae_mesh()
     # rae_field()
     # rae_mesh_fine()
-    sphere_fields()
+    # rae_field_fine()
+    # sphere_fields()
     # sphere_carbuncle()
     # covo_cedre_mesh()
     # covo_cedre_fields()

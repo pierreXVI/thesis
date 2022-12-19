@@ -93,7 +93,7 @@
         It is because this computation uses turbulence wall modelling.
         Such models are known to be troublesome with some more complex turbulence models such as the $k-\epsilon$ model but are used with others such as the one we use here.
         Turbulence wall modelling may be nonconventional in aerodynamic simulations but it is a commonly used feature of our solver, so it is interesting to see how our new method behaves on such test cases.
-        The spatial discretisation method is a second-order Finite Volume method, using the HLLC Riemann solver and Multislope method\footnote{\GP{Citer le papier de Le Touze, Murrone et Guillard sur JCP?}\PS{C'est déjà fait quand j'introduis les méthodes de reconstructions, je peux la remettre}} with a Van--Leer slope limiter.
+        The spatial discretisation method is a second-order Finite Volume method, using the HLLC Riemann solver and Multislope method \cite{LeTouzeMurroneGuillard2015} with a Van--Leer slope limiter.
         We also use local time-stepping to speed up the convergence.
 
 
@@ -166,7 +166,7 @@
         \begin{figure}
           \centering
           \includegraphics{figures/rae_residuals.png}
-          \caption{Residual norms for the two momentum components, energy and turbulent viscosity throughout the computation.}
+          \caption{Residual 2-norms for the two momentum components, energy and turbulent viscosity throughout the computation.}
           \label{fig:rae_residuals}
         \end{figure}
 
@@ -222,23 +222,47 @@
         Then we continue the computation for a few more iterations with the traditional implicit Euler method.
         We do this to reach a state close enough of the steady solution more quickly before analysing the convergence of our methods.
         After that, we can restart the computation with the traditional method on one side and with the matrix-free method on the other.
-        We then look once again at the residuals in figure \ref{fig:rae_residuals_fine}.
+        We then look once again at the residuals in figure \ref{fig:rae_residuals_fine_l2}.
         Overall, it takes much more iterations to decrease residual norms on this test case compared to the previous one.
         It is due to the larger number of cells, and the presence of small flattened cells in the boundary layer.
 
-        \PS{TODO: MF a un $\Delta t$ 10 fois plus grand.}
-
         \paragraph{}
-        We see in figure \ref{fig:rae_residuals_fine} that the reduction in residual norms with the standard method is not satisfying.
+        We see in figure \ref{fig:rae_residuals_fine_l2} that the reduction in residual 2-norms with the standard method is not satisfying.
         Users usually expect the solver to reduce the order of magnitude of the residuals by 4 or 5, which is more than what our solver does.
-        In contrast, the matrix-free method reduces the residual norm much more efficiently, and converges to a more precise solution.
+        In contrast, the matrix-free method reduces residual norms much more efficiently, and converges to a more precise solution.
         The quality of the solution computed by the matrix-free method is then better.
 
         \begin{figure}
           \centering
-          % \includegraphics{figures/rae_residuals_fine.png}
-          \caption{\PS{TODO}}
-          \label{fig:rae_residuals_fine}
+          \includegraphics{figures/rae_residuals_fine_l2.png}
+          \caption{Residual 2-norms for the horizontal and vertical momentum components, energy and turbulent viscosity throughout the computation.}
+          \label{fig:rae_residuals_fine_l2}
+        \end{figure}
+
+        \PS{
+        \paragraph{}
+        In figure \ref{fig:rae_residuals_fine_linf} we see residual norms for the same simulations, but this time using the $\infty$-norm.
+        This time, we see that the traditional method is not able at all to reduce residual norms.
+        It means there are some cells in the computational domain for which the method is not able to reduce the local residual.
+        The JFNK method in orange does not have this issue and converges to a better solution.
+        We note that the width of the curve is due to data noise, as all lines use the same width.
+        }
+
+        \begin{figure}
+          \centering
+          \includegraphics{figures/rae_residuals_fine_linf.png}
+          \caption{Residual $\infty$-norms for the horizontal and vertical momentum components, energy and turbulent viscosity throughout the computation.}
+          \label{fig:rae_residuals_fine_linf}
+        \end{figure}
+
+        \begin{figure}
+          \centering
+          \includegraphics[width=\textwidth]{figures/rae_field_fine.png}
+          \caption{
+            $\tilde{\nu}$ \PS{(ça a un nom ?)} on the RAE 2822 wing profile for the traditional method (left) and the JFNK method (right).
+            The top views show the profile from above, and the bottom views from below.
+          }
+          \label{fig:rae_field_fine}
         \end{figure}
 
 

@@ -559,6 +559,46 @@ def rae_residuals():
         # plt.show()
 
 
+def fig_rae_residuals_fine():
+    with plt.rc_context({'font.size': 8, 'xtick.labelsize': 6, 'ytick.labelsize': 6}):
+        for label, tag0, name in (('$L_2$', 'MOYENS', 'l2'), (r'$L_\infty$', 'MAXIMA', 'linf')):
+            fig = plt.figure(figsize=[5.78851, 3])
+            fig.suptitle(r"$\log_{{10}}$ of the {0} residual norms".format(label), y=0.95)
+
+            ax11 = fig.add_subplot(221)
+            ax12 = fig.add_subplot(222)
+            ax21 = fig.add_subplot(223, sharex=ax11)
+            ax22 = fig.add_subplot(224, sharex=ax12)
+
+            for ax, tag, title in zip((ax11, ax12, ax21, ax22),
+                                      ('RhoV_x', 'RhoV_z', 'RhoEtot', 'RhoNuTilde'),
+                                      ("$x$ momentum", "$z$ momentum", "Energy", "Turbulent viscosity")):
+                ax.grid(True)
+                plotter = bibarch.HistoPlotter(ax, ('RESIDUS', tag0, tag), 'ITER', "/tmp_user/sator/pseize/RAE_2822",
+                                               plot_restarts=False)
+                plotter.plot(['BASE/RUN_0', 'BASE/RUN_1'], 'k', label='Initialisation')
+                plotter.plot(['BASE/RUN_2_1e-4', 'BASE/RUN_3_1e-4'], label='Traditional method')
+                plotter.plot(['MF/RUN_{0}'.format(i) for i in range(9)], label='JFNK method')
+                ax.set_title('')
+                ax.set_ylabel(title)
+
+            ax11.tick_params(labelbottom=False)
+            ax12.tick_params(labelbottom=False)
+            ax11.get_xaxis().get_offset_text().set_visible(False)
+            ax12.get_xaxis().get_offset_text().set_visible(False)
+            ax11.set_xlabel('')
+            ax12.set_xlabel('')
+            ax21.set_xlabel('Iteration number', labelpad=10)
+            ax22.set_xlabel('Iteration number', labelpad=10)
+            fig.legend(*ax11.get_legend_handles_labels())
+            fig.align_ylabels([ax11, ax21])
+            fig.align_ylabels([ax12, ax22])
+
+            fig.subplots_adjust(0.1, 0.15, 0.99, 0.85, 0.30, 0.1)
+            fig.savefig('rae_residuals_fine_{0}.png'.format(name))
+            # plt.show()
+
+
 def sphere_mte_residuals():
     with plt.rc_context({'font.size': 8, 'xtick.labelsize': 6, 'ytick.labelsize': 6}):
         fig = plt.figure(figsize=[5.78851, 3])
@@ -1082,7 +1122,8 @@ if __name__ == '__main__':
     # rae_cp()
     # rae_coefficients()
     # rae_residuals()
-    sphere_mte_residuals()
+    # fig_rae_residuals_fine()
+    # sphere_mte_residuals()
     # sd_discontinuous()
     # sd_scheme()
     # sd_points()
