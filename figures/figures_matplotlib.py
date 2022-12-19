@@ -526,7 +526,7 @@ def rae_coefficients():
 def rae_residuals():
     with plt.rc_context({'font.size': 8, 'xtick.labelsize': 6, 'ytick.labelsize': 6}):
         fig = plt.figure(figsize=[5.78851, 3])
-        fig.suptitle(r"$\log_{10}$ of the $L_2$ residual norms", y=0.95)
+        fig.suptitle(r"$L_2$ residual norms", y=0.95)
 
         ax11 = fig.add_subplot(221)
         ax12 = fig.add_subplot(222)
@@ -538,9 +538,12 @@ def rae_residuals():
                                   ("$x$ momentum", "$y$ momentum", "Energy", "Turbulent viscosity")):
             ax.grid(True)
             plotter = bibarch.HistoPlotter(ax, ('RESIDUS', 'MOYENS', tag), 'ITER', "/scratchm/pseize/RAE_2822")
-            plotter.plot('BASE/INIT', 'k', label='Initialisation')
-            plotter.plot('BASE/RUN_1', label='Traditional method')
-            plotter.plot('MF/RUN_1', label='JFNK method')
+            x, y, _ = plotter.get('BASE/INIT')
+            ax.semilogy(x, np.power(10, y), 'k', label='Initialisation')
+            x, y, _ = plotter.get('BASE/RUN_1')
+            ax.semilogy(x, np.power(10, y), label='Traditional method')
+            x, y, _ = plotter.get('MF/RUN_1')
+            ax.semilogy(x, np.power(10, y), label='JFNK method')
             ax.set_title('')
             ax.set_ylabel(title)
 
@@ -563,7 +566,7 @@ def fig_rae_residuals_fine():
     with plt.rc_context({'font.size': 8, 'xtick.labelsize': 6, 'ytick.labelsize': 6}):
         for label, tag0, name in (('$L_2$', 'MOYENS', 'l2'), (r'$L_\infty$', 'MAXIMA', 'linf')):
             fig = plt.figure(figsize=[5.78851, 3])
-            fig.suptitle(r"$\log_{{10}}$ of the {0} residual norms".format(label), y=0.95)
+            fig.suptitle(r"{0} residual norms".format(label), y=0.95)
 
             ax11 = fig.add_subplot(221)
             ax12 = fig.add_subplot(222)
@@ -576,9 +579,12 @@ def fig_rae_residuals_fine():
                 ax.grid(True)
                 plotter = bibarch.HistoPlotter(ax, ('RESIDUS', tag0, tag), 'ITER', "/tmp_user/sator/pseize/RAE_2822",
                                                plot_restarts=False)
-                plotter.plot(['BASE/RUN_0', 'BASE/RUN_1'], 'k', label='Initialisation')
-                plotter.plot(['BASE/RUN_2_1e-4', 'BASE/RUN_3_1e-4'], label='Traditional method')
-                plotter.plot(['MF/RUN_{0}'.format(i) for i in range(9)], label='JFNK method')
+                x, y, _ = plotter.get(['BASE/RUN_0', 'BASE/RUN_1'])
+                ax.semilogy(x, np.power(10, y), 'k', label='Initialisation')
+                x, y, _ = plotter.get(['BASE/RUN_2_1e-4', 'BASE/RUN_3_1e-4'])
+                ax.semilogy(x, np.power(10, y), label='Traditional method')
+                x, y, _ = plotter.get(['MF/RUN_{0}'.format(i) for i in range(9)])
+                ax.semilogy(x, np.power(10, y), label='JFNK method')
                 ax.set_title('')
                 ax.set_ylabel(title)
 
@@ -602,7 +608,7 @@ def fig_rae_residuals_fine():
 def sphere_mte_residuals():
     with plt.rc_context({'font.size': 8, 'xtick.labelsize': 6, 'ytick.labelsize': 6}):
         fig = plt.figure(figsize=[5.78851, 3])
-        fig.suptitle(r"$\log_{10}$ of the $L_2$ residual norms", y=0.95)
+        fig.suptitle(r"$L_2$ residual norms", y=0.95)
 
         ax11 = fig.add_subplot(221)
         ax12 = fig.add_subplot(222)
@@ -615,11 +621,12 @@ def sphere_mte_residuals():
                                    "$\\operatorname{N}_2$ vibrational\nenergy", "Energy")):
             ax.grid(True)
             p = bibarch.HistoPlotter(ax, ('RESIDUS', 'MOYENS', tag), 'WALL', '/tmp_user/sator/pseize/SPHERE_LOBB_MTE')
-            # p.plot(['INIT/RUN_1', 'INIT/RUN_2'], 'k', label='Initialisation')
             p.reset_offset('INIT/RUN_1')
-            p.plot('RK2/RUN_1', label='Midpoint method')
+            x, y, _ = p.get('RK2/RUN_1')
+            ax.semilogy(x, np.power(10, y), label='Midpoint method')
             p.reset_offset(['INIT/RUN_1', 'INIT/RUN_2'])
-            p.plot('MF/RUN_1', label='JFNK method')
+            x, y, _ = p.get('MF/RUN_1')
+            ax.semilogy(x, np.power(10, y),label='JFNK method')
             ax.set_title('')
             ax.set_ylabel(title)
             ax.set_xlim(-500, 7999)
