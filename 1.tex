@@ -29,7 +29,7 @@
   \section{Problem setup}
 
     \paragraph{}
-    \GP{In order to set the mathematical framework for this study, let's start from a partial differential equation arising} from the physical model, in the form of
+    In order to set the mathematical framework for this study, let us start from a partial differential equation arising from the physical model, in the form of
     \begin{equation}\label{eq:pde}
       \frac{\partial \xi}{\partial t} + \operatorname{F}\left(\xi\right) = 0
     \end{equation}
@@ -47,9 +47,7 @@
     Those conservative equations are the ones we will focus on in this study, as they describe the physical systems we are interested in.
 
     \paragraph{}
-    In this work, \GP{attention is paid on} computational fluid dynamics %. we will talk about computational fluid dynamics.
-    %We are in fact mostly interested in the Navier--Stokes equation, and its variants: the reactive Navier--Stokes equation, the Reynold-averaged Navier--Stokes equation, etc.
-    \GP{solution of the Navier--Stokes equation}, and its variants: the reactive Navier--Stokes equation, the Reynold-averaged Navier--Stokes equation, etc.
+    In this work, attention is paid on computational fluid dynamics and in particular to solution of the Navier--Stokes equation and its variants: the reactive Navier--Stokes equation, the Reynold-averaged Navier--Stokes equation, etc.
     A simple form of this equation can be:
     \begin{equation}\label{eq:ns}
       \left\{\begin{aligned}
@@ -61,34 +59,32 @@
     \end{equation}
     with the closing relation $\rho E = \frac{p}{\gamma - 1} + \rho\frac{\vec{u} \cdot \vec{u}}{2}$.
     This relation is quite simple, as it is the one that corresponds to ideal gas with constant heat capacity.
-    In our solver CEDRE, this relation is usually more complex as we are working with multifluid flows and with variable heat capacities.
+    In the solver CEDRE, this relation is usually more complex as we are working with multifluid flows and with variable heat capacities.
     The deviatoric stress tensor $\tau$ accounts for the fluid's viscosity, and its computation depends on the model used.
     Without it, one recovers the Euler equations.
     To this simple form can be added source terms from the reactive model, source terms from the turbulence model, divergence terms from a molecular diffusion model, etc.
-    Yet it is clear that with a bit of rewriting, \GP{it is possible to get} back to the starting form (\ref{eq:pde}) and even the conservative form with source terms (\ref{eq:pde_conservative}).
+    Yet it is clear that with a bit of rewriting, it is possible to get back to the starting form (\ref{eq:pde}) and even the conservative form with source terms (\ref{eq:pde_conservative}).
     The quantity $\xi$ is no longer a scalar but a vector with the density $\rho$, each component of the momentum $\rho\vec{u}$ and the energy $\rho E$ as its components.
     Apart from this small change, the idea is the same.
 
     \paragraph{}
     When solving equations like (\ref{eq:pde}) numerically, the domain of interest is first bounded since infinite domain cannot be represented by a discrete set of variables.
     Let $\mathcal{D}$ be this computational domain.
-    \GP{For the numerical resolution, the different quantities, such as the state variable $\xi$, are represented discretely 
-    over the domain $\mathcal{D}$ and store it in the memory of a computer.}
-    %As we are interested in solving equations numerically, we need to be able to represent different quantities, such as the state variable $\xi$, numerically over the domain $\mathcal{D}$ and store it in the memory of a computer.
+    For a numerical computation, the different quantities, such as the state variable $\xi$, are represented discretely over the domain $\mathcal{D}$ and store it in the memory of a computer.
     To do so, the domain $\mathcal{D}$ is split into a finite number of cells, or elements, associated to the Degrees of Freedom of the solution: this is the mesh.
     Those cells are small disjoints volumes in 3D, faces in the two-dimensional space or segments in 1D, such as their union recovers the original domain.
     Interest quantities, such as the fluid velocity, density, \dots, are then stored at each node, averaged at the center of each cell or sometimes in a more complex fashion depending on the method.
     They are no longer mathematically represented by a function of the continuous physical domain $\xi: \mathcal{D} \rightarrow \mathbb{R}$ but by a finite-sized vector $\Xi$ gathering all the information across the discretised domain.
     For some simple discretisation methods, this vector consists of the quantity evaluated at the mesh nodes or averaged at the center of the cells.
     For more complex methods, this vector consists of information used to construct the solution over the domain: polynomial coefficients, spectral decomposition coefficients, etc.
-    Anyway, \GP{no one can} work in a continuous domain $\mathcal{D}$ but on a discretised one.
+    Anyway, a discretised domain is used rather than $\mathcal{D}$, the continuous one.
 
     \paragraph{}
     The partial differential equation (\ref{eq:pde}) transforms then into an ordinary differential equation:
     \begin{equation}
       \frac{\mathrm{d} \Xi}{\mathrm{d} t} - \operatorname{G}\left(\Xi\right) = 0 .
     \end{equation}
-    The difference here is that the function $\operatorname{G}$ is a function of a discrete vector whereas $\operatorname{F}$ was a function of a continuous \GP{domain}, and therefore $\operatorname{G}$ does not use any spatial derivatives.
+    \PS{The difference here is that the function $\operatorname{G}$ is a function of a discrete vector whereas $\operatorname{F}$ was a function of continuous state variable that are in turn function on the space variable, and therefore $\operatorname{G}$ does not use any spatial derivatives.}
     The negative sign is here so that this new equation is similar to the original partial differential equation (\ref{eq:pde}) and the new equation can be written in the form that corresponds to most of the literature:
     \begin{equation}\label{eq:ode}
       \frac{\mathrm{d} \Xi}{\mathrm{d} t} = \operatorname{G}\left(\Xi\right) .
@@ -102,7 +98,7 @@
 
     \paragraph{}
     A \emph{spatial discretisation method} is what tells how to represent a quantity over a discretised domain, and how to compute the spatial derivative of this quantity from this representation.
-    Indeed, before solving equation (\ref{eq:pde}) \GP{anyone} must decide how to transform the continuous model into a discretised one.
+    Indeed, before solving equation (\ref{eq:pde}), one must decide how to transform the continuous model into a discretised one.
     We also have to look at how the spatial derivatives arising from equation (\ref{eq:pde}) translate in the discretised model.
 
     \subsection{The Finite Volume method}
@@ -132,20 +128,17 @@
 
       \paragraph{}
       As stated before, the spatial discretisation method does transform the partial differential equation into an ordinary differential equation.
-      It tells to store the quantities as the averaged values represented at the center of gravity of each cell as our vector $\Xi$.
-      \GP{An important aspect concerns the transformation of} the divergence from equation (\ref{eq:pde_conservative}) \GP{into} a flux surface average, 
-      \GP{and the flux computation is still here an open question}.
-      %The last thing to do is to decide how to compute this flux surface average.
-      The mesh cells are supposed to be polyhedrons and they have a finite number of (planar) faces.
+      It tells to store quantities as their averaged values represented at the center of gravity of each cell as the vector $\Xi$.
+      An important aspect concerns the transformation of the divergence from equation (\ref{eq:pde_conservative}) into a flux surface average, \PS{and the flux computation is still here an open question}.
+      The mesh cells are supposed to be polyhedrons and they have a finite number of planar faces.
       The integral over the boundary of the cell can be decomposed by the faces, to get the approximation:
       \begin{equation}
         \oint_{\partial\mathcal{V}_i} \vec{\operatorname{f}}\left(\xi\right) \cdot \vec{\mathrm{d}s} \approx \sum_{j\textrm{ neighbor of } i} \vec{\operatorname{f}}_{ij} \cdot \vec{s_{ij}}
       \end{equation}
-      where $\vec{\operatorname{f}}_{ij} \cdot \vec{s_{ij}}$ is an approximation of the flux going through the face between cells $i$ and $j$. 
-      \GP{$\vec{s_{ij}}$ is the product of the face area and the unit normal vector directed ouwards volume $i$.}
-      This approximation is a key element of the Finite Volume method and \GP{will be discussed later}.
-      \GP{The} function $\operatorname{G}$ from equation (\ref{eq:ode}) \GP{can be computed}: for each face of the mesh \GP{one} computes $\vec{\operatorname{f}}_{ij} \cdot \vec{s_{ij}}$, \GP{adds} this value to the $i$th component and removes it from the $j$th component of the new vector.
-      Then, the vector containing the result of $\operatorname{G}\left(\Xi\right)$ \GP{is get after adding the source terms}.
+      where $\vec{s_{ij}}$ is the product of the face area and the unit normal vector directed outwards volume $i$ and $\vec{\operatorname{f}}_{ij} \cdot \vec{s_{ij}}$ is an approximation of the flux going through the face between cells $i$ and $j$.
+      This approximation is a key element of the Finite Volume method and will be discussed later.
+      \PS{The function $\operatorname{G}$ from equation (\ref{eq:ode}) can now be computed: for each face of the mesh, one computes $\vec{\operatorname{f}}_{ij} \cdot \vec{s_{ij}}$, adds this value to the $i$th component and removes it from the $j$th component of the new vector.
+      Then, after adding the source terms, this yields the vector containing the result of $\operatorname{G}\left(\Xi\right)$.}
       As can be seen, every contribution of the flux added in a cell is removed from another, and therefore this spatial discretisation method preserves the conservation of the underlying equation.
 
 
@@ -153,7 +146,7 @@
 
       \paragraph{}
       The last remaining problem with this presentation of the Finite Volume method is how to compute the flux going through cell interfaces.
-      On the interfaces between two cells, the left and right quantities $\xi_L$ and $\xi_R$ are known, and \GP{are input data} to compute the corresponding flux.
+      On the interfaces between two cells, the left and right quantities $\xi_L$ and $\xi_R$ are known and are used to compute the corresponding flux.
       It is possible here to use a reconstruction method to get a better approximation of the quantities at the left and right sides of the interface, and therefore we end up using the left and right quantities $\xi_L^*$ and $\xi_R^*$.
       The idea is now to compute the flux going through the face as a function of $\xi_L^*$, $\xi_R^*$ and the surface vector $\vec{s}$.
       From the interface point of view, there are two possible different states, one from each side: this is what is called a Riemann problem.
@@ -172,7 +165,7 @@
       This corresponds to a first-order discretisation method.
       Simply put, it means that it can represent quantities exactly as 0-order polynomials locally to each cell.
       There are ways to achieve higher-order representation such as with the MUSCL approach \cite{VanLeer1979}.
-      It consists in handling the surface flux evaluation on one hand, \GP{as} in the Riemann problem part, and deciding what left and right quantities to feed to this flux computation on the other hand.
+      It consists in handling the surface flux evaluation as explained in the Riemann problem part on one hand, and deciding what left and right quantities to feed to this flux computation on the other hand.
       In our solver, there are two ways to construct high-order states to give to the flux computation method.
       They are described in the following parts.
       For both of them, the idea is to use neighbouring data to enhance the order of the local representation.
@@ -181,27 +174,26 @@
       \subsubsection{The $k$-exact method}
 
         \paragraph{}
-        The first method used to reconstruct high-order quantities is called the \emph{$k$-exact} method \GP{with successive corrections}.
+        The first method used to reconstruct high-order quantities is called the \emph{$k$-exact} method with successive corrections.
         The idea is to construct iteratively an order $k$ representation of the quantity using the neighbouring order $k-1$ representation \cite{HaiderCroisilleCourbet2009}.
         This method is often employed to achieve a second-order reconstruction, as choose most users, but it can also achieve higher-order reconstructions \cite{HaiderCroisilleCourbet2011, HaiderCourbetCroisille2018, PontBrennerCinellaEtAl2017}.
         At each step, while increasing the order of the representation, it is important not to create a local maximum or minimum.
         This might happen close to discontinuities in the solution, or near rapidly varying spots.
         It is indeed common, when interpolating, to create local overshoot or undershoot.
         One might think here about Gibbs or Runge's phenomena, and despite the problem here being a different one, the idea is the same.
-        Creating local extrema in the solution can be troublesome, and so the $k$-exact method \GP{includes limiters to limit the reconstructed data}.
+        Creating local extrema in the solution can be troublesome, and so the $k$-exact method includes limiters to limit reconstructed data.
 
 
       \subsubsection{The Multislope method}
 
         \paragraph{}
-        The second method used to reconstruct high-order quantities is called the \emph{Multislope} method. 
-        \GP{This method is a direct adaptation of the structured dirctional method to unstructured grids. It consists in defining local 
-        directions for the interpolation of the unknown on the face. For a given cell and one of its face, one can draw the line from those points. 
-        Using surrouding cells, the goal is to interpolate information on the line. In practice, it means that two three-point stencils are available. }
-        %At each face, this method computes a local gradient to interpolate the quantity from the center of the cell to the face.
-        %This gradient is obtained using neighbouring data, with a complex mechanism that we will not discuss here \cite{LeTouzeMurroneGuillard2015}.
-        \GP{The mechanism to define the slopes and the geometric treatment is quite complex and it won't be discussed here. The details 
-        are provided in \cite{LeTouzeMurroneGuillard2015}.}
+        The second method used to reconstruct high-order quantities is called the \emph{Multislope} method.
+        This method is a direct adaptation of the structured directional method to unstructured grids.
+        It consists in defining local directions for the interpolation of the unknown on the face.
+        For a given cell and one of its face, one can draw the line from their centers.
+        Information is interpolated on this line using neighbouring cells to get the local slope.
+        The mechanism to define the slopes and the geometric treatment is quite complex and it won't be discussed here.
+        The details are provided in \cite{LeTouzeMurroneGuillard2015}.
         Finally, the Multislope method gives a second-order reconstruction.
         Once again, this reconstruction might create local maxima or minima, and therefore it uses slope limiters \cite{Venkatakrishnan1993, BergerAftosmis2005} to prevent it.
 
@@ -230,8 +222,8 @@
 
     \paragraph{}
     The idea is now to solve the temporal evolution of $\Xi$ to get the solution after a long time when it approaches the steady solution.
-    \GP{The equation is solved} numerically, which means \GP{the next solution is computed} iteratively after a given time step, knowing the current one.
-    It is also possible to modify the equation, as \GP{the interest is} in the final state, not in the transient one.
+    The equation is solved numerically, which means the next solution is computed iteratively after a given time step, knowing the current one.
+    It is also possible to modify the equation, as the interest is in the final state, not in the transient one.
     It is possible, for example, to use local time-stepping, which consists in having each cell of the mesh move forward in time with its own time step.
     The resulting transient states do not make sense from a physical point of view, as the equation solved is not the initial one, but it converges to the same steady solution.
     Therefore, it is alright to change the equation as long as it gives the same steady solution.
@@ -242,14 +234,13 @@
     \begin{equation}\label{eq:init_value_ode}
       \left\{\begin{aligned}
         & \frac{\mathrm{d} \Xi}{\mathrm{d}t} = \operatorname{G}\left(\Xi\right) \\
-        & \Xi\left(t_0\right) = \Xi_0.
-      \end{aligned}\right.
+        & \Xi\left(t_0\right) = \Xi_0
+      \end{aligned}\right. .
     \end{equation}
     A time integration method is going to produce a succession of solutions: starting from $\Xi_0$, it produces $\Xi_1$ at $t_1$, then $\Xi_2$ at $t_2$, and $\Xi_n$ at $t_n$, etc.
-    \GP{Let} $\Delta t_n$ \GP{denote} the time step $t_{n+1} - t_n$.
-    \GP{Look at a single step of time integration methods in the following, the subscript on the time step can be drop as it is not meaningful}.
-    \GP{For} a steady solution, the evolution of the solution \GP{has no interest} and 
-    it seems reasonable to want to "go fast" to the steady state, meaning to use as large a time step as possible.
+    Let $\Delta t_n$ be the time step $t_{n+1} - t_n$.
+    \PS{Sans le "we" c'est pas clair} \GP{Look at a single step of time integration methods in the following, the subscript on the time step can be drop as it is not meaningful}.
+    For a steady problem, the evolution of the solution has no interest and it seems reasonable to want to "go fast" to the steady state, meaning to use as large a time step as possible.
     Unfortunately, not every time integration method allows large time steps due to the well-known Courant--Friedrichs--Lewy condition \cite{CourantFriedrichsLewy1967}.
     Some tools must be defined in order to help decide on the method to use.
 
@@ -296,19 +287,20 @@
         Depending on the application, we will expect different levels of stability in order to avoid a numerically induced divergence of the computation.
 
         \paragraph{}
-        \GP{The stability of a time integration method is usually analysed on} the ordinary differential equation with a linear right-hand side \cite{HairerWanner1996}.
-        The reason is that if $\tilde{\Xi}$ is solution of equation (\ref{eq:init_value_ode}), $\operatorname{G}$ \GP{can be linearised in} $\tilde{\Xi}$.
-        With $y = \Xi - \tilde{\Xi}$ and $J = \frac{\partial \operatorname{G}}{\partial \Xi}\left(\tilde{\Xi}\right)$, assumed constant, \GP{it comes}:
+        The stability of a time integration method is usually analysed on the ordinary differential equation with a linear right-hand side \cite{HairerWanner1996}.
+        The reason is that if $\tilde{\Xi}$ is solution of equation (\ref{eq:init_value_ode}), $\operatorname{G}$ can be linearised in $\tilde{\Xi}$.
+        With $y = \Xi - \tilde{\Xi}$ and $J = \frac{\partial \operatorname{G}}{\partial \Xi}\left(\tilde{\Xi}\right)$, assumed constant, it comes:
         \begin{equation}\label{eq:dahlquist}
           \frac{\mathrm{d} y}{\mathrm{d} t} = J y .
         \end{equation}
         This new equation used to analyse the stability of time integration methods is the one called the Dahlquist test equation.
         \GP{Now, the goal is to compute the eigenvalues and eigenvectors of the matrix $J$} in $\mathbb{C}$.
+        \footnote{PS pas le sens de départ : We look at this equation in $\mathbb{C}$, so that we can compute the eigenvalues and eigenvectors of the matrix $J$.}
 
         \paragraph{Note:}
         When looking at a method applied to the Dahlquist test equation (\ref{eq:dahlquist}), we assume that the real parts of the eigenvalues of $J$ are all negative.
         This choice may seem arbitrary but can be understood with the following example.
-        Let's work in $\mathbb{C}^2$, with:
+        Let us work in $\mathbb{C}^2$, with:
         \begin{equation}
           J = \begin{pmatrix} -1 & 0 \\ 0 & 10^3 \end{pmatrix}, \quad y_0 = \begin{pmatrix} 1 \\ 0 \end{pmatrix} .
         \end{equation}
@@ -331,20 +323,20 @@
         For the numerical values suggested here, this amount to an error as large as $10^6$ for $n = 5$ and $10^{28}$ for $n = 10$.
         The explosion of the error comes from the fact that the positive eigenvalue of $J$ amplifies the roundoff error.
         This phenomenon has nothing to do with the time integration scheme, but with the equation.
-        Finally, this is why equation (\ref{eq:dahlquist}) \GP{is studied} assuming the eigenvalues of $J$ are negative.
+        Finally, this is why equation (\ref{eq:dahlquist}) is studied assuming the eigenvalues of $J$ are negative.
 
         \paragraph{Single-step methods}
         To compute the solution at the next time step, some methods need only to know the current solution.
         Such methods are called single-step methods.
         A single-step method applied to the Dahlquist test equation (\ref{eq:dahlquist}) leads to the following relationship between the current solution and the next one:
         \begin{equation}\label{eq:single_step}
-          y_{n+1} = g\left(\Delta tJ\right)y_n.
+          y_{n+1} = g\left(\Delta tJ\right)y_n .
         \end{equation}
         For most time integration methods, $g$ is an analytic function.
-        \GP{The initial value $y_0$ can be decomposed} on a basis of eigenvectors of $J$, $v_1, \dots, v_N$, associated with the eigenvalues $\alpha_1, \dots, \alpha_N$: $y_0 = \sum_{i=1}^N \lambda_i v_i$.
-        Because $g$ is an analytic function, it \GP{comes immediatly}:
+        The initial value $y_0$ can be decomposed on a basis of eigenvectors of $J$, $v_1, \dots, v_N$, associated with the eigenvalues $\alpha_1, \dots, \alpha_N$: $y_0 = \sum_{i=1}^N \lambda_i v_i$.
+        Because $g$ is an analytic function, it comes immediatly:
         \begin{equation}
-          y_n = \sum_{i=1}^N \lambda_i g\left(\Delta t \alpha_i\right)^n v_i.
+          y_n = \sum_{i=1}^N \lambda_i g\left(\Delta t \alpha_i\right)^n v_i .
         \end{equation}
 
         It is now straightforward to deduce a stability condition for the single-step method: if for any $i$ we have $\left|g\left(\Delta t\alpha_i\right)\right| < 1$, then $y_n$ converges to 0.
@@ -426,8 +418,7 @@
 
         \paragraph{}
         Instead of making one step forward in time as the explicit Euler method, Runge--Kutta methods will make a set of intermediate steps, and find the final solution as a combination of those intermediate steps.
-        %The general idea is as such.
-        Suppose that the value of $\Xi_n$ in $t_n$ is known, the intermediates steps $t_{n, i} = t_n + c_i\Delta t$ for $1 \leq i \leq k$, with a fixed $k$ are set.
+        It starts from the value of $\Xi_n$ known in $t_n$ and given intermediates steps $t_{n, i} = t_n + c_i\Delta t$ for $1 \leq i \leq k$, with a fixed $k$.
         An exact integration between $t_n$ and $t_{n, i}$ of equation (\ref{eq:init_value_ode}) leads to:
         \begin{equation}
           \Xi\left(t_{n, i}\right) = \Xi_n + \Delta t \int_{t_n}^{t_{n,i}} \operatorname{G}\left(\Xi\left(t\right)\right) \mathrm{d}t .
@@ -542,7 +533,7 @@
         Because of that, the cost of one iteration of the Adams--Bashforth method is quite inexpensive.
         The stability analysis for such methods is a bit more complex \cite{HairerNorsettWanner1993, HairerWanner1996}, and so the result obtained numerically is shown on figure \ref{fig:ab_stab} without giving the details.
         The conclusion is even worse than with Runge--Kutta methods, as the stability region decreases as the order increases.
-        The Adams--Bashforth \GP{methods} can reach a high order of accuracy while staying computationally inexpensive, but they drastically lack stability, and that is why they are often not used in computational fluid dynamics computations.
+        The Adams--Bashforth methods can reach a high order of accuracy while staying computationally inexpensive, but they drastically lack stability, and that is why they are often not used in computational fluid dynamics computations.
         More generally, an explicit multistep method cannot be A-stable \cite{Dahlquist1963}.
 
         \begin{figure}
@@ -576,7 +567,7 @@
         and the next state $\Xi_{n+1}$ is given as the solution of a nonlinear problem, the root of a nonlinear function.
 
         \paragraph{}
-        After checking that this is a first-order method, the stability analysis \GP{can be performed} to find the corresponding function $g\left(z\right) = \left(1 - z\right)^{-1}$, that gives a stability region equal to the whole complex plane minus the closed unity disk centered in 1.
+        After checking that this is a first-order method, the stability analysis gives the corresponding function $g\left(z\right) = \left(1 - z\right)^{-1}$, that gives a stability region equal to the whole complex plane minus the closed unity disk centered in 1.
         Therefore this method is A-stable.
 
 
@@ -593,7 +584,7 @@
         Despite their cost, implicit Runge--Kutta methods can be appealing.
         The main reason is that they can easily achieve a high order of accuracy.
         For example, the methods based on Gauss--Legendre quadratures achieve an order $2k$ with $k$ steps, and they are all A-stable \cite{Iserles2008}.
-        Theoretically, this means \GP{that an arbitrarily high order can be achieved} while keeping the stability quality with these methods.
+        Theoretically, this means that an arbitrarily high order can be achieved while keeping the stability quality with these methods.
         However, users usually stop at the 3-stage 6th order method, as the computational cost tends to be too much for higher order methods.
 
         \paragraph{}
@@ -609,11 +600,11 @@
         Then, each step is given as an implicit problem using the already known steps and the next one.
         The difference is that instead of solving a full implicit system, we just need to solve each implicit step successively.
         This help drastically reduces the cost of the method.
-        Furthermore, if all quadrature coefficient $a_{ii}$ are all equals, as  \GP{the following matrix must be inverted} at each step the matrix
+        Furthermore, if all quadrature coefficient $a_{ii}$ are all equals, as each step requires the inversion of the matrix
         \begin{equation}
           \operatorname{Id} - a_{ii} \Delta t \frac{\mathrm{d} \operatorname{G}}{\mathrm{d} \Xi}\left(\Xi_n\right) ,
         \end{equation}
-        this can help \GP{solving} the linear problem.
+        this can help solving the linear problem.
         This variant is called Singly Diagonally Implicit Runge--Kutta methods (SDIRK) \cite{HairerWanner1996}.
 
         \paragraph{Rosenbrock methods}
@@ -668,16 +659,16 @@
         This new method is called the Adams--Moulton method.
         However, the stability region of Adams--Moulton is quite narrow, as they were originally not made for stiff equations \cite{Iserles2008}.
         This is why the Backward Differentiation Formula methods, or BDF methods, were introduced.
-        Contrary to Adams--Bashforth and Adams--Moulton methods, they use the Lagrange interpolation of the solution $\Xi$ instead of the function $\operatorname{G}$.
-        Then, the time derivative of the solution \GP{can be replaced by} the time derivative of the interpolating polynomial \GP{that is evaluated} at the next time step $t_{n+1}$.
-        This gives an implicit equation to invert to get $\Xi_{n+1}$.
+        Contrary to Adams--Bashforth and Adams--Moulton methods, they use the Lagrange interpolation of the solution $\Xi$ instead of the interpolation of the function $\operatorname{G}$.
+        Then, the time derivative of the solution can be replaced by the time derivative of the interpolating polynomial, and the resulting equality is evaluated at the next time step $t_{n+1}$.
+        This gives an implicit equation that is solved to get $\Xi_{n+1}$.
         The name of those methods comes from the fact that if we use a constant time step between iterations, this equation can be written using the differentiating operator defined by $\nabla^0 \square_i = \square_i$ and $\nabla^{j+1} \square_i = \nabla^j \square_i - \nabla^j \square_{i-1}$:
         \begin{equation}
           \sum_{i=1}^k \frac{1}{i} \nabla^i \Xi_{n+1} = \Delta t \operatorname{G}\left(\Xi_{n+1}\right)
         \end{equation}
 
         \paragraph{}
-        The order of the methods is equal to the index of the methods, corresponding to the number of previous states needed to compute the next one.
+        The order of the method is equal to the index of the method, corresponding to the number of previous states needed to compute the next one.
         These methods allow for an arbitrarily high order without increasing the cost, as the implicit equation is not harder to solve as the order increases.
         However, the stability analysis limits the higher order achievable.
         The stability analysis of the BDF methods can be done numerically.
@@ -726,15 +717,16 @@
       	\begin{equation}
       		\tilde{f}\left(\Xi_{n+1}\right) = 0 .
       	\end{equation}
-        Equivalently, as work \GP{is performed} here for a single $n$ at a time, this equation \GP{can be expressed} in terms of the increment $x = \Xi_{n+1} - \Xi_n$:
+        Equivalently, as it works for a single $n$ at a time, this equation can be expressed in terms of the increment $x = \Xi_{n+1} - \Xi_n$ without writing the subscript:
         \begin{equation}\label{eq:nonlinear}
       		f\left(x\right) = 0 .
       	\end{equation}
-        Newton's method starts from an initial guess $x_0=0$ and it is equivalent to taking $\Xi_n$ as an initial guess for $\Xi_{n+1}$.
+        Newton's method starts from an initial guess $x_0$.
+        This initial guess is often equal to zero, as it is equivalent to taking $\Xi_n$ as an initial guess for $\Xi_{n+1}$.
         The method will then iterate to approximate the solution of equation (\ref{eq:nonlinear}).
 
         \paragraph{}
-        At each step of Newton's method, a first-order linearisation in the current estimation $x_i$ of the nonlinear function $f$ is evaluated in the next iteration $x_{i+1}$ and this linearisation is set equal to 0, so:
+        At each step of Newton's method, the problem is linearised in the current estimation $x_i$ and the new equation is evaluated at the next iteration $x_{i+1}$:
         \begin{equation}\label{eq:nonlinear_linearised}
           f\left(x_{i+1}\right) \approx f\left(x_i\right) + f'\left(x_i\right) \left( x_{i+1} - x_i \right) = 0
         \end{equation}
@@ -749,7 +741,7 @@
           Ax = b
         \end{equation}
         where $A = f'\left(x_i\right)$, $b = -f\left(x_i\right)$ and $x = \left( x_{i+1} - x_i \right)$.
-        The $x$ notation \GP{is introduced} as it is often used in the literature to name the unknown in linear problems.
+        The $x$ notation is reused as it is often used in the literature to name the unknown in linear problems.
         We find such linear problems during the iterations of Newton's method, but each is solved for a given iteration number so there are no ambiguity from this notation.
         A lot of methods were conceived to solve such linear problems, and we will discuss later how we will handle them.
 
@@ -777,7 +769,8 @@
       \paragraph{}
       As we said, we solve the nonlinear problem with Newton's method.
       What was done in our solver was in fact a single step of Newton's method, which means a single linearization of the nonlinear problem.
-      \GP{Since we could benefit from an actual Newton's method, it was implemented, accounting for several Jacobian matrices, because several linear problems need to be solved during one single time step.}
+      Since we could benefit from an actual Newton's method, it was implemented.
+      Contrary to the single linearisation that was done before, several linear problems need to be solved during one single time step, so several Jacobian matrices are needed.
 
       \paragraph{}
       The issue when using Newton's method is that it should be accompanied by a Line Search algorithm to determine the step size $\alpha$ so that the next iterate of the method is:
@@ -796,7 +789,7 @@
       This size is quite large in our typical applications, but the linear system is sparse.
       This means that the coefficients of the matrix $A$ are mostly zeros.
       This is because a coefficient in the matrix $A$ corresponds to a link between two degrees of freedom.
-      For the \GP{considered} spatial discretisation methods, a cell only depends on a small number of neighbouring cells, and therefore a degree of freedom is not linked with most of the others.
+      For the considered spatial discretisation methods, a cell only depends on a small number of neighbouring cells, and therefore a degree of freedom is not linked with most of the others.
       In practice, the stencil is generally reduced to the current cell and those that share a face with the current cell.
       This transcribes into lots of zeros in the matrix, and therefore its sparsity.
       Such sparse matrices can be seen in figure \ref{fig:sparse}.
@@ -834,7 +827,7 @@
       Many methods exist to solve linear problems.
       Some are even taught in school, such as the Gaussian elimination.
       Such methods are called direct methods, as they first do some work and then find directly the exact solution to the problem.
-      But for problems with huge sizes such as the ones in computational fluid dynamics, the amount of work is too much to be computed with today's means.
+      But for problems with huge sizes such as the ones encountered in computational fluid dynamics, the amount of work is too much to be computed with today's means.
       It would take too much time as well as too much memory.
       Instead, we can use iterative methods.
       An iterative method starts from an initial guess $x_0$ and produces as it iterates a supposedly better estimation of the solution $x_n$.
@@ -864,7 +857,7 @@
   		\begin{equation}
   			\krylov[A, r_0]{n} = \operatorname{Vect}\left( r_0, A r_0, \dots, A^{n-1} r_0 \right) .
   		\end{equation}
-      Then, the next iterate in $\krylov{n}$ \GP{must satisfy} a Petrov--Galerkin condition \cite{SimonciniSzyld2007}:
+      Then, the next iterate in $\krylov{n}$ must satisfy a Petrov--Galerkin condition \cite{SimonciniSzyld2007}:
   		\begin{equation}
   			x_n \in x_0 + \krylov[A, r_0]{n} \quad \textrm{such as} \quad r_n \perp \mathcal{L}_n
   		\end{equation}
@@ -996,12 +989,10 @@
       Indeed, the matrix we have is not precise, as we will explain later, so using it as a preconditioner may not work as well as expected.
 
       \paragraph{}
-      As we do not need explicitly the preconditioning matrix $P$, and its effect should be near $A^{-1}$, one could take as a preconditioning procedure another Krylov subspace method:
-      to apply the preconditioning to any vector $v$ would mean solving $Ax = v$ with a Krylov subspace method.
+      As we do not need explicitly the preconditioning matrix $P$, and its effect should be near $A^{-1}$, one could take as a preconditioning procedure another Krylov subspace method: to apply the preconditioning to any vector $v$ would mean solving $Ax = v$ with a Krylov subspace method.
       However, applying a Krylov subspace method is not a linear operator.
-      To handle this case, the GMRES algorithm \GP{must be modified} into the Flexible Generalized minimal residual method, or FGMRES \cite{Saad1993, SimonciniSzyld2002}, \GP{with its associated advantages}.
-      %We saw several advantages to this method.
-      GMRES \GP{can be preconditioned} with an inner GMRES, and as GMRES was already written in our solver this idea was simple to apply.
+      To handle this case, the GMRES algorithm must be modified into the Flexible Generalized minimal residual method, or FGMRES \cite{Saad1993, SimonciniSzyld2002}.
+      GMRES can be preconditioned with an inner GMRES, and as GMRES was already written in our solver this idea was simple to implement.
       This preconditioning does not need more information on the matrix $A$ than the outer GMRES does: in particular it does not require knowing the matrix coefficients.
       This is interesting for some reasons that are discussed later.
       Finally, this method interests many scientists \cite{CoulaudGiraudRametEtAl2013, Vasseur2016} and has shown promising results in numerical simulation \cite{Pinel2010}.
