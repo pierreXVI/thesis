@@ -1957,6 +1957,122 @@ Studies were made at the Naval Ordnance Laboratory of the shock detachment dista
   eprint    = {https://arc.aiaa.org/doi/pdf/10.2514/6.2022-4086},
 }
 
+@Article{VanharenPuigtVasseurEtAl2017,
+  author   = {Vanharen, Julien and Puigt, Guillaume and Vasseur, Xavier and Boussuge, Jean-François and Sagaut, Pierre},
+  journal  = {Journal of Computational Physics},
+  title    = {Revisiting the spectral analysis for high-order spectral discontinuous methods},
+  year     = {2017},
+  issn     = {0021-9991},
+  pages    = {379--402},
+  volume   = {337},
+  abstract = {The spectral analysis is a basic tool to characterise the behaviour of any convection scheme. By nature, the solution projected onto the Fourier basis enables to estimate the dissipation and the dispersion associated with the spatial discretisation of the hyperbolic linear problem. In this paper, we wish to revisit such analysis, focusing attention on two key points. The first point concerns the effects of time integration on the spectral analysis. It is shown with standard high-order Finite Difference schemes dedicated to aeroacoustics that the time integration has an effect on the required number of points per wavelength. The situation depends on the choice of the coupled schemes (one for time integration, one for space derivative and one for the filter) and here, the compact scheme with its eighth-order filter seems to have a better spectral accuracy than the considered dispersion-relation preserving scheme with its associated filter, especially in terms of dissipation. Secondly, such a coupled space–time approach is applied to the new class of high-order spectral discontinuous approaches, focusing especially on the Spectral Difference method. A new way to address the specific spectral behaviour of the scheme is introduced first for wavenumbers in [0,π], following the Matrix Power method. For wavenumbers above π, an aliasing phenomenon always occurs but it is possible to understand and to control the aliasing of the signal. It is shown that aliasing depends on the polynomial degree and on the number of time steps. A new way to define dissipation and dispersion is introduced and applied to wavenumbers larger than π. Since the new criteria recover the previous results for wavenumbers below π, the new proposed approach is an extension of all the previous ones dealing with dissipation and dispersion errors. At last, since the standard Finite Difference schemes can serve as reference solution for their capability in aeroacoustics, it is shown that the Spectral Difference method is as accurate as (or even more accurate) than the considered Finite Difference schemes.},
+  doi      = {10.1016/j.jcp.2017.02.043},
+  file     = {:Revisiting the Spectral Analysis for High Order Spectral Discontinuous Methods - VanharenPuigtVasseurEtAl.pdf:PDF},
+  keywords = {Space–time spectral analysis, Spectral discontinuous, Finite Difference, Aeroacoustics, Aliasing, Matrix Power Method},
+  url      = {https://www.sciencedirect.com/science/article/pii/S0021999117301468},
+}
+
+@TechReport{CassagnePuigtBoussuge2015,
+  author = {Cassagne, Adrien and Puigt, Guillaume and Boussuge, J.-F.},
+  title  = {High-order method for a new generation of large eddy simulation},
+  year   = {2015},
+  school = {joint PRACE project report from CERFACS (Toulouse) and Cines (Montpellier)},
+}
+
+@MastersThesis{Cassagne2014,
+  author = {Cassagne, Adrien},
+  school = {EPSI Bordeaux and CERFACS},
+  title  = {Implémentation multi {GPU} de la méthode spectral differences pour un code de {CFD}},
+  year   = {2014},
+}
+
+@MastersThesis{Marait2015,
+  author = {Marait, Gilles},
+  school = {Bordeaux INP ENSEIRB MATMECA and CERFACS},
+  title  = {Performances du code de mécanique des fluides {JAGUAR} sur {CPU} et accélérateur},
+  year   = {2015},
+}
+
+@Article{FievetDeniauPiot2020,
+  author   = {Fiévet, Romain and Deniau, Hugues and Piot, Estelle},
+  journal  = {Journal of Computational Physics},
+  title    = {Strong compact formalism for characteristic boundary conditions with discontinuous spectral methods},
+  year     = {2020},
+  issn     = {0021-9991},
+  pages    = {109276},
+  volume   = {408},
+  abstract = {Characteristic boundary conditions for the Navier-Stokes equations (NSCBC) are implemented for the first time with discontinuous spectral methods, namely the spectral difference and flux reconstruction. The implementation makes use of the resolution by these methods of the strong form of the Navier-Stokes equations by applying these conditions through a flux balance regularization which takes the form of a generalized element-compact correction polynomial. It is shown to be at least as effective as similar implementations in finite volume solvers, and sustains arbitrarily-high orders of accuracy on hexahedral-based unstructured meshes. Further, Navier-Stokes time-domain impedance boundary conditions are derived and implemented as a NSCBC sub-class. They account for the diffusive process at the wall and are shown to properly resolve the broadband response of porous materials under normal and grazing flow conditions. The ability of these NSCBC in preventing the appearance of spurious reflections at the boundaries is demonstrated through a varied series of bench-marking simulations. They effectively shield the inner computational domain from any far-field unphysical contamination. Overall, this work enables the use of strong discontinuous spectral methods to study unsteady problems on complex geometries.},
+  doi      = {10.1016/j.jcp.2020.109276},
+  keywords = {Spectral difference, Flux reconstruction, Navier-Stokes characteristic boundary conditions, Time-domain impedance boundary conditions},
+  url      = {https://www.sciencedirect.com/science/article/pii/S0021999120300504},
+}
+
+@Article{CardesaFievetPiotEtAl2022,
+  author   = {Cardesa, J. I. and Fiévet, R. and Piot, E. and Deniau, H. and Airiau, C.},
+  journal  = {Journal of Computational Science},
+  title    = {Optimizing an acoustic liner by automatic differentiation of a compressible flow solver},
+  year     = {2022},
+  issn     = {1877-7503},
+  pages    = {101703},
+  volume   = {61},
+  abstract = {The attenuation power of an acoustic liner is optimized by unsteady compressible flow simulations that model the presence of the liner with a time-domain impedance boundary condition (TDIBC). Two test cases are considered: a one-dimensional impedance tube and a two-dimensional grazing incidence tube. The impact of the liner on the pressure field is tuned through various TDIBC parameters imposed at the boundary where the liner surface is located. Automatic differentiation of the direct numerical simulation (DNS) code yields the gradients of the time-integrated pressure perturbations with respect to the TDIBC parameters. The gradients are subsequently used in an iterative process that minimizes the perturbations at a given location. In both test cases considered, TDIBC parameters are found which are more effective at attenuating perturbation frequencies other than those the initial TDIBC is designed to cancel. Finally, a sensitivity analysis reveals the importance of the choice of the initial TDIBC parameters for finding optimized settings. Our results pave the way to a wider application of the presented procedure in more complex problems with bulk flow motion and larger perturbation amplitudes.},
+  doi      = {10.1016/j.jocs.2022.101703},
+  keywords = {Gradient-based multi-parameter optimization, Automatic differentiation, Time-domain impedance boundary condition, Acoustic liner},
+  url      = {https://www.sciencedirect.com/science/article/pii/S1877750322001041},
+}
+
+@InBook{HartmannBalanBassiEtAl2021,
+  author    = {Hartmann, R. and Balan, A. and Bassi, F. and Boussuge, J.-F. and de Brauer, A. and Cagnone, J.-S. and Colombo, A. and Couaillier, V. and Coulaud, O. and Crivellini, A. and Franciolini, M. and Ghidoni, A. and Hillewaert, K. and de la Llave Plata, M. and Manzinali, G. and Naddei, F. and Noventa, G. and Puigt, G. and Vermeire, B. C. and Vincent, P. E.},
+  editor    = {Hirsch, Charles and Hillewaert, Koen and Hartmann, Ralf and Couaillier, Vincent and Boussuge, Jean-Francois and Chalot, Frederic and Bosniakov, Sergey and Haase, Werner},
+  pages     = {103--190},
+  publisher = {Springer International Publishing},
+  title     = {Space adaptive methods/meshing},
+  year      = {2021},
+  address   = {Cham},
+  isbn      = {978-3-030-62048-6},
+  abstract  = {This chapter describes space adaptive approaches developed by six TILDA partners for the application in scale-resolving simulations. They are designed to provide sufficient spatial resolution in regions where required and to allow a lower resolution elsewhere for efficiency reasons. Adaptation techniques considered include mesh (h-refinement), order refinement of the spatial discretization (p-refinement) or a combination of both (hp-refinement). Furthermore, near-wall local mesh refinement, refinement using feature-based indicators and indicators obtained from the Variational Multiscale Method are considered.},
+  booktitle = {TILDA: Towards Industrial LES/DNS in Aeronautics: Paving the Way for Future Accurate CFD - Results of the H2020 Research Project TILDA, Funded by the European Union, 2015 -2018},
+  doi       = {10.1007/978-3-030-62048-6_4},
+}
+
+@Article{VeilleuxPuigtDeniauEtAl2022,
+  author  = {Veilleux, Adèle and Puigt, Guillaume and Deniau, Hugues and Daviller, Guillaume},
+  journal = {Journal of Scientific Computing},
+  title   = {Stable spectral difference approach using {R}aviart-{T}homas elements for 3{D} computations on tetrahedral grids},
+  year    = {2022},
+  volume  = {91},
+}
+
+@Article{VeilleuxPuigtDeniauEtAl2022a,
+  author   = {Veilleux, Adèle and Puigt, Guillaume and Deniau, Hugues and Daviller, Guillaume},
+  journal  = {Journal of Computational Physics},
+  title    = {A stable spectral difference approach for computations with triangular and hybrid grids up to the 6th order of accuracy},
+  year     = {2022},
+  issn     = {0021-9991},
+  pages    = {110774},
+  volume   = {449},
+  abstract = {In the present paper, a stable Spectral Difference formulation on triangles is defined using a flux polynomial expressed in the Raviart-Thomas basis up to the sixth-order of accuracy. Compared to the literature on the Spectral Difference approach, the present work increases the order of accuracy that the stable formulation can deal with. The proposed scheme is based on a set of flux points defined in the paper. The sets of points leading to a stable formulation are determined using a Fourier stability analysis of the linear advection equation coupled with an optimization process. The proposed Spectral Difference formulation differs from the Flux Reconstruction method on hybrid grids: the distinction between the two approaches is highlighted through the definition of the number of interior flux points. Validation starts from a convergence study using Euler equations and continues with simulations of laminar viscous flows over the NACA0012 airfoil using quadratic triangles and around a cylinder using a hybrid grid.},
+  doi      = {10.1016/j.jcp.2021.110774},
+  keywords = {High-order method, Spectral Difference method, Raviart-Thomas space, Triangle, Hybrid, Linear stability analysis},
+  url      = {https://www.sciencedirect.com/science/article/pii/S0021999121006690},
+}
+
+@Misc{MarchalDeniauBoussugeEtAl2021,
+  author    = {Marchal, Thomas and Deniau, Hugues and Boussuge, Jean-François and Cuenot, Bénédicte and Mercier, Renaud},
+  title     = {Extension of the Spectral Difference method to combustion},
+  year      = {2021},
+  copyright = {arXiv.org perpetual, non-exclusive license},
+  doi       = {10.48550/ARXIV.2112.09636},
+  keywords  = {Computational Physics (physics.comp-ph), FOS: Physical sciences, FOS: Physical sciences},
+  publisher = {arXiv},
+  url       = {https://arxiv.org/abs/2112.09636},
+}
+@Inproceedings{DeniauPuigt2022,
+  author={Deniau, Hugues and Puigt, Guillaume},
+  title = {Entropy stable spectral difference scheme}, 
+  booktitle = {European workshop on high order nonlinear numerical methods for evolutionary PDEs: theory and applications (HONOM2022), April 4-8, Braga, Portugal}, 
+  year={2022}
+}
 @Comment{jabref-meta: databaseType:bibtex;}
 
 @Comment{jabref-meta: fileDirectoryLatex-pierre-ubuntu-XVI:/home/pierre/latex;}
