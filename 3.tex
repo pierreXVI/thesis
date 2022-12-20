@@ -34,14 +34,16 @@
 
 
   \section{Comparaison entre la matrice jacobienne explicite et la formulation sans matrice}
-  \GP{Comparison between full-Jacobian and matrix-free formulations}
+  \GP{Comparison between full-Jacobian matrix and matrix-free formulations}
 
     \paragraph{}
+    \footnote{\PS{J'avais commencé par "From our analysis and implementation," pour faire une transition et dire que ça découle des chapitres précédents. Je trouve que là ça fait "vérité générale"}}
     From our analysis and implementation, the main addition to the solver is the Jacobian-Free Newton--Krylov method, and in particular the matrix-free approach.
-    In this part, we will then compare two methods: the traditional method and the new one that uses the matrix-free approach.
-    As we are interested in implicit time integration, we will use the implicit Euler method, for reasons previously discussed.
+    In this part, the new method that uses the matrix-free approach will be compared with the implicit Euler method as implicit time integration schemes.\footnote{\PS{Au lieu de "as we are interested in implicit time integration", je trouve que sans ça il y a moins d'enchaînement logique}}
+    % In this part, we will then compare two methods: the traditional method and the new one that uses the matrix-free approach.
+    % As we are interested in implicit time integration, we will use the implicit Euler method, for reasons previously discussed.
     The traditional method linearises the equation that the implicit Euler method produces, approximates the Jacobian matrix using the Jacobian matrix of the corresponding first-order scheme, and then solves the linear system with the Krylov subspace method GMRES.
-    As we want to understand the impact of a better Jacobian matrix, we are only going to change how it is computed.
+    In order to understand the impact of a better Jacobian matrix, the only difference is how the Jacobian matrix is handled.
     The new method will then work in a similar way, except the matrix used in the linear solver is not actually computed, but the matrix-vector products are approximated using equation (\ref{eq:matrix_free}).
 
 
@@ -50,23 +52,22 @@
       \subsubsection{Definition of the test case}
 
         \paragraph{}
-        Our first application is a typical aerodynamics test case.
+        The first application is a typical aerodynamics test case.
         It is a two-dimensional simulation of the flow around an RAE 2822 wing profile.
-        The only fluid is standard air.
+        The fluid is standard air assumed to be a perfect gas.
         The Mach number is taken equal to 0.75, the chord is equal to $1\si{\meter}$, the angle of attack is $0\si{\degree}$ and we use the atmospheric conditions at 10km.
         This gives a laminar Reynolds number of \num{6.5e6}.
 
         \paragraph{}
-        We decided to use this first test case for multiple reasons.
+        This first test case is chosen for multiple reasons.
         Firstly, it is a simple case in the field of computational fluid dynamics.
         It is a standard aerodynamics case, with a small mesh in comparison to many other three-dimensional cases.
-        This allows us to test our methods inexpensively.
+        This allows to test our methods inexpensively.
         Secondly, this case belongs to the tutorial suite of our solver.
         It means that it is already well mastered by the team.
         Thirdly, even if it is only a standard aerodynamics case it still has some stiff features, such as turbulence modelling and a shock.
         Finally, it is a standard test case for turbulence modelling validation.
         Therefore there are many references in the literature using this case.
-        Even if this thesis aims at multiphysics, it is often good to start slow, and that is what we are doing with this test case.
 
         \paragraph{}
         The mesh used for this simulation is an unstructured hybrid mesh made of triangles and quadrangles.
@@ -87,24 +88,25 @@
         \paragraph{}
         The model used is the Reynolds Averaged Navier--Stokes equations, or RANS.
         Simply put, every scale of the turbulence is modelled.
-        For this case, we decided to use the famous Spalart--Allmaras turbulence model.
-        It is well known for being one of the simplest turbulence models, which is fine for us as we want to set up a simple first test case.
+        The Spalart--Allmaras turbulence model is chosen to close the RANS equation.
+        It is well known for being one of the simplest turbulence models, which is fine to set up a simple first test case.
         Figure \ref{fig:rae_mesh} shows that the mesh near the wall boundary is not particularly fine, and therefore it is not fine enough to compute the boundary layer.
-        It is because this computation uses turbulence wall modelling.
+        It is indeed because this computation uses turbulence wall model that replaces the standard no-slip boundary condition by a more complex relation between the variables and their derivatives.
+        Physics of the boundary layer is introduced in the model, which limits the stiffness of the system.
         Such models are known to be troublesome with some more complex turbulence models such as the $k-\epsilon$ model but are used with others such as the one we use here.
         Turbulence wall modelling may be nonconventional in aerodynamic simulations but it is a commonly used feature of our solver, so it is interesting to see how our new method behaves on such test cases.
         The spatial discretisation method is a second-order Finite Volume method, using the HLLC Riemann solver and Multislope method \cite{LeTouzeMurroneGuillard2015} with a Van--Leer slope limiter.
-        We also use local time-stepping to speed up the convergence.
+        Local time-stepping is used to speed up the convergence.
 
 
       \subsubsection{Analysis of the results}
 
         \paragraph{}
         We are now going to compare the results from the two different simulations.
-        It is first worth noting that before trying the JFNK method, we need to start the computation using the traditional method.
-        As we explained before, the matrix-free approximation is not ideal to handle discontinuities such as shocks, and a shock is indeed present in this computation.
+        It is first worth noting that before trying the JFNK method, the computation needs to start using the traditional method.
+        As explained before, the matrix-free approximation is not ideal to handle discontinuities such as shocks, and a shock is indeed present in this computation.
         Only some iterations are needed, just to start the development of the boundary layer and approximately place the shock.
-        After that, we can restart the computation with the traditional method on one side and with the new method on the other.
+        After that, the computation can be continued, with the traditional method on one side and with the new method on the other.
 
         \begin{figure}
           \centering
@@ -128,31 +130,30 @@
         \end{figure}
 
         \paragraph{}
-        We can first look at a global image of the flow.
-        This is done in figure \ref{fig:rae_field} where we can look at the pressure field near the airfoil.
-        In particular, as expected, we see the shock on the upper part.
+        The global flow is shown in figure \ref{fig:rae_field} through the pressure field near the airfoil.
+        The shock is clearly seen on the upper part.
         The two computations give similar results: they are indistinguishable by just looking at the pressure field.
         This is to be expected as the traditional method gives already satisfying results on such applications.
-        We can also look at the pressure coefficient around the airfoil in figure \ref{fig:rae_cp}.
+        The pressure coefficient around the airfoil is given in figure \ref{fig:rae_cp}.
         Once again, the two curves are indistinguishable.
-        Finally, we can look at the aerodynamic coefficients, the drag and lift coefficients, throughout the simulation in figure \ref{fig:rae_coefficients}.
-        This time, we see an improvement from our method: the coefficients are much more stable, which means the convergence is better with our method.
+        Finally, the aerodynamic coefficients, the drag and lift coefficients, are given throughout the simulation in figure \ref{fig:rae_coefficients}.
+        This time, the JFNK method gives an improvement: the coefficients are much more stable, which means the convergence is better.
         The blue curve corresponding to the traditional method struggles to converge and seems to oscillate periodically.
         In comparison, the oscillation of the orange curve is dampened: this corresponds to convergence.
         The scale of the oscillation seen in figure \ref{fig:rae_coefficients} is not significant physically speaking, as it is negligible.
         It shows an issue with the traditional implicit method of the solver CEDRE: it fails to reach proper convergence but it oscillates around the solution.
         The new JFNK method however achieves proper convergence.
-        We use this figure to show an advantage of the new method, but this result is almost meaningless as the oscillation of the blue curve is numerically insignificant.
-        We need to look at other data to properly conclude on the convergence of the two methods.
+        Even if the figure shows an advantage of the new method, the result is almost meaningless as the oscillation of the blue curve is numerically insignificant.
+        Looking at other data is necessary to properly conclude on the convergence of the two methods.
 
 
         \paragraph{}
-        In order to find out if our method did help the convergence of the solver, we need to look at the residuals.
-        To define the residuals, we need to go back to the partial differential equation (\ref{eq:pde}) from which we started.
+        The residual is the best way to measure if a method can help the convergence of the solver.
+        To define the residuals, let us use the partial differential equation (\ref{eq:pde}).
         The residual is in fact the value of the function $\operatorname{F}$ from this equation.
-        We can then understand its name for steady problems: it is what is left and still needs to be removed to find a steady solution.
-        To decide on the convergence of a steady simulation, we look at this residual norm throughout the computational domain $\mathcal{D}$.
-        More precisely, we look at this residual component by component.
+        The name is quite adequate: for steady problems, the residual is what is left and still needs to be removed to find a steady solution.
+        To decide on the convergence of a steady simulation, this residual norm is measured throughout the computational domain $\mathcal{D}$.
+        More precisely, this residual is analysed component by component.
         For example, the residual 2-norm associated with the $i$th component is:
         \begin{equation}
           \norm[2]{\operatorname{F}_i} = \int_\mathcal{D} \left| \operatorname{F}_i \right| \mathrm{d}v
@@ -161,7 +162,8 @@
         \begin{equation}
           \norm[\infty]{\operatorname{F}_i} = \max_\mathcal{D} \left| \operatorname{F}_i \right|
         \end{equation}
-        In this fluid dynamics application, we can look at the residual norm associated with the conservative variables: the density, the momentum components, the energy and the turbulent variable from the Spalart--Allmaras model $\nu_t$.
+        In this fluid dynamics application, the residual norm is associated with the conservative variables: the density, the momentum components, the energy and the turbulent variable from the Spalart--Allmaras model $\nu_t$.
+        \PS{C'est quoi la variable conservée (facteur $\rho$) ?}
 
         \begin{figure}
           \centering
@@ -171,11 +173,11 @@
         \end{figure}
 
         \paragraph{}
-        Figure \ref{fig:rae_residuals} shows the residual norms from our two computations.
+        Figure \ref{fig:rae_residuals} shows the residual norms from both computations.
         The gain from using the JFNK method appears clearly.
         The final residual norm is much smaller for each and every conservative component.
         This means that the Jacobian-Free Newton--Krylov method is able to reach a better convergence level than the traditional method.
-        In other words, the better Jacobian matrix approximation from our new method leads to a better convergence than the older poor approximation.
+        In other words, the better Jacobian matrix approximation leads to a better convergence than the older poor approximation.
 
         \paragraph{}
         In this first test case, we looked at the residual norms as the fields computed by both methods were almost identical.
@@ -194,11 +196,11 @@
         This is what we present next.
         The new mesh, shown in figure \ref{fig:rae_mesh_fine} is clearly different.
         It is a three-dimensional mesh, which is in fact a two-dimensional mesh that was extruded on 6 cells in the $y$ direction.
-        We set a periodicity between the two sides of the domain.
+        Periodicity is set between the two parallel sides of the domain.
         The mesh is made of \num{198144} cells whereas the previous RAE 2822 mesh was only made of \num{36541} cells.
-        With these additional cells, this mesh is able to be fine on the wall boundary condition as is seen in figure \ref{fig:rae_mesh_fine}.
-        This means that we do not need to use the turbulent wall model we used in the previous test case.
-        We still use the Spalart--Allmaras one equation turbulence model.
+        With these additional cells, this mesh is able to be fine on the wall boundary condition as seen in figure \ref{fig:rae_mesh_fine}.
+        This means that the use of the turbulent wall model is no longer necessary, unlike in the previous test case.
+        Turbulence closure is still provided by the Spalart--Allmaras one equation turbulence model.
         The scale of the mesh is the same: the chord is still equal to $1\si{\meter}$.
 
         \begin{figure}
@@ -210,7 +212,7 @@
 
         \paragraph{}
         The flight conditions are also modified to match some existing experimental conditions: the AGARD-AR-138 experimental database.
-        We take a Mach number equal to 0.734, and the angle of attack is $2.54\si{\degree}$ with a Reynolds number of \num{6.5e6}.
+        The Mach number is then 0.734 and the angle of attack is $2.54\si{\degree}$, with a Reynolds number of \num{6.5e6}.
         This corresponds to \emph{Case 9} from the experimental conditions.
         The parameters are not exactly the same as they are corrected to account for the effects of the wind tunnel \cite{HellstromDavidsonRizzi1994}.
 
@@ -218,16 +220,16 @@
       \subsubsection{Analysis of the results}
 
         \paragraph{}
-        We proceed as we did before: we start the computation from an initial state constant in the domain and we use the first-order Finite Volume method.
-        Then we continue the computation for a few more iterations with the traditional implicit Euler method.
-        We do this to reach a state close enough of the steady solution more quickly before analysing the convergence of our methods.
-        After that, we can restart the computation with the traditional method on one side and with the matrix-free method on the other.
-        We then look once again at the residuals in figure \ref{fig:rae_residuals_fine_l2}.
+        As before, the computation starts from an initial state constant in the domain and the scheme..
+        Then the computation is continued for a few more iterations with the traditional implicit Euler method.
+        This is to reach a state close enough of the steady solution more quickly before analysing the convergence of our methods.
+        After that, the computations are restarted, with the traditional method on one side and the matrix-free method on the other.
+        The residuals are given in figure \ref{fig:rae_residuals_fine_l2}.
         Overall, it takes much more iterations to decrease residual norms on this test case compared to the previous one.
         It is due to the larger number of cells, and the presence of small flattened cells in the boundary layer.
 
         \paragraph{}
-        We see in figure \ref{fig:rae_residuals_fine_l2} that the reduction in residual 2-norms with the standard method is not satisfying.
+        Figure \ref{fig:rae_residuals_fine_l2} shows that the reduction in residual 2-norms with the standard method is not satisfying.
         Users usually expect the solver to reduce the order of magnitude of the residuals by 4 or 5, which is more than what our solver does.
         In contrast, the matrix-free method reduces residual norms much more efficiently, and converges to a more precise solution.
         The quality of the solution computed by the matrix-free method is then better.
@@ -239,14 +241,13 @@
           \label{fig:rae_residuals_fine_l2}
         \end{figure}
 
-        \PS{
         \paragraph{}
-        In figure \ref{fig:rae_residuals_fine_linf} we see residual norms for the same simulations, but this time using the $\infty$-norm.
-        This time, we see that the traditional method is not able at all to reduce residual norms.
+        The $\infty$-norm of the residual is given in figure \ref{fig:rae_residuals_fine_linf} for the same simulations.
+        This time, the traditional method is not able at all to reduce residual norms.
         It means there are some cells in the computational domain for which the method is not able to reduce the local residual.
         The JFNK method in orange does not have this issue and converges to a better solution.
-        We note that the width of the curve is due to data noise, as all lines use the same width.
-        }
+        Note that the width of the curve is due to data noise, as all lines use the same width.
+        \footnote{\PS{Ca me fait bizarre "Note that", ça "apostrophe"}}
 
         \begin{figure}
           \centering
@@ -255,19 +256,18 @@
           \label{fig:rae_residuals_fine_linf}
         \end{figure}
 
-        \PS{
         \paragraph{}
-        In figure \ref{fig:rae_field_fine} we see the value of $\tilde{\nu}$ on the profile for both computations.
-        The top views show the upper part of the airfoil, and we see a discontinuity due to the shock, as expected.
+        The value of the turbulent variable $\tilde{\nu}$ in the first cell above the wing profile is provided for both computations in
+        figure \ref{fig:rae_field_fine}.
+        The top views show the upper part of the airfoil, and the discontinuity due to the shock is visible, as expected.
         The bottom views show the lower part of the airfoil.
         The views on the right correspond to the JFNK computation, whereas the ones on the left to the computation with the traditional method.
-        We see that this method produces a solution of lower quality, as the pattern we see is not physical.
-        In particular, there are cells on the wall for which $\tilde{\nu}$ is null, which should not happen with our standard Spalart--Allmaras model.
-        We see in figure \ref{fig:rae_residuals_fine_linf} that the $\infty$-norm of the residual on the conservative variable $\rho \tilde{\nu}$ is near $10^2$ \PS{pas d'unité ?}, so we highlight on figure \ref{fig:rae_field_fine} cells for which the residual is higher than $10^{1.8}$.
-        We see that those cells correspond to the ones for which $\tilde{\nu} = 0$.
-        It shows a default of the standard time integration method, as it has non-physical features in the solution that prevent the residual convergence.
-        Tn contrast, it shows the quality of the JFNK method on this application.
-        }
+        This traditional method using an approximated Jacobian matrix produces a solution of lower quality, as the pattern is not physical.
+        In particular, there are cells for which $\tilde{\nu}$ is null in the computational domain, which should not happen with the standard Spalart--Allmaras model.
+        Figure \ref{fig:rae_residuals_fine_linf} shows that the $\infty$-norm of the residual on the conservative variable $\rho \tilde{\nu}$ is near $10^2$ \PS{TODO: pas d'unité}, so figure \ref{fig:rae_field_fine} highlights cells for which the residual is higher than $10^{1.8}$.
+        Those cells correspond to the ones for which $\tilde{\nu} = 0$.
+        It shows a flaw of the standard time integration method, as it has non-physical features in the solution that prevent the residual convergence.
+        In contrast, it shows the quality of the JFNK method on this application.
 
         \begin{figure}
           \centering
