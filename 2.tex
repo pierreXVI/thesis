@@ -100,7 +100,7 @@
 
       \paragraph{}
       Sparse matrices are stored in an in-house format, using an array for the diagonal blocks, another one for the extra-diagonal blocks and a third one to index the extra-diagonal blocks.
-      Matrix vector products are made inside BIBCEDRE to handle this matrix format, with the routine:
+      Matrix-vector products are made inside BIBCEDRE to handle this matrix format, with the routine:
 \begin{minted}{fortran}
   subroutine gmvec(sys, i_p, i_ap)
     type(type_sys), intent(inout) :: sys
@@ -108,7 +108,7 @@
     integer,        intent(in)    :: i_ap
 \end{minted}
       that takes three arguments: the \mintinline{fortran}{type_sys} instance, an index identifying the vector to multiply and an index identifying the vector where to put the result.
-      As we explained when we introduced Krylov subspace methods, GMRES uses the linear system matrix through this matrix vector product routine.
+      As we explained when we introduced Krylov subspace methods, GMRES uses the linear system matrix through this matrix-vector product routine.
       Classically, a client solver such as CHARME fills the matrix coefficients and then lets BIBCEDRE solve the linear system.
       In order to use the matrix-free approximation from equation (\ref{eq:matrix_free}), we only need to replace this routine with a new one that computes the approximation.
       Unfortunately, the approximation uses a function that belongs to the client solver.
@@ -121,7 +121,7 @@
       Without going into too much detail, we added a member to the type \mintinline{fortran}{type_sys} that contains the context to evaluate a matrix-vector product:
 \begin{minted}{fortran}
   type type_sys
-    ! Matrix vector product context
+    ! Matrix-vector product context
     class(type_gmvec_ctx), pointer :: gmvec_ctx => null()
 
     ... ! Additional data
@@ -348,7 +348,7 @@
       Handling the inner preconditioning with our matrix-free implementation is easy as those two operations are independent of each other.
       The outer preconditioning relies on the fact that the preconditioners available are simple, and therefore it is inexpensive to apply it to the whole matrix, and less expensive than applying after each matrix-vector product.
       We lose this advantage with our matrix-free method.
-      We still apply once the left preconditioning to the right-hand side before the solve, but we now need to apply it after each matrix vector approximation.
+      We still apply once the left preconditioning to the right-hand side before the solve, but we now need to apply it after each matrix-vector approximation.
 
 
     \subsection{Local time-stepping}

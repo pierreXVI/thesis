@@ -10,8 +10,8 @@
 
   \paragraph{}
   Nous analysons ensuite les méthodes exponentielles ajoutées à JAGUAR grâce à l'utilisation de la librairie SLEPc sur un cas simple, afin de constater l'ordre de ces méthodes à travers l'erreur globale en fin de simulation.
-  Sur un autre cas académique, nous comparons ensuite notre ensemble de méthodes en regardant le temps d'execution qu'il leur est nécessaire afin de réaliser une même simulation.
-  Pour finir, nous utilisons les méthodes exponentielles sur un cas plus significatif car proche d'une application réelle du sulveur: une aube de turbine.
+  Sur un autre cas académique, nous comparons ensuite notre ensemble de méthodes en regardant le temps d'exécution qu'il leur est nécessaire afin de réaliser une même simulation.
+  Pour finir, nous utilisons les méthodes exponentielles sur un cas plus significatif car proche d'une application réelle du solveur: une aube de turbine.
 \end{tcolorbox}
 
   \paragraph{}
@@ -27,9 +27,11 @@
 
     \paragraph{}
     JAGUAR means proJect of an Aerodynamic solver using General Unstructured grids And high ordeR schemes.
-    It is a reactive Navier--Stokes solver initially developed at the European center for research and advanced training in scientific computing: CERFACS.
-    It is made for unstructured grids and uses a Large Eddy Simulation model to solve turbulence.
-    Its particularity is that it uses a spectral method as the spatial discretisation scheme: the Spectral Difference method.
+    It is a reactive Navier--Stokes solver originally developed at CERFACS, \PS{the European center for research and advanced training in scientific computing\footnote{je vois pas l'intérêt de le mettre en anglais, soit ça soit j'enlève}}, and is jointly own by ONERA and CERFACS for four years.
+    It is made for unstructured grids and uses a Large Eddy Simulation model to solve unsteady turbulence effects.
+    It means that the large turbulence scales are computed explicitly while the smaller ones are modelled.
+    Its particularity is that it uses a spectral method as spatial discretisation scheme: the Spectral Difference method.
+    \PS{The Spectral Difference method follows some principles of the Discontinuous Galerkin formulation, in the sense that both are families of schemes of arbitrary order using polynomial approximations, but their mathematical foundations differ.}
 
 
     \subsection{The Spectral Difference method}
@@ -38,12 +40,12 @@
       With the Spectral Difference method, the solution is represented by a polynomial of degree $p$ inside each cell.
       It means that in the partial differential equation
       \begin{equation}\label{eq:pde_2}
-        \frac{\partial u}{\partial t} + \nabla \cdot F\left(u\right) = 0 \ ,
+        \frac{\partial u}{\partial t} + \nabla \cdot F\left(u\right) = 0 ,
       \end{equation}
       $u$ is a $p$-degree polynomial of the coordinate variables, where the polynomial coefficients are functions of time.
-      Then $F\left(u\right)$ has to be a $p\!+\!1$-order polynomial of the coordinate variables.
+      Then $F\left(u\right)$ has to be a $p\!+\!1$-order polynomial of the coordinate variables in order to have a $p$-order polynomial of the flux divergence.
       The key to the Spectral Difference method is how to compute a $p + 1$-order $F\left(u\right)$ from a $p$-order $u$.
-      This method uses key elements that were first mentioned by \cite{Kopriva1996}, and was later developed by \cite{LiuVinokurWang2006}.
+      This method uses key elements that were first mentioned by \cite{Kopriva1996}, and were later developed by \cite{LiuVinokurWang2006}.
 
       \begin{figure}
         \centering
@@ -55,27 +57,26 @@
       \paragraph{}
       Because the solution is represented in each cell by a polynomial, there is no reason for the solution to be continuous throughout cell interfaces.
       Indeed, the Spectral Difference method uses a piecewise representation of the solution.
-      For example, we show in figure \ref{fig:sd_discontinuous} a function represented as the Spectral Difference method represents the solution.
-      The two-dimensional mesh is regular and made of $2 \times 2$ cells over $\left[0, 2\right]^2$.
-      We represent the function
+      For example, let us consider the two-dimensional regular mesh, made of $2 \times 2$ cells over $\left[0, 2\right]^2$.
+      The exact analytical function $u$ over the mesh in the left part of figure \ref{fig:sd_discontinuous}:
       \begin{equation}
         \begin{aligned}
           u \colon \left[0, 2\right]^2 &\to \mathbb{R}\\
           \left(x, y\right) &\mapsto \cos\left(5x\right) \tanh\left(5\left(1 - y\right)\right)
         \end{aligned}
       \end{equation}
-      over the mesh in the left part of figure \ref{fig:sd_discontinuous}.
-      The colour mapping corresponds to the output of the function but is not given as this function is of no particular interest, but is just an example for the point we make here.
+      cannot be represented by polynomial exactly and the right picture of figure \ref{fig:sd_discontinuous} represents the solution associated with the Spectral Difference method.
+      The colour mapping corresponds to the output of the function but is not given as this function is of no particular interest: it is a rough example only.
       This function is interpolated with a second-order method using Lagrange polynomials over each cell.
       The result is shown in the right part of figure \ref{fig:sd_discontinuous}, where each colour corresponds to one cell.
-      We see that there are discontinuities at the cell interfaces, which shows a specificity of the Spectral Difference methods.
-      If we were to use the function on the left part of figure \ref{fig:sd_discontinuous} as an initial condition for a simulation, the Spectral Difference method would in fact use the function on the right part of the figure.
+      There are discontinuities at the cell interfaces, which shows a specificity of the Spectral Difference methods.
+      If the function on the left part of figure \ref{fig:sd_discontinuous} was used as an initial condition for a simulation, the Spectral Difference method would in fact use the polynomial interpolation on the right part.
       However, to respect the underlying conservation property of equation (\ref{eq:pde_2}), it is necessary for $F$ to be continuous over the whole computational domain.
       The Spectral Difference method will then make sure that the polynomial representations of the flux density are continuous throughout cell interfaces.
 
       \paragraph{}
-      To better understand how this method works, we take a one-dimensional cell: the segment $\left[0, 1\right]$.
-      Because the following is done at a fixed time we will drop the dependency on the time, but the solution and the coefficients are in reality functions of the time, not scalars.
+      To better understand how this method works, let us take a one-dimensional cell: the segment $\left[0, 1\right]$.
+      Because the following is done at a fixed time, the dependency on the time is dropped, but the solution and the coefficients are in reality functions of the time, not scalars.
       The solution $u$ inside this segment is then $u\left(x\right) = \sum_{i=0}^p a_ix^i$.
       Using Lagrange interpolation polynomials, it is equivalent to use the set of the $p + 1$ coefficients $a_i$ or the set of the $p + 1$ values $u\left(x_i\right)$ computed at the distinct points $x_i \in \left[0, 1\right]$ called \emph{solution points}.
       The solution as a $p$-order polynomial is represented by either one of those two sets.
@@ -91,46 +92,44 @@
       \end{figure}
 
       \paragraph{}
-      Figure \ref{fig:sd_scheme} shows the steps the Spectral Difference make to compute the flux divergence $\nabla \cdot F\left(u\right)$ from the solution $u$.
-      In this example, we have $p = 2$.
+      Figure \ref{fig:sd_scheme} shows the steps the Spectral Difference make to compute the flux divergence $\nabla \cdot F\left(u\right)$ from the solution $u$, with the specific choice $p = 2$.
       \begin{enumerate}
         \setcounter{enumi}{-1}
         \item At first, the solution is represented with a red line by its value in the $p + 1$ solution points.
         The solution points are marked by red dots.
-        We see parts of the solution from the left and right neighbouring cells.
-        As the figure shows and as we discussed before, they may be discontinuous from the solution in this cell.
-        This is the starting point of the Spectral Difference method so we will call it the 0-th step.
+        Parts of the solution from the left and right neighbouring cells can be seen.
+        As the figure shows, the piecewise local solutions inside each cell may be discontinuous at the mesh interface.
+        This is the starting point of the Spectral Difference method and will be called the 0-th step.
         \item In the first step, the method computes the value of the solution in the $p + 2$ flux points, marked by blue dots.
         As the polynomial representing the solution is known, this step just consists in evaluating it at flux points.
         \item In the second step, the method evaluates the flux density $F\left(u\right)$ in each flux point.
-        This is possible because we computed the solution in those points in the previous step.
+        This is possible because the solution was computed in those points in the previous step.
         The values of the flux density are marked by blue squares in the figure.
-        However, segment end points are flux points for the two neighbouring cells, and therefore we show in the figure a full black square for the flux at $0$ from the left neighbouring cell and an empty black square for the flux at $1$ from the right neighbouring cell.
+        However, segment end points are flux points for the two neighbouring cells, and therefore the figure shows a full black square for the flux at $0$ from the left neighbouring cell and an empty black square for the flux at $1$ from the right neighbouring cell to highlight this discontinuity.
         \item Because there are different values of the flux density at the segment end points, the method would not preserve the conservative property of the partial differential equation.
         This is why in the third step, the method computes a unique interface flux density for both cells at each segment end points.
         The problem is to find the interface flux at the discontinuity of a piecewise solution.
         In other words, this is a Riemann problem.
         Once again, this is solved with a Riemann solver, exact or approximate, to get in the end a single value for the left and right parts of the discontinuity.
-        \item Now that we have the value of the flux density at the $p+2$ flux points, we can interpolate it with Lagrange polynomials to get a $p+1$ order $F$ as expected in the fourth step, represented with a blue line in the figure.
-        We end up with a continuous representation of $F$, differentiable everywhere except at cell interfaces.
-        \item In the last step, we can differentiate the representation of $F$ to get the flux divergence, represented by a green line in the figure.
-        We finally get a $p$-order representation of $\nabla \cdot F$ that we can evaluate at the solution points.
+        \item An interpolation from the value of the flux density at the $p+2$ flux points using Lagrange polynomials enables to get a $p+1$ order $F$ as expected in the fourth step, represented with a blue line in the figure.
+        Therefore, one can end up with a continuous representation of $F$, differentiable everywhere except at cell interfaces.
+        \item In the last step, the representation of $F$ is differentiated to get the flux divergence, represented by a green line in the figure.
+        Finally, a time integration method can use a $p$-order representation of $\nabla \cdot F$ to compute the solution at the next time step.
       \end{enumerate}
 
       \paragraph{}
-      To work with any segment, not only $\left[0, 1\right]$, we use an isoparametric transformation to get back to this unity segment.
+      To work with any segment, not only $\left[0, 1\right]$, an isoparametric transformation is introduced to get back to this unity segment.
       It is the same when working with multiple dimensions, where the isoparametric transformation gets the cell back to the tensor powers of this segment.
       The placement of the solution points does not seem to matter much, but the placement of the flux points does \cite{VandenAbeeleLacorWang2008}.
       The $p + 1$ solution points we will use are defined in the $\left[0, 1\right]$ segment as the Chebyshev roots:
       \begin{equation}
-        x_i = \frac{1}{2} \left(1 - \cos\left(\frac{2i + 1}{2p + 2} \pi\right)\right), \quad, 0 \leq i \leq p \ .
+        x_i = \frac{1}{2} \left(1 - \cos\left(\frac{2i + 1}{2p + 2} \pi\right)\right), \quad 0 \leq i \leq p .
       \end{equation}
       They are traditionally defined inside the $\left[-1, 1\right]$ segment but are scaled into $\left[0, 1\right]$.
       They are the roots of the Chebyshev polynomials of the first kind and are often used in polynomial interpolation as they tend to minimise Runge's phenomenon.
-      The $p + 2$ flux points used by our methods are the $p$ roots of the $p$-th Legendre polynomials to which are added the two segment end points.
+      The $p + 2$ flux points are the $p$ roots of the $p$-th Legendre polynomials to which are added the two segment end points.
       This choice has the property that there is a flux point between each contiguous solution point.
       There is no explicit formula for the Legendre polynomial roots as there is one for the Chebyshev polynomial roots.
-      Their value is taken from tables from the literature \PS{ref ?}.
       They are also defined in the $\left[-1, 1\right]$ segment and are scaled into $\left[0, 1\right]$.
       Finally, the solution and flux points can be seen in figure \ref{fig:sd_points}.
 
@@ -142,67 +141,76 @@
       \end{figure}
 
       \paragraph{}
-      As a side note, we see that the Spectral Difference method with $p = 0$ corresponds to the first-order Finite Volume method.
+      As a side note, the Spectral Difference method with $p = 0$ corresponds roughly\footnote{\PS{Pourquoi roughly?}} to the first-order Finite Volume method.
       Indeed, the solution is assumed constant in the cell, represented by the value at its barycenter.
       The flux balance is made at the cell interfaces with a Riemann solver.
       This corresponds to the placement of the solution and flux points in figure \ref{fig:sd_points} when $p = 0$.
-      For higher $p$ we have a true Spectral Difference method, of order $p$ \PS{preuve de l'ordre ?}.
-      In JAGUAR, we can chose the order $p$ from 2 to 10 \PS{10 en pratique ?}.
+      For higher $p$, the proposed Spectral Difference method is naturally of order $p$
+      Indeed, the method can represent exactly any polynomial of degree $p\!-\!1$ and, as a consequence, the error term is of order $p$.
+      In JAGUAR, the order $p$ range from 2 to 10, but $2 \le p \le 6$ for practical applications.
+
+      \paragraph{}
+      The demonstration of the accuracy of the Spectral Difference method is proposed in a reference paper published recently \cite{Vanharen_JCP_337_2017}.
+      JAGUAR was optimised to be efficient for parallel computations \cite{Cassagne2015, CassagneMSc2014, MaraitMSC2015}.
+      To perform Large Eddy Simulation, it is of paramount importance to implement unsteady characteristic boundary condition: Navier--Stokes Characteristic Boundary Condition, or NSCBC.
+      The initial formulation \cite{FievetJCP2020} was extended to deal with acoustic conditions and liner\footnote{\PS{liner ou linear ?}} optimisation \cite{CardesaJCP2022}.
+      Recently, the solver was extended to handle $h-p$ adaptation \cite{Hartmann2021} and the schemes were extended to triangles and tetrahedrons \cite{Veilleux2022a, Veilleux2022b}.
+      Another improvement concerns the treatment of combustion, with a PhD thesis funded by Safran \cite{Marchal2021}.
+      Finally, the last extension concerns the treatment of shocks \cite{DeniauPuigt2022}.
+      This review shows the strong involvement of researchers on the solver.
 
 
     \subsection{Exponential integration methods in JAGUAR}
 
       \paragraph{}
-      We now have a high-order spatial discretisation method, so that when we test our high-order time integration methods the resulting error will come mostly from the time integration and not the spatial discretisation.
+      Using a high-order spatial discretisation method and a refined mesh is the best suited situation to test high-order time integration methods: the resulting error will come mostly from the time integration and not the spatial discretisation.
       The development of an exponential time integration method was inexpensive within CEDRE as the method reuses lots of already existing parts.
-      For JAGUAR which only has explicit methods, we would have to develop the Arnoldi iteration in addition to the exponential computation functions.
-      As this work does not aim to produce a finely tuned method for JAGUAR but to analyse scientifically exponential methods, we decided to rely on the SLEPc library \cite{HernandezRomanVidal2005}.
+      For JAGUAR which only has explicit methods, the Arnoldi iteration and the exponential computation functions must be implemented to use exponential methods.
+      They could be developed as internal stand-alone routines to produce a finely tuned method for JAGUAR.
+      However, since the goal is to analyse exponential methods scientifically, it was decided to rely on the SLEPc library \cite{HernandezRomanVidal2005}.
       The Scalable Library for Eigenvalue Problem Computation, or SLEPc, is an extension of the software library PETSc \cite{petsc-web-page, petsc-user-ref, petsc-efficient}.
-      Instead of rewriting the algorithms we need, we can use their SLEPc implementation.
+      Instead of rewriting the needed algorithms, it was chosen to use their SLEPc implementation.
       In particular, SLEPc handles what it calls \emph{Matrix Function} objects or MFN:
       \begin{quote}
         "Given a matrix $A$ and a vector $b$, the call \mintinline{c}{MFNSolve(mfn, b, x)} computes \\
         $x=f\left(A\right) b$, where $f$ is a function such as the exponential."
       \end{quote}
-      This is precisely what we need to develop our methods:
-      As it handles the previously introduced $\varphi$-functions with its MFN objects, SLEPc is then an obvious choice of a library for implementing exponential integration methods.
+      This is precisely what is needed to develop exponential methods: as it handles the previously introduced $\varphi$-functions with its MFN objects, SLEPc is then an obvious choice of a library for implementing exponential integration methods.
       Furthermore, because it relies on PETSc, it is efficiently scalable to fit our multiprocessing needs.
 
       \paragraph{}
-      We saw that exponential methods are based on a decomposition of the ordinary differential equation such as equation (\ref{eq:ode_split}).
+      Exponential methods are based on a decomposition of the ordinary differential equation such as equation (\ref{eq:ode_split}).
       However, JAGUAR uses only explicit time integration methods, so no Jacobian matrix is available.
-      Computing analytically the Jacobian matrix would prove challenging as we would have to differentiate the Spectral Difference scheme, the Riemann solvers, the diffusion scheme, etc.
-      It is not insurmountable but would amount to more work than what we can afford during this thesis.
-      We decided instead to reuse the work from the previous part: the Jacobian matrix will not be formed, but its effect will be computed by a finite difference approximation.
+      Computing analytically the Jacobian matrix would prove challenging as any ingredient should be differentiated, such as the Spectral Difference scheme, the Riemann solvers, the diffusion scheme, etc.
+      It is not insurmountable but would amount to more work than what could be afforded during this thesis.
+      It was decided instead to reuse the work from the previous part: the Jacobian matrix will not be formed, but its effect will be computed by a finite difference approximation.
       Another reason to work with the SLEPc library is that using a finite difference approximation is easy with it.
       More precisely, it is PETSc that handles this approximation.
-      To sum up, to compute $\varphi_k\left(L\right)b$ that is required for our exponential methods with $L = f'\left(y\right)$, we first use the fact that $L$ is a Jacobian matrix to create it with the appropriate PETSc data type.
-      We only need to indicate to PETSc what function $L$ it is the Jacobian matrix of, that is $f$.
-      Then, after setting the MFN object of SLEPc, we can compute the desired result.
+      \PS{To sum up, to compute $\varphi_k\left(L\right)b$ that is required for the exponential methods with $L = f'\left(y\right)$, $L$ is created with the appropriate PETSc data type.
+      As it is a Jacobian matrix of a function, PETSc only needs to know the function to compute matrix-vector products.}
+      Then, after setting the MFN object of SLEPc, the library can compute the desired result
       The Arnoldi iteration, the Scaling and Squaring algorithm and the exponential evaluation are all handled internally by the library.
       Overall, this procedure is extremely simple from our perspective and requires only a few lines of code to implement.
-      This highlight the relevance of using the SLEPc library.
+      This highlights the relevance of using the SLEPc library to easily test procedures and acquire the associated knowledge.
 
       \paragraph{}
-      With what we described, we are able to write an exponential time integration method in JAGUAR.
       Other people that also work with JAGUAR did develop implicit time integration methods using PETSc.
-      To continue in this direction, we decided to add a time integration method based on the generic PETSc Time Stepper \cite{AbhyankarBrownConstantinescuEtAl2018}.
-      This way, a user may use most methods from PETSc in JAGUAR with no additional developments
+      To continue in this direction, it was decided to add a time integration method based on the generic PETSc Time Stepper \cite{AbhyankarBrownConstantinescuEtAl2018}.
+      This way, a user may use most methods from PETSc in JAGUAR with no additional developments.
       It includes any explicit and implicit time integration methods, but also nonlinear solvers such as Newton's methods with various line search algorithms, linear solvers with various Krylov subspace methods and finally various preconditioning.
       However, this generic PETSc Time Stepper method was added on the side of this thesis, and therefore will not be discussed here, along with the previous work on implicit methods.
 
 
     \paragraph{}
-    In the end, we now have a high-order spatial discretisation method with the Spectral Difference method that allows us to analyse and compare exponential methods.
-    In the following, we will work with the three methods we developed in JAGUAR and we presented earlier in table \ref{tab:exprb_butcher}: the Rosenbrock--Euler, ExpRB32 and ExpRB42 methods.
+    In the end, the high-order spatial discretisation method called the Spectral Difference method allows to analyse and compare exponential methods that are available through the SLEPc library.
+    In the following, attention is mainly focused on the three methods that were presented earlier in table \ref{tab:exprb_butcher}: the Rosenbrock--Euler, ExpRB32 and ExpRB42 methods.
 
 
   \section{Analysis of exponential time integration methods}
 
     \paragraph{}
-    We now have in JAGUAR all the tools necessary to analyse exponential time integration methods.
-    We have to choose several test cases to do so.
-    We compare the exponential methods to explicit Runge--Kutta methods as they are the only available methods in JAGUAR.
+    There are in JAGUAR all the tools necessary to analyse exponential time integration methods and several test case must be chosen.
+    During the analysis, the exponential methods and explicit Runge--Kutta methods will be compared, as the latest ones are the only available methods in JAGUAR and represent the state-of-the-art.
     Those methods are:
     \begin{itemize}
       \item RK2, the Midpoint method
@@ -214,7 +222,7 @@
     Low-storage methods are Runge--Kutta methods for which the matrix $A$ in their Butcher tableau is lower diagonal, or in other words all $a_{ij}$ are null except when $j = i - 1$.
     Also, all $b_i$ are null except the last one that is equal to $1$.
     It means that the final stage and all intermediate ones use only the previous stage.
-    Therefore we do not need to keep track of the intermediate stages in memory, only to update the current value, which gives the name low-storage method.
+    Therefore, there is no need to keep track of intermediate stages in memory, only to update the current value, which gives the name low-storage method.
     The last two methods are Runge--Kutta methods with an additional property originally called TVD \cite{GottliebShu1996} and more recently SSP  \cite{GottliebShuTadmor2001}.
     Without going into too much detail, it means that they are methods that are convex combinations of explicit Euler steps so that their stability is guaranteed for sufficiently small time steps.
     To us, it means they are defined differently than other methods, using the coefficients $\alpha_{0 < i \leq k, 0\leq j < i}$ and $\beta_{0 < i \leq k, 0\leq j < i}$ as:
@@ -223,75 +231,82 @@
         y_{n+1} &= y^{\left(k\right)} \\
         \textrm{with}\quad y^{\left(i\right)} &= \sum_{j = 0}^{i-1} \alpha_{ij} y^{\left(j\right)} + \Delta t \beta_{ij} f\left(y^{\left(j\right)}\right) , \quad 1 \leq i \leq k\\
         \textrm{and}\quad y^{\left(0\right)} &= y_n
-      \end{aligned}\right. \ .
+      \end{aligned}\right. .
     \end{equation}
     However, they are equivalent to traditional Runge--Kutta methods in the sense that they can be represented by the standard Butcher tableau, with:
     \begin{equation}
       \left\{\begin{aligned}
         a_{ij} &= \sum_{l = j+1}^{i-1} \alpha_{i-1, l-1} a_{l, j} + \beta_{i-1, j-1} \\
         b_i &= \sum_{l = i+1}^{k} \alpha_{k, l-1} a_{l, i} + \beta_{k, i-1}
-      \end{aligned}\right. \ .
+      \end{aligned}\right. .
     \end{equation}
     We can finally say that we are indeed working with explicit Runge--Kutta methods, as they were introduced initially.
 
 
-    \subsection{Order: convected inviscid isentropic vortex}
+    \subsection{Order analysis: convected inviscid isentropic vortex}
 
       \paragraph{}
-      For the first test, we wanted to see if the orders of the exponential time integration methods were the correct ones when used in JAGUAR.
-      We decided to use the same test case we used with CEDRE: the two-dimensional inviscid isentropic vortex.
+      This first case is designed to analyse the order of accuracy of the proposed methods and to validate their implementation.
+      Is is the simple case of the two-dimensional inviscid isentropic vortex, the same as the one considered with CEDRE.
       The case is still described by equation \ref{eq:covo}, but the numerical values are different.
-      The convective flow Mach number is still $0.5$, but this time $P_\infty = 10^5$ and $T_\infty = 300$.
-      The heat capacity ratio is $\gamma = 1.4$ and the specific gas constant is $r_\textrm{gas} = 287.058$.
-      The mesh represent the two-dimensional box $\left[0, L\right]^2$ with $L = 0.1$, and is made of $N \times N$ cells.
-      The vortex is defined by its characteristic radius $R_0 = 0.005$ and its intensity $\beta = 0.2$.
-      It corresponds in fact to the same vortex as the one we used with CEDRE, in size and in intensity, but it has been scaled down into a smaller box and dimensioned to some given pressure and temperature.
-      \PS{unités ?}
+      The convective flow Mach number is still $0.5$, but this time $P_\infty = 10^5\si{\pascal}$ and $T_\infty = 300\si{\kelvin}$.
+      The heat capacity ratio is $\gamma = 1.4$ and the specific gas constant is $r_\textrm{gas} = 287.058\si{\joule\per\kilo\gram\per\kelvin}$.
+      Those values correspond to standard values for dry air.
+      The mesh represent the two-dimensional box $\left[0, L\right]^2$ with $L = 0.1\si{\meter}$, and is made of $N \times N$ cells.
+      The vortex is defined by its characteristic radius $R_0 = 0.005\si{\meter}$ and its intensity $\beta = 0.2$.
+      It corresponds in fact to the same vortex as the one used with CEDRE, in size and in intensity, but it has been scaled down into a smaller box and dimensioned to some given pressure and temperature.
+      The present choice is in agreement with the prescription of the International Workshop on High Order CFD Methods.
 
       \paragraph{}
-      The period for those numerical values is \PS{TODO}.
-      After 20 periods, we can compute the $L_2$ error for a scalar variable $u\left(\vec{x}, t\right)$:
+      \GP{Quel solveur de Riemann ???? Tu ne l'as pas dit...}
+      \PS{Comment ça ?}
+
+      \paragraph{}
+      The period for those numerical values is $L / U_\infty = \num{0.0005759974000734113}\si{\seconds}$.
+      After 20 periods, the vortex should recover the initial position and the 2-norm of the error between initial and computed solutions can be defined for any scalar variable $u\left(\vec{x}, t\right)$:
       \begin{equation}
-        \operatorname{err}\left(u\right) = \left(\int_{\left[0, L\right]^2} \left(u\left(\vec{x}, 20T\right) - u\left(\vec{x}, 0\right)\right)^2 \mathrm{d}\vec{x} \right)^{1/2} \ .
+        \operatorname{err}\left(u\right) = \left(\int_{\left[0, L\right]^2} \left(u\left(\vec{x}, 20T\right) - u\left(\vec{x}, 0\right)\right)^2 \mathrm{d}\vec{x} \right)^{1/2} .
       \end{equation}
-      Because it is a periodic case, the initial value corresponds to the exact solution.
-      This error corresponds then to the error of the time integration method.
-      By looking at this error as a function of the time step, we can determine the order of our time integration methods.
+      \PS{
+      %\GP{ Je vire ca car c'est pas tout à fait vrai... Because it is a periodic case, the initial value corresponds to the exact solution.
+      %This error corresponds then to the error of the time integration method.}\\
+      %Je mets ça à la place:
+      Once the vortex moves in the domain, the numerical solution is subject to two schemes and errors are a consequence of both.
+      Once the spatial scheme is defined, the mesh is chosen sufficiently refined in order to transport the vortex accurately and the goal is to have a much lower influence of the spatial scheme than of the time integration scheme on the total error.
+      The order of our time integration methods can be determined by looking at this error as a function of the time step.
+      }
 
       \paragraph{}
-      The error we get is the global truncation error: the error the method makes while getting to a fixed time, no matter how many iterations it took.
-      However, we previously defined the order of a time integration method using the local truncation error: the error it makes after a single small step.
+      The error at the end of the simulation is the global truncation error: the error the method makes while getting to a fixed time, no matter how many iterations it took.
+      However, the order of a time integration method was previously defined using the local truncation error: the error it makes after a single small step.
       There is a link between global and local truncation errors for our single-step methods.
       Let us call $\tau_n$ the local truncation error and $e_n$ the global truncation error at step $n$.
-      Because our methods are single-step methods that can be written as:
+      Because single-step methods can be written as:
       \begin{equation}
-        y_{n+1} = y_n + \Delta t_n g\left(y_n, \Delta t_n\right) \ ,
+        y_{n+1} = y_n + \Delta t_n g\left(y_n, \Delta t_n\right) ,
       \end{equation}
-      with an increment function $g$ that is $K$-Lipschitz continuous in the $y$ variable, we have \cite{SueliMayers2003}:
+      with an increment function $g$ that is $K$-Lipschitz continuous in the $y$ variable, the global truncation error is bounded \cite{SueliMayers2003}:
       \begin{equation}
-        \left| e_n \right| \leq \frac{\max_{1 \leq i \leq n} \left| \tau_i \right|}{K \Delta t_n} \left(e^{K\left(t_n - t_0\right)} - 1\right) \ .
+        \left| e_n \right| \leq \frac{\max_{1 \leq i \leq n} \left| \tau_i \right|}{K \Delta t_n} \left(e^{K\left(t_n - t_0\right)} - 1\right) .
       \end{equation}
       A method is a $p$-order method if $\tau_n = O\left(\Delta t^{p+1}\right)$.
       Therefore, a $p$-order method verify $e_n = O\left(\Delta t^{p}\right)$.
-      However, the reciprocal is not true: just because we observe a global truncation error is $e_n = O\left(\Delta t^{p}\right)$ does not mean the order of the method is $p$.
-      Here we do not look at the error to show the method orders are correct, but to see if we end up with the expected order for the global truncation error, as it is the error users look at.
+      However, the reciprocal is not true: observing a global truncation error $e_n = O\left(\Delta t^{p}\right)$ does not mean the order of the method is $p$.
+      As a consequence, attention is focused on the expected order for the global truncation error at the end of the computation, as it is the error users look at.
       The proof of the order for a method is analytical, by writing the partial Taylor series of the exact solution, as we did earlier for the exponential Rosenbrock--Euler method.
 
       \paragraph{}
       The point of this analysis is to see how the global truncation error depends on the time step $\Delta t$ that is kept constant throughout the computations.
-      Because some methods are more accurate than others, we did several computations with different mesh resolutions and Spectral Difference method orders.
-      We start with the Midpoint method.
-      We take the order of the spatial discretisation method $p = 4$.
-      We look at the $L_2$ error for the pressure after 20 periods, for given time steps.
-      We will in fact show results using the CFL number, as it is proportional to the time step:
+      Because some methods are more accurate than others, several computations with different mesh resolutions and Spectral Difference method orders were made.
+      Let us start with the Midpoint method, associated with the order of the spatial discretisation method $p = 4$. The computation is stopped after 20 periods and the $L_2$ error for the pressure is analysed for different time steps.
+      Results are shown using the CFL number as it is proportional to the time step:
       \begin{equation}
-        \mathcal{N}_\textrm{CFL} = \frac{N \left(p + 1\right) \left(1 + \operatorname{Ma}\right) \sqrt{\gamma r_\textrm{gas} T}}{L} \Delta t\ .
+        \mathcal{N}_\textrm{CFL} = \frac{N \left(p + 1\right) \left(1 + \operatorname{Ma}\right) \sqrt{\gamma r_\textrm{gas} T}}{L} \Delta t .
       \end{equation}
-      Using the CFL number instead of the time step allows us to compare results with different $N$ or even $p$.
+      Using the CFL number instead of the time step allows to compare results with different $N$ or even $p$.
       It can be seen here as a nondimensional time.
-      We do the computation for multiple values of $N$: 16, 32 and 64.
-      The result is shown in figure \ref{fig:covo_rk2}.
-      We see that the $16\times16$ mesh does not allow for a good analysis: the error due to the spatial discretisation method is too important and prevents us to see the expected dependency between the global truncation error and the time step.
+      Computations are made for multiple values of $N$: 16, 32 and 64, and the corresponding results are shown in figure \ref{fig:covo_rk2}.
+      The $16\times16$ mesh does not allow for a good analysis: the error due to the spatial discretisation method is too important and prevents to see the expected dependency between the global truncation error and the time step.
       The two other meshes however show the expected relation: $\operatorname{err} = O\left(\Delta t^2\right)$.
 
       \begin{figure}
@@ -302,14 +317,12 @@
       \end{figure}
 
       \paragraph{}
-      We can repeat this analysis for other methods, and we look next at the RK4 method.
-      However, we see in figure \ref{fig:covo_rk2_rk4} that the error is constant no matter the value of $N$.
+      This analysis is repeated for other methods, and we look now at the RK4 method.
+      However, figure \ref{fig:covo_rk2_rk4} shows that the error is constant no matter the value of $N$.
       It is because the error due to the RK4 method is so small that it is dominated by the error due to the spatial discretisation scheme.
       It is useless to do the same for lower time steps, as the error would not change, therefore the RK4 error lines are continued by black dashed lines.
-      We still see the curves corresponding to the Midpoint method.
-      As the time step decreases, we see that those curves tend to the dashed lines: to the same values as the constant errors we have with the RK4 method.
-      This lower bound for the error corresponds to the error of the Spectral Difference method.
-      It shows once again that we need spatial discretisation methods with small errors in order to analyse time integration methods.
+      As the time step decreases, the curves from the Midpoint scheme tend to the same dashed lines: this is the proof that this lower bound for the error corresponds to the error of the spatial discretisation method.
+      It shows once again that a spatial discretisation method with small errors is necessary in order to analyse time integration methods.
 
       \begin{figure}
         \centering
@@ -319,22 +332,21 @@
       \end{figure}
 
       \paragraph{}
-      At first, we kept increasing $N$ up to 128 and then 256, unsuccessfully: the error was still constant.
-      Instead of refining the mesh, we can use the Spectral Difference method to increase the spatial discretisation order.
+      Increasing $N$ up to 128 and then 256 was unsuccessful: the error was still constant.
+      Instead of refining the mesh, an analysis playing with the Spectral Difference method can be performed by increasing the spatial discretisation order.
       As the theory behind this analysis does not directly depend on $N$ and $p$, we can adjust them to better fit the method we want to analyse.
-      This is done in figure \ref{fig:covo_rk} where we show the global truncation error as a function of the time step, or CFL number, for the RK4, RKo6s and TVDRK(3, 3) methods.
-      We observe the expected slopes for the second and third-order methods.
-      The result is more subtle for the fourth-order method.
+      This is done in figure \ref{fig:covo_rk} where the global truncation error is shown as a function of the time step, or CFL number, for the RK4, RKo6s and TVDRK(3, 3) methods.
+      The expected slopes for the second and third-order methods are obtained but the result is more subtle for the fourth-order method.
       The error is once again dominated by the error of the spatial discretisation scheme.
-      On the right part of the curve, we are able to guess the correct slope.
-      To see it more clearly we should plot the error for larger time step values.
-      However, those larger time step values are outside the stability domain of the method, so we can not do it.
+      On the right part of the curve, one can guess the correct slope but it is necessary to plot the error for larger time step values
+      to see it more clearly.
+      However, those larger time step values are outside the stability domain of the method.
       In fact, all curves end on the right at the largest time step for which the computation did not fail.
       It means from figure \ref{fig:covo_rk} that the RKo6s method is more stable than both the RK4 and TVDRK(3, 3) methods.
-      This is the issue with this analysis: if we use too small time steps, the error from the spatial discretisation method is dominant and we do not see the expected slope.
-      If on the other hand, we use too large time steps, we fall outside the stability region of the method.
-      We need to find the correct window that allows us to observe the desired slope by choosing suitable values for $p$ and $N$.
-      Because the error of the SSPRK(5, 4) is particularly small, we were not able to find reasonable values below $p = 8$ and $N = 64$.
+      This is the issue with this analysis: for too small time steps, the error from the spatial discretisation method is dominant and the expected slope are not recovered.
+      On the other hand, with too large time steps, computations fall outside the stability region of the method.
+      The difficulty is to find the correct window that allows to observe the desired slope by choosing suitable values for $p$ and $N$.
+      Because the error of the SSPRK(5, 4) is particularly small, it was not possible to find reasonable values below $p = 8$ and $N = 64$.
       Above those values, the computations get rather long so we skipped this method.
 
       \begin{figure}
@@ -345,20 +357,20 @@
       \end{figure}
 
       \paragraph{}
-      Now that we tried our analysis on traditional explicit Runge--Kutta methods, we look at the newly added exponential Rosenbrock methods.
+      The analysis on traditional explicit Runge--Kutta methods can now be applied to the newly added exponential Rosenbrock methods.
       Their corresponding error curves are shown in figure \ref{fig:covo_exp}.
-      As expected, we see the respective 2, 3 and 4 slope values.
-      Furthermore, by looking at the abscissa ranges, we see that they work correctly with higher CFL numbers than all the explicit methods we tried.
+      As expected, the respective slope values are 2, 3 and 4.
+      Furthermore, by looking at the abscissa ranges, they work correctly with higher CFL numbers than all the explicit methods that were tested.
       The goal of this first analysis of the exponential integration methods is not to analyse their robustness, but it already seems better than with explicit methods.
-      What is interesting from this analysis is that we are able to use higher-order methods with fewer Runge--Kutta stages.
+      What is interesting from this analysis is that one can use higher-order methods with fewer Runge--Kutta stages.
       Furthermore, the additional computational cost of the additional stages is low.
-      As we discussed earlier, we can reformulate exponential Rosenbrock methods as in equation (\ref{eq:exprb_defect})  using the defects $D_{n, i}$.
-      The first stage of an exponential Rosenbrock method is then an exponential Rosenbrock--Euler method, for which we compute the contribution of the "full" right-hand side $f\left(y_n\right)$.
+      As discussed earlier, exponential Rosenbrock methods can be reformulated as in equation (\ref{eq:exprb_defect}) using the defects $D_{n, i}$.
+      The first stage of an exponential Rosenbrock method is then an exponential Rosenbrock--Euler method, for which the contribution of the "full" right-hand side $f\left(y_n\right)$ is used.
       Here, this is done with the algorithms previously described, using a Krylov subspace of dimension 20.
       Then, because the defects are relatively smaller, the other stages compute their contribution with only 5 Krylov basis vectors.
       The two exponential Rosenbrock methods with two stages are not a lot more expensive than the Rosenbrock--Euler method.
       In comparison, a 2-stage explicit Runge--Kutta method will be twice as computationally expensive as the Euler method.
-      We also tried this analysis with larger Krylov subspace methods.
+      This analysis was also performed with larger Krylov subspace methods.
       In this other configuration, the first stage uses 40 Krylov basis vectors for all three exponential methods, and the second stage uses 10 Krylov basis vectors for the ExpRB32 and ExpRB42 methods.
       However, using a larger subspace did not have any impact on the result of this analysis.
       For all $\left(N, p\right)$ configurations, the error curve as a function of the time step was almost the same as with smaller Krylov subspace, such as they were almost indistinguishable when plotted in figures like figure \ref{fig:covo_exp}.
@@ -372,21 +384,21 @@
 
       \paragraph{}
       We choose this first test case as it is widespread in the computational fluid dynamic community, as a tool to analyse the order of integration schemes.
-      Often, it concerns spatial discretisation methods, but we used it for our time integration method as it gives us easy access to the global truncation error, which is the error that interest the solver users.
-      First, we showed that this analysis recover the correct slope on the error curve as a function of the time step for the already existing explicit Runge--Kutta integration methods.
+      It often concerns spatial discretisation methods, but it can be considered for time integration method as it gives access to the global truncation error, which is the error that interests the solver users.
+      First, this analysis recovers the correct slope on the error curve as a function of the time step for the already existing explicit Runge--Kutta integration methods.
       Indeed, the error converges, as the time step decreases, to a minimum error value that comes from the spatial discretisation scheme.
       By refining the mesh and using higher-order spatial discretisation methods, we are able to reduce this minimal error and observe the expected curve for almost all methods.
-      The same analysis but with the newly implemented exponential Rosenbrock methods showed that we get the expected order.
+      The same analysis but with the newly implemented exponential Rosenbrock methods showed the expected order.
       It also showed that the additional cost of using more stages with exponential methods is relatively small compared to the same additional cost for explicit Runge--Kutta methods.
-      Finally, it showed that for this convected inviscid isentropic vortex case, the exponential Rosenbrock methods were much more robust, as they work with higher CFL numbers.
+      Finally, for this convected inviscid isentropic vortex case, the exponential Rosenbrock methods were much more robust, as they work with higher CFL numbers.
       The analysis of their stability is the topic of the next section.
 
 
-    \subsection{Robustness: Taylor--Green vortex}
+    \subsection{Robustness analysis: Taylor--Green vortex}
 
       \paragraph{}
-      For the next text case, we choose another explicit computation: the Taylor--Green vortex.
-      It is a three-dimensional case where we solve the Navier-Stokes equations in a periodic box of length $2 \pi L$ centered around the origin.
+      The Taylor--Green vortex consists in following the evolution of a set of vortices in a periodic domain.
+      It is a three-dimensional case, solution of the Navier--Stokes equations in a periodic box of length $2 \pi L$ centered around the origin.
       The initial flow is given by:
       \begin{equation}\label{eq:tgv}
         \left\{\begin{aligned}
@@ -399,7 +411,7 @@
           P &= P_\infty \left(1 + \frac{\gamma \operatorname{Ma}^2}{16} \left(\cos\left(\frac{2x}{L}\right) + \cos\left(\frac{2y}{L}\right)\right) \left(\cos\left(\frac{2z}{L}\right) + 2\right) \right)
         \end{aligned}\right.
       \end{equation}
-      over the domain $\left(x, y, z\right) \in \left[-\pi L, \pi L\right]^3$, and can be seen in figure \ref{fig:tgv_fields}.
+      over the domain $\left(x, y, z\right) \in \left[-\pi L, \pi L\right]^3$, as seen in figure \ref{fig:tgv_fields}.
       Even if $\vec{u}_z = 0$ at the initialisation, it becomes non-null afterwards and the problem is fully three-dimensional.
       The initial flow transition to turbulence: the initial large scales decay into smaller ones, that end up dissipated.
 
@@ -411,55 +423,53 @@
       \end{figure}
 
       \paragraph{}
-      \PS{UNITÉS ?}
-      The numerical values we took in this test case are $L = 1$, $\operatorname{Ma} = 0.1$, $r_\textrm{gas} = 71.4284$, $T_\infty = 1$ and $P_\infty = 71.4288$.
-      Because here the fluid viscosity is constant with $\mu = \num{6.25e-4}$, we have the Reynolds number based on L: $\operatorname{Re} = \rho_\infty U\infty L / \mu = 1600$, which is a standard value in many validation cases from the literature \PS{REFs}.
+      The numerical values are non dimensionalised: $L = 1$, $\operatorname{Ma} = 0.1$, $r_\textrm{gas} = 71.4284$, $T_\infty = 1$ and $P_\infty = 71.4288$.
+      The goal is to recover the Reynolds number $\operatorname{Re} = \rho_\infty U\infty L / \mu = 1600$ with the associated constant fluid viscosity is $\mu = \num{6.25e-4}$.
       The Prandtl number, ratio of momentum diffusivity to thermal diffusivity, is equal to 0.71.
-      Using the convective time $t_c = L / U_\infty$ \PS{c'est bien ça ?}, it is known for our numerical values that the maximum of dissipation happens around $8 t_c$, and after $15 t_c$ the flow is fully turbulent without any trace of the initial structures.
+      Using the convective time $t_c = L / U_\infty$, it is known that the maximum of dissipation happens around $8 t_c$, and after $15 t_c$ the flow is fully turbulent without any trace of the initial structures.
+      The definition of the test case is part of the International Workshop on High-Order CFD Methods.
+      A reference solution is also provided by the workshop, obtained using a spectral solver on a very refined mesh.
 
       \paragraph{}
-      The values of interest for this test case are the \PS{mean turbulent kinetic energy averaged over the computational domain $\Omega$}:
-      \begin{equation} \PS{TODO}
-        E_k = \frac{1}{\Omega} \int_\Omega \rho \frac{\norm{\vec{u}}^2}{2} \mathrm{d}\Omega \ ,
+      The values of interest for this test case are the temporal evolution of the mean turbulent kinetic energy over the computational domain $\Omega$:
+      \begin{equation}
+        E_k = \frac{1}{\rho_\infty \left|\Omega\right|} \int_\Omega \rho \frac{\norm{\vec{u}}^2}{2} \mathrm{d}\Omega ,
       \end{equation}
       the mean enstrophy, defined by
-      \begin{equation} \PS{TODO}
-        \mathcal{E} = \frac{1}{\rho_\infty \Omega} \int_\Omega \rho \frac{\norm{\nabla \times \vec{u}}^2}{2} \mathrm{d}\Omega \ ,
+      \begin{equation}
+        \mathcal{E} = \frac{1}{\rho_\infty \left|\Omega\right|} \int_\Omega \rho \frac{\norm{\nabla \times \vec{u}}^2}{2} \mathrm{d}\Omega ,
       \end{equation}
-      and the kinetic energy dissipation rate, that follows the relation:
-      \begin{equation} \PS{TODO}
-        \epsilon = -\frac{\mathrm{d} E_k}{\mathrm{d} t} = 2 \mu \mathcal{E} \ .
+      and the kinetic energy dissipation rate, that follows the relation \PS{MAIS EN FAIT JE LA MONTRE PAS}:
+      \begin{equation}
+        \epsilon = -\frac{\mathrm{d} E_k}{\mathrm{d} t} = 2 \mu \mathcal{E} .
       \end{equation}
-      We can compare those values computed by our simulation with some reference values.
-      Those reference values were computed using spectral methods derived specially for this Taylor--Green vortex case \PS{Guillaume, c'est bien ça ? Ref ?}.
+      Those values computed by the present simulation are compared with the reference values.
 
       \paragraph{}
       The mesh used here is the same for all computations: a regular Cartesian mesh made of $80^3$ cells.
-      We use the Spectral Difference method with the order $p = 4$.
+      This choice is not natural from the workshop but previous experiments have lead to the conclusion that such a mesh gives the best solution at the lowest CPU cost, for the Spectral Difference method with the order $p = 4$.
       Each computation is run on 308 CPU cores.
-      What interest us is that the result from the simulation matches reference data, and how much CPU time the computation took.
-      For each time integration method we want to try, we simulate the flow from the initial condition up to $20 t_c$.
-      We will work with the RKo6s, TVDRK(3, 3) and SSPRK(5, 4) methods as the already existing reference methods, and the exponential Rosenbrock--Euler and ExpRB32 methods as the newly implemented methods.
-      For the exponential Rosenbrock methods, we use Krylov subspaces of dimension 20 for the first stage, and of dimension 5 for the additional stages for the ExpRB32 method.
-      We use constant time steps in a simulation, and we try to find the highest time step compatible with the method.
-      However, after finding the largest acceptable time step value for the exponential Rosenbrock--Euler method, we tried to increase it.
-      To do so, we had to increase the dimension of the Krylov subspaces used to compute $\varphi$-functions.
-      By doing so, the computational cost of a single iteration is higher, but it reduces the error in the $\varphi$-functions evaluations and we hope this will help the time integration method.
-      Symmetrically, we tried to reduce the dimension of the Krylov subspaces.
+      The goal is to see if the result from the simulation matches reference data up to $20 t_c$, and how much CPU time the computation took.
+      The RKo6s, TVDRK(3, 3) and SSPRK(5, 4) methods are the already existing reference methods, and the exponential Rosenbrock--Euler, ExpRB32 and ExpRB42 methods are the newly implemented methods.
+      For the exponential Rosenbrock methods, Krylov subspaces of dimension 20 are used for the first stage, and of dimension 5 for the additional stages for the ExpRB32 and ExpRB42 method.
+      \PS{The time step is constant in a simulation, and some effort was done to use the highest time step compatible for each method.
+      Above this upper bound on the time step, either the computation fails or the quality of the solution is not satisfying anymore.
+      However, this higher time step can be increased for exponential methods by increasing the dimension of the Krylov subspaces used to compute $\varphi$-functions.
+      By doing so, the computational cost of a single iteration is higher, but it reduces the error in the $\varphi$-functions evaluations.
+      Symmetrically, it was also tried to reduce the dimension of the Krylov subspaces.
       It means that the method can not work with the same time step as before as it is now too high, but this reduces the iterations cost.
-      Here we wanted to see if making more iterations that are less expensive can be a good idea.
-      We will call ExpEuler($d$) method the exponential Rosenbrock--Euler method that uses a Krylov subspace of dimension $d$.
+      This is to see if making more iterations that are cheaper, or in the opposite less that are more expensive can be a good idea.}
+      From now on, ExpEuler($d$) method refers to the exponential Rosenbrock--Euler method that uses a Krylov subspace of dimension $d$.
 
       \paragraph{}
       The result of all simulation is shown in figure \ref{fig:tgv_curves}.
-      As a simulation correspond to the computation with the largest time step for which the results are satisfying, this figure does not gives much information: all methods produce results that are close to reference data.
+      As a simulation correspond to the computation with the largest time step for which the results are satisfying, this figure does not give much information: all methods produce results that are close to reference data.
       There are some differences with the reference, but all JAGUAR computations are almost undistinguishable from one another.
-      \PS{The error from the spatial discretisation method is the origin of the difference between the reference and JAGUAR computaions.
-      For the selected method and CFL number pairs, all results are almost exacts, apart from this spatial discretisation error.
-      C'est bien ça ?}
-      The ExpRB42 method is not shown, as it is similar to the ExpRB32 method.
-      Indeed, we compare methods that give similar physical results, and what interest us is their statistics.
-      As those two methods run at the same highest CFL number and have a similar iteration cost, they behave similarly in this analysis.
+      As a consequence, one can argue that the error from the spatial discretisation method is the origin of the difference between
+      the reference and JAGUAR computations.
+      In the following, the assumption that the exact solution is provided is assumed, even if it is a numerical solution and not an algebraic one.\footnote{\PS{pas compris la phrase}}
+      \PS{Apart from this error, all curves are all gathered around the same solution.}
+      Indeed, we compare methods that give similar physical results, and what interests us is their statistics.
 
       \begin{figure}
         \centering
@@ -489,36 +499,38 @@
       \end{table}
 
       \paragraph{}
-      In table \ref{tab:tgv}, we show the statistics for each time integration method.
-      As the cost of the algorithms used in the time integration methods does not change between iterations, we can compute an average elapsed real time per iteration for each method.
+      Statistics for each time integration method are provided in table \ref{tab:tgv}.
+      As the cost of the algorithms used in the time integration methods does not change between iterations, it makes sense to compute the average elapsed real time per iteration.
       Among the explicit methods, we see that the RKo6s and SSPRK(5, 4) methods run at a higher CFL number than the TVDRK(3, 3) method.
-      However, they have more stages per iteration so each iteration takes longer, and the total elapsed real time is similar between all three methods.
+      However, they have more stages per iteration so each iteration takes longer, and the total elapsed real time is rather similar between all three methods.
       We note that the cost of one step of an explicit Runge--Kutta method is not proportional to the number of stages.
       Indeed, the implementation of the RKo6s method uses the fact that it is a low storage method to reduce the computational cost in terms of both time and memory.
       Nevertheless, the cost of an iteration of those explicit methods is much less than exponential methods.
       As expected, the cost of the exponential Rosenbrock--Euler method is similar to $d^2$ where $d$ is the dimension of the Krylov subspace used for the Arnoldi iteration \PS{vérifier ça}.
-      As we explained, the ExpRB32 method does not cost a lot more than the exponential Rosenbrock--Euler method that uses Krylov subspace with the same dimension.
-      This is because the second stage use just small Krylov subspace, and this is what we see from the results in table \ref{tab:tgv}.
+      As explained, the ExpRB32 method does not cost a lot more than the exponential Rosenbrock--Euler method that uses Krylov subspace with the same dimension.
+      This is because the second stage uses only small Krylov subspace, and this is what is seen from the results in table \ref{tab:tgv}.
       We can draw two important conclusions from this analysis.
       First, we see that the exponential Rosenbrock methods are faster than the explicit Runge--Kutta methods available in JAGUAR.
       For some of them, they are almost twice as fast.
-      Secondly, we see that the exponential Rosenbrock--Euler method can accurately simulate the Taylo--Green vortex at high CFL numbers.
-      Accurate explicit methods would not work with such high CFL numbers, and implicit methods that could would not be accurate enough to \PS{représenter} the small scales of the flow \PS{je peux dire ça ?}.
+      Secondly, we see that the exponential Rosenbrock--Euler method can accurately simulate the Taylor--Green vortex at high CFL numbers.
+      Accurate explicit methods would not work with such high CFL numbers, and even if implicit methods could they would not be accurate enough to capture and preserve the small scales of the flow.
       To reach high CFL numbers, we have to use larger Krylov subspaces, that make the method a lot slower.
-      The method we used here should not be used for actual applications: the goal was just to show feasibility.
-      It seems that with exponential methods, we can increase the robustness by paying the price in terms of Krylov subspace dimension.
+      The method used here should not be used for actual applications: the goal was just to show feasibility.
+      It seems that with exponential methods, the robustness can be increased by paying the price in terms of Krylov subspace dimension.
       We can think of ways to compute more accurately the $\varphi$-functions less expensively: by using restarted methods for instance, we can control the maximal dimension of the Krylov subspace.
       However this was not tried during this thesis.
 
       \paragraph{}
       This unsteady test case shows that exponential methods are interesting for our applications.
-      We found a method that reduced the elapsed real time by two, which is a great improvement to a JAGUAR user.
+      We found a method that halves the elapsed real time, which is a great improvement for an unsteady simulation.
       We also showed that we could accurately simulate this flow while using high CFL numbers.
       It means that we have added more robust methods than the already existing ones.
       They could prove useful on applications where we are limited by the lack of stability of the explicit Runge--Kutta methods.
 
 
     \subsection{Industrial application: LS89}
+
+      \PS{TODO}
 
       \paragraph{}
       We decided to try exponential methods on a last test case.

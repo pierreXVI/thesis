@@ -5,10 +5,10 @@
   Le but de ce chapitre est de d'introduire un nouveau type de méthodes d'intégration temporelle.
 
   \paragraph{}
-  Les méthodes utilisées dans la résolution des problèmes stationnaires sont souvent réutilisées dans la résolution de problèmes instationnaires intégrés avec de grands pas de temps.
+  Les méthodes classiquement utilisées dans la résolution des problèmes stationnaires sont souvent réutilisées après être adaptées dans la résolution de problèmes instationnaires intégrés avec de grands pas de temps pour s'affranchir des critères de stabilité de l'intégration explicite.
   Nous présentons dans ce chapitre le principe des méthodes d'intégration exponentielles, qui sortent de la dichotomie explicite/implicite.
   Nous décrivons ensuite plus en détail la famille des méthodes Rosenbrock exponentielles, qui seront utilisées par la suite.
-  Nous réalisons également une brève analyse théorique ce ces méthodes.
+  Nous réalisons également une brève analyse théorique de ces méthodes.
 
   \paragraph{}
   Comme leur nom l'indique, ces méthodes reposent sur l'exponentielle.
@@ -28,12 +28,12 @@
   The reason is that they can use larger time steps than their explicit counterparts.
   Because of this advantage, they are also often used when solving unsteady problems but with large time steps.
   Indeed, solving an unsteady problem with large time steps is similar to solving a steady problem.
-  Most of what is done towards the steady problem solve can therefore be reused for unsteady problem solves with large time steps.
+  Most of what is done towards the steady problem solve can therefore be reused for unsteady problem with large time steps.
 
   \paragraph{}
   Even if implicit time integration methods are quite standard when solving problems with large time steps, there are other less conventional methods we could choose from.
   We could step out from the explicit implicit dichotomy, and decide to use IMplicit-EXplicit, or IMEX, methods.
-  They split the function from the ordinary differential equation (\ref{eq:ode}) into two parts: the stiff part than is integrated by an implicit method, because of its stiffness, and the other part that can just be integrated with an explicit method.
+  They split the function from the ordinary differential equation (\ref{eq:ode}) into two parts: the stiff part that is integrated by an implicit method, because of its stiffness, and the other part that can just be integrated with an explicit method.
   The Additive Semi-Implicit Runge--Kutta methods, or ASIRK methods, are such methods \cite{Zhong1996}.
   They are already in use in computational fluid dynamics problems, such as fluid-structure interaction problems \cite{HuangPerssonZahr2019}.
   Previous work already implemented ASIRK methods in our solver CEDRE for specific multiphysics applications.
@@ -47,25 +47,28 @@
   They can even be used in a more convoluted way, with for instance exponential methods \cite{GanderGuettel2013}.
   Just as parallel time integration is inspired by parallel spatial discretisation, some other time integration methods are inspired by spectral discretisation methods.
   Time spectral methods, that were originally used for fluid dynamic time-periodic problems \cite{GopinathJameson2005, GopinathJameson2006}, are now used on non-periodic problems \cite{EkiciDjeddiLiEtAl2020}.
+  \PS{GP, pourquoi pas ça :
   But as both time parallel integration methods and time spectral methods are considered modern methods and highly unconventional, they do not seem appropriate for an industrial solver such as ours.
+  }
+  In this part, however, we prefer to focus on another class of time integration methods.
 
 
   \section{Exponential integration methods}
 
     \paragraph{}
-    We decided to look at another class of time integration methods: exponential methods.
-    Despite being known for a long time \cite{Pope1963}, they were not widely used in computational fluid dynamics, because of some difficulties that we will explain later, but still interested some \cite{EdwardsTuckermanFriesnerEtAl1994}.
+    We focus on methods known as exponential methods.
+    Despite being known for a long time \cite{Pope1963}, they were not widely used in computational fluid dynamics, because of some difficulties that we will explain later, but still interested some scientists \cite{EdwardsTuckermanFriesnerEtAl1994}.
     They started to come back in the literature \cite{HochbruckOstermann2005, HochbruckOstermann2010} and are now being used on applications similar to ours \cite{NieZhangZhao2006, BhattKhaliqWade2018}.
 
     \paragraph{}
     We start with an ordinary differential equation
     \begin{equation}\label{eq:ode_2}
-      \frac{\mathrm{d} y}{\mathrm{d} t} = f\left(y\right) \ .
+      \frac{\mathrm{d} y}{\mathrm{d} t} = f\left(y\right) .
     \end{equation}
     This is the same as the ordinary differential equation (\ref{eq:ode}) from the previous part but with different notations.
     The main idea of exponential integration methods is to start from the ordinary differential equation (\ref{eq:ode_2}) and split the function $f$ into a linear part and a nonlinear part:
     \begin{equation}\label{eq:ode_split}
-      \frac{\mathrm{d} y}{\mathrm{d} t} = Ly + N\left(y\right) \ .
+      \frac{\mathrm{d} y}{\mathrm{d} t} = Ly + N\left(y\right) .
     \end{equation}
     This decomposition is sometimes natural for some particular equations, but in the more general case it is always possible: it consists in choosing a linear part $L$ and then setting the nonlinear part $N\left(y\right) = f(y) - Ly$.
     There are then an infinite number of decompositions, but we will see later that some are more interesting.
@@ -75,7 +78,7 @@
     We note $\Delta t = t_{n+1} - t_n$ as we work here with a fixed $n$.
     We can integrate equation (\ref{eq:ode_2}) using the variation of constants formula to get:
     \begin{equation}\label{eq:ode_int}
-      y\left(t_{n+1}\right) = e^{\Delta t L} y_n + \int_{t_n}^{t_{n+1}} e^{\left(t_{n+1} - t\right) L} N\left(y\left(t\right)\right) \mathrm{d}t \ .
+      y\left(t_{n+1}\right) = e^{\Delta t L} y_n + \int_{t_n}^{t_{n+1}} e^{\left(t_{n+1} - t\right) L} N\left(y\left(t\right)\right) \mathrm{d}t .
     \end{equation}
     The exponential integration methods then approximate the integral to compute the next value $y_{n+1}$.
     What defines the method is how it approximates this integral.
@@ -99,18 +102,18 @@
       \left\{\begin{aligned}
         \varphi_0 &: z \mapsto e^z \\
         \forall k \in \mathbb{N}^*, \varphi_{k} &: z \mapsto \int_0^1 e^{\left(1 - \theta\right)z} \frac{\theta^{k-1}}{\left(k-1\right)!} \mathrm{d}\theta
-      \end{aligned}\right.\ .
+      \end{aligned}\right. .
     \end{equation}
     We could also define them using the recurrence relation:
     \begin{equation}
       \left\{\begin{aligned}
         \varphi_0 &: z \mapsto e^z \\
-        \forall k \in \mathbb{N}, \varphi_{k+1} &: z \mapsto \frac{\varphi_k\left(z\right) - \varphi_k\left(0\right)}{z} \ .
+        \forall k \in \mathbb{N}, \varphi_{k+1} &: z \mapsto \frac{\varphi_k\left(z\right) - \varphi_k\left(0\right)}{z} .
       \end{aligned}\right.
     \end{equation}
     Finally, we can also use their analytic formula:
     \begin{equation}
-      \forall k \in \mathbb{N}, \varphi_{k} : z \mapsto \sum_{i = 0}^{+\infty} \frac{z^i}{\left(i + k\right)!} \ .
+      \forall k \in \mathbb{N}, \varphi_{k} : z \mapsto \sum_{i = 0}^{+\infty} \frac{z^i}{\left(i + k\right)!} .
     \end{equation}
     This analytic formula ensures it is well-defined for squared matrices.
 
@@ -128,7 +131,7 @@
       \end{equation}
       using the $\varphi_1$ function defined above, and finally:
       \begin{equation}\label{eq:expeuler}
-        y_{n+1} = y_n + \Delta t \varphi_1\left(\Delta t L\right) f\left(y_n\right) \ .
+        y_{n+1} = y_n + \Delta t \varphi_1\left(\Delta t L\right) f\left(y_n\right) .
       \end{equation}
       We note the difference with the corresponding standard Euler method, for which the $\varphi_1$ function is replaced with the identity function.
       If there is no linear part in the decomposition, with $L = 0$, then nothing is treated differently by the exponential method, and we recover the standard explicit Euler method.
@@ -167,13 +170,13 @@
       \end{equation}
       the partial series of order 2 is:
       \begin{equation}
-        N\left(y\left(t\right)\right) = N\left(y_n\right) + N'\left(y_n\right)f\left(y_n\right)\left(t - t_n\right) + O\left(\left(t - t_n\right)^2\right) \ .
+        N\left(y\left(t\right)\right) = N\left(y_n\right) + N'\left(y_n\right)f\left(y_n\right)\left(t - t_n\right) + O\left(\left(t - t_n\right)^2\right) .
       \end{equation}
       The error of the method is then:
       \begin{equation}
         \begin{aligned}
           y\left(t_{n+1}\right) - y_{n+1} &= \int_{t_n}^{t_{n+1}} e^{\left(t_{n+1} - t\right) L} \left( N'\left(y_n\right)f\left(y_n\right)\left(t - t_n\right) + O\left(\left(t - t_n\right)^2\right) \right) \mathrm{d}t \\
-          &= \Delta t^2\varphi_2\left(\Delta t L\right) N'\left(y_n\right)f\left(y_n\right) + O\left(\Delta t^3\right) \ .
+          &= \Delta t^2\varphi_2\left(\Delta t L\right) N'\left(y_n\right)f\left(y_n\right) + O\left(\Delta t^3\right) .
         \end{aligned}
       \end{equation}
       We now understand the decomposition chosen earlier: if $L = f'\left(y_n\right)$ and therefore $N'\left(y_n\right) = 0$ then $y\left(t_{n+1}\right) - y_{n+1} = O\left(\Delta t^3\right)$ and the method is of order 2.
@@ -191,7 +194,6 @@
       Some work in the literature does define some stability notions for exponential methods \cite{DuZhu2004}, but usually takes a linear $N$.
       It goes against the idea that all the linear part of $f$ is in $L$ and $N$ is purely nonlinear.
       We did not find a stability analysis that was satisfying to us.
-      We will probably find such analysis, today or maybe in the future, in research from a more mathematical context than the one we are in, so we did not insist on finding such an analysis.
 
 
   \section{Exponential Runge--Kutta and Rosenbrock methods}
@@ -205,7 +207,7 @@
       \left\{\begin{aligned}
         y_{n+1} &= e^{\Delta t L} y_n + \Delta t \sum_{i = 1}^k b_i\left(\Delta t L\right) N\left(y_{n,i}\right) \\
         \textrm{with}\quad y_{n,i} &= e^{c_i \Delta t L} y_n + \Delta t \sum_{j = 1}^{i-1} a_{ij}\left(\Delta t L\right) N\left(y_{n,j}\right)
-      \end{aligned}\right. \ .
+      \end{aligned}\right. .
     \end{equation}
     The Butcher tableau that we used to represent the Runge--Kutta methods is also used to represent the exponential Runge--Kutta methods.
     For instance, the Butcher tableau of the exponential Rosenbrock--Euler method, which is a special simple case of exponential Runge--Kutta methods, is shown in table \ref{tab:exprb_butcher}.
@@ -215,7 +217,7 @@
     From the literature, exponential Runge--Kutta methods are defined just as we did above, except they use a fixed linearisation: $L = f'\left(y_0\right)$ \cite{HochbruckOstermann2005}.
     It is because they were developed for semilinear parabolic problems:
     \begin{equation}
-      \frac{\mathrm{d} y}{\mathrm{d} t} + Ay = g\left(y\right) \ .
+      \frac{\mathrm{d} y}{\mathrm{d} t} + Ay = g\left(y\right) .
     \end{equation}
     They are used when the remainder $r$ is small or at least bounded in terms of $A$.
     This is not the case in our applications, and in many others so that is why another type of exponential method was introduced: exponential Rosenbrock methods \cite{HochbruckOstermannSchweitzer2006}.
@@ -312,12 +314,13 @@
       Instead of looking for the matrix exponential as an infinite series, we can look for an $N$-order polynomial.
       Moreover, exponential methods do not need to evaluate the exponential or the $\varphi$-functions of the matrix, but their effect when applied to a vector.
       For instance, the exponential Rosenbrock--Euler method from equation (\ref{eq:expeuler}) does not need to compute $\varphi_1\left(\Delta t L\right)$ but $\varphi_1\left(\Delta t L\right)f\left(y_n\right)$.
-      It means we do not need to evaluate the function $g$ on the matrix $A$, but to compute its effect on the vector $b$.
+      It means we do not need to evaluate the function $g$ on the matrix $A$, but to compute the effect of $g\left(A\right)$ on the vector $b$.
+      \PS{GP tu avais mis en italique, c'était juste pour mettre en valeur ta correction ?}
       The idea, originally developed to approximate eigenvalues of a large sparse matrix, is to use a Krylov subspace method to approximate $g\left(A\right)b$ \cite{Saad1992, Sidje1998}.
       In fact, it is similar to using a Krylov subspace method to solve the linear system $Ax = b$: it means taking $g = z \mapsto z^{-1}$.
       The Krylov subspace method produces with the Arnoldi iteration the relation, at the $m$-th iteration:
       \begin{equation}\label{eq:arnoldi}
-        AV_m = V_{m+1} \tilde{H}_m = V_m H_m + h_{m+1, m} v_{m+1} e_m^T \ .
+        AV_m = V_{m+1} \tilde{H}_m = V_m H_m + h_{m+1, m} v_{m+1} e_m^T .
       \end{equation}
       The columns of $V_m$, $v_1, \dots, v_m$, form an orthonormal basis of the Krylov subspace:
       \begin{equation}
@@ -342,7 +345,7 @@
       The vector $v_{m+1}$ is the last column vector of $V_{m+1}$, added to the column vectors of $V_m$ to get an orthonormal basis of $\krylov[A, b]{m+1}$, and $e_m$ is the $m$-th canonical vector $\left(0, \dots, 0, 1\right)^T$.
       Since $H_m$ represent the compression of $A$ on $\krylov[A, b]{m}$ with respect to basis $V_m$ and $b = \norm[2]{b} V_m e_1$ with $e_1 = \left(1, 0, \dots, 0\right)$, we make the approximation \cite{EiermannErnst2006}:
       \begin{equation}
-        g\left(A\right)b \approx \norm[2]{b} V_m g\left(H_m\right) e_1 \ .
+        g\left(A\right)b \approx \norm[2]{b} V_m g\left(H_m\right) e_1 .
       \end{equation}
 
       \paragraph{}
@@ -353,7 +356,7 @@
       Just as Krylov subspace methods for solving linear problems, this method can be restarted to limit the size of the Krylov subspace and therefore control the memory consumption of the algorithm.
       It is even possible to define an error estimate in our approximation to dynamically control the number of iterations needed to reach a given tolerance, albeit it is more convoluted than the residual used for solving linear systems with Krylov subspace methods \cite{EiermannErnst2006}.
 
-      \paragraph{}
+      \paragraph{Note:}
       Since the matrix used to evaluate the quadrature functions of the exponential Rosenbrock methods is always the same, $L$, only one Arnoldi iteration is required for one step of the method.
       This could lead to a great cost reduction, however, we did not try it in our developments.
       Indeed, our work on exponential integration methods was more to demonstrate their feasibility in our applications, but it would be interesting to use this idea for future performance enhancements.
@@ -371,7 +374,7 @@
         e^z \approx r_{k,m}\left(z\right) = \frac{p_{k,m}\left(z\right)}{q_{k,m}\left(z\right)} \quad\textrm{with} \left\{\begin{aligned}
           \quad p_{k,m} &= \sum_{i = 0}^k \frac{\left(k + m - i\right)! k!}{\left(k + m\right)! \left(k - i\right)!} \frac{z^i}{i!} \\
           \quad q_{k,m} &= \sum_{i = 0}^m \frac{\left(k + m - i\right)! m!}{\left(k + m\right)! \left(m - i\right)!} \frac{\left(-z\right)^i}{i!}
-        \end{aligned}\right. \ .
+        \end{aligned}\right. .
       \end{equation}
       It is best to use diagonal approximants, with $k = m$, as they are more accurate \cite{HighamAlMohy2010}.
 
@@ -379,7 +382,7 @@
       The final method used to compute the exponential of a dense matrix is the Scaling and Squaring method \cite{Higham2009}.
       It computes an optimal parameter $s$ and takes:
       \begin{equation}
-        e^z \approx r_{m,m}\left(z/2^s\right)^{2^s} \ .
+        e^z \approx r_{m,m}\left(z/2^s\right)^{2^s} .
       \end{equation}
       The goal is to choose $s$ such as the error on the computation of the exponential is bounded, with minimal cost.
       It then decides on an optimal order $m$ for the Padé approximant.
@@ -413,7 +416,7 @@
                                     &                                       & 1                                       & \ddots & \vdots                                  \\
                                     &                                       &                                         & \ddots & \frac{\tau}{1!}                         \\
           0                         &                                       &                                         &        & 1
-        \end{pmatrix} \ .
+        \end{pmatrix} .
       \end{equation}
       \endgroup
       The additional cost of using this augmented matrix is negligible in comparison with the cost of the rest of the methods.
@@ -460,9 +463,10 @@
     \end{figure}
 
     \paragraph{}
-    To test the method, we decided to use a simple academic test case.
+    To test the method, we decided to use a simple academic test case, adapted from the one proposed on the International Workshop on High Order CFD Methods (HiOCFD).
     It is a two-dimensional inviscid isentropic vortex that is convected in a periodic box.
-    It is a \PS{calcul adimensionné (du coup je mets pas les unités ?)}, and the mesh is regular over a square of length $L = 20$, with $100^2$ cells.
+    This vortex is an known exact solution of the unsteady Euler equations and is generally considered as a good test case to analyse accuracy of both spatial discretisation and time integration methods.
+    It is a non dimensionalised computation, and the mesh is regular over a square of length $L = 20$, with $100^2$ cells.
     It is shown in figure \ref{fig:covo_cedre_mesh}.
     The vortex is convected in a flow at a Mach number of $\operatorname{Ma} = 0.5$, with the dimensioning parameters $P_\infty = 1$ and $T_\infty = 1$.
     The undisturbed velocity is then $U_\infty \vec{e}_x$ with $U_\infty = \operatorname{Ma} \sqrt{\gamma r_\textrm{gas} T_\infty}$ and the vortex is defined using the polar coordinates system $\left(\vec{e}_r, \vec{e}_\theta\right)$:
@@ -471,13 +475,12 @@
         \vec{u} &= U_\infty \vec{e}_x + \beta U_\infty \frac{r}{R_0} e^{-r^2 / 2 R_0^2} \ \vec{e}_\theta \\[10pt]
         T &= T_\infty - \beta^2 U_\infty^2 \frac{\gamma - 1}{2 \gamma r_\textrm{gas}} e^{-r^2 / R_0^2} \\[10pt]
         P &= P_\infty \left( 1 - \frac{\beta^2 U_\infty^2}{T_\infty} \frac{\gamma - 1}{2 \gamma r_\textrm{gas}} e^{-r^2 / R_0^2} \right)^{\gamma/\left(\gamma - 1\right)}
-      \end{aligned}\right. \ .
+      \end{aligned}\right. .
     \end{equation}
     The heat capacity ratio $\gamma$ is equal to $1.4$, and the specific gas constant is $r_\textrm{gas} = 1$.
     The vortex is defined by its characteristic radius $R_0 = 1$ and its intensity $\beta = 0.2$.
     This initial condition is shown in figure \ref{fig:covo_cedre_fields}.
     As we solve inviscid Navier--Stokes equations, or Euler equations, the vortex moves in the $\vec{e}_x$ direction undisturbed, and as the domain is periodic the solution after one period $\Delta T = L/U_\infty = 33.8$ is the same as the initial solution.
-    It gives a way to compute the error of the methods and that is why it is a famous academic case to benchmark numerical methods.
 
     \begin{figure}
       \centering
