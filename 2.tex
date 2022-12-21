@@ -220,7 +220,7 @@
       That is why we decided to use a variation from what is currently found in the literature: we will use the norm $\norm[2]{\,\cdot\,} / \sqrt{N}$ that can be seen as a scaled 2-norm.
       We then get a new strategy for the choice of $\varepsilon$ that we note $\varepsilon_{\textrm{wp}, N}$:
       \begin{equation}
-        \varepsilon_{\textrm{wp}, N} = \frac{\sqrt{\varepsilon_0 \left(1 + \norm[2]{x} / \sqrt{N}\right) }}{\norm[2]{v} / \sqrt{N}} \ .
+        \varepsilon_{\textrm{wp}, N} = \frac{\sqrt{\varepsilon_0 \left(1 + \norm[2]{x} / \sqrt{N}\right) }}{\norm[2]{v} / \sqrt{N}} .
       \end{equation}
 
       \begin{figure}
@@ -316,18 +316,18 @@
       This normalisation is often used by our solver's users, so we need to ensure compatibility with our matrix-free method.
       We can adapt the approximation (\ref{eq:matrix_free}) to account for the normalisation as:
       \begin{equation}
-        \left( \mathcal{N}^{-1} f'\left(x\right) \mathcal{N} \right) v \approx \mathcal{N}^{-1} \frac{f\left(x + \varepsilon \mathcal{N} v\right) - f\left(x\right)}{\varepsilon} \ .
+        \left( \mathcal{N}^{-1} f'\left(x\right) \mathcal{N} \right) v \approx \mathcal{N}^{-1} \frac{f\left(x + \varepsilon \mathcal{N} v\right) - f\left(x\right)}{\varepsilon} .
       \end{equation}
       We also need to adapt our strategy for the choice of $\varepsilon$.
       With the normalisation, we see that $\varepsilon \mathcal{N}$ sort of plays the role of $\varepsilon$.
       It then makes sense to take $\norm{\varepsilon \mathcal{N}}$ equal to the original choice of $\varepsilon$, and therefore we take:
       \begin{equation}
-        \varepsilon = \frac{\sqrt{\varepsilon_0 \left(1 + \norm{x}\right) }}{\norm{\mathcal{N}} \norm{v}} \ .
+        \varepsilon = \frac{\sqrt{\varepsilon_0 \left(1 + \norm{x}\right) }}{\norm{\mathcal{N}} \norm{v}} .
       \end{equation}
       We take as a matrix norm the one induced by the vector norm.
       This means that:
       \begin{equation}
-        \norm{\mathcal{N}} = \sup_{v \ne 0} \frac{\norm{\mathcal{N}v}}{\norm{v}} \ .
+        \norm{\mathcal{N}} = \sup_{v \ne 0} \frac{\norm{\mathcal{N}v}}{\norm{v}} .
       \end{equation}
       When using the 2-norm, the corresponding norm is $\norm{\mathcal{N}} = \max{\mathcal{N}_{ii}}$ as $\mathcal{N}$ is diagonal with strictly positive coefficients.
       When using the scaled 2-norm discussed in the previous part, the corresponding norm is also the same.
