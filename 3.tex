@@ -151,7 +151,9 @@
         The name is quite adequate: for steady problems, the residual is what is left and still needs to be removed to find a steady solution.
         To decide on the convergence of a steady simulation, this residual norm is measured throughout the computational domain $\mathcal{D}$.
         More precisely, this residual is analysed component by component.
-        For example, the residual 2-norm associated with the $i$th component is: \LM{J'avoue que mes souvenirs sont assez vague, mais il me semblait que la norme L2 était la racine de l'intégrale des carré; ce que tu écris ne serait pas la norme L1 plutôt?}
+        For example, the residual 2-norm associated with the $i$th component is:
+        \LM{J'avoue que mes souvenirs sont assez vague, mais il me semblait que la norme L2 était la racine de l'intégrale des carré; ce que tu écris ne serait pas la norme L1 plutôt?}
+        \PS{Oups ... en plus elle est normalisée par le volume.}
         \begin{equation}
           \norm[2]{\operatorname{F}_i} = \int_\mathcal{D} \left| \operatorname{F}_i \right| \mathrm{d}v
         \end{equation}
@@ -422,11 +424,15 @@
     In the previous section, we compared the new Jacobian-Free Newton--Krylov method to the traditional method that uses the first-order Jacobian matrix.
     This first-order matrix is easily computed for the usual Navier--Stokes equations.
     But as CEDRE is under constant development, new models are added in order to handle more finely various multiphysics phenomena.
-    For example, a new model was recently added to better handle multiphasic flows \cite{Cordesse2020}. \LM{mais du coup tu ne l'utilises pas du tout ce nouveau modèle dans la suite, non?}
+    For example, a new model was recently added to better handle multiphasic flows \cite{Cordesse2020}.
+    \LM{mais du coup tu ne l'utilises pas du tout ce nouveau modèle dans la suite, non?}
+    \PS{Nope c'est juste pour montrer que c'est quelque chose qui se fait, et donc que le Matrix free peut intéresser d'autres personnes.}
     Adding a new model amount to writing the function $\operatorname{F}$ from equation (\ref{eq:pde}), or equivalently $\operatorname{G}$ from equation (\ref{eq:ode}).
     Usually, the development of this function is straightforward as it is given explicitly from the equations.
     However, the development of the Jacobian matrix is much more difficult.
-    This is why the new models can not compute Jacobian matrices, and therefore can not use implicit methods.\LM{Je dirais plutôt qu'on ne se précipite pas sur l'effort d'évaluation du jacobien, pas qu'on ne peut pas l'évaluer, non?}
+    This is why the new models can not compute Jacobian matrices, and therefore can not use implicit methods.
+    \LM{Je dirais plutôt qu'on ne se précipite pas sur l'effort d'évaluation du jacobien, pas qu'on ne peut pas l'évaluer, non?}
+    \PS{Concretement, on ne peux pas évaluer la jacobienne de MF5 et MTE, donc les deux ?}
     The Jacobian-Free Newton--Krylov method is then a nice way to use implicit methods as it does not require the Jacobian matrix.
     Because the matrix-free approximation is written in a generic fashion, it can be used on any fluid model.
     In the following, we will use the JFNK method on a new fluid model that does not have an available Jacobian matrix and therefore can not use traditional implicit methods.
@@ -441,7 +447,7 @@
       In more traditional models, it is assumed that all modes are at equilibrium, and they are grouped in what we call energy.
       We can define a time constant for each energy mode that corresponds to the number of collisions that are required to get to the equilibrium.
       A few collisions are required for translation modes, and about ten for rotation modes.
-      This gives a small time constant of order $10^{-9}\,\si{seconds}$.
+      This gives a small time constant of order $10^{-9} \si{\second}$.
       For vibration modes, however, up to \num{20000} collisions are required.
       The corresponding time constant is significantly larger, and there may be regions where there can be a disequilibrium between vibrational energy on one side and translation and rotation energy on the other.
       The energy of such components can no longer be described with a single temperature.
@@ -455,8 +461,7 @@
       \end{itemize}
 
       \paragraph{}
-      To account for the disequilibrium, the Navier--Stokes equations (\ref{eq:ns}) are modified into the following=\GP{Il faut virer ce qui suit car la formulation est non conservative..., in conservative form.}
-      \PS{Virer que "in conservative form" ou virer toute l'équation ?}
+      To account for the disequilibrium, the Navier--Stokes equations (\ref{eq:ns}) are modified into the following:
       \begin{equation}
         \left\{\begin{alignedat}{5}
           &\partial_t\left(  \rho_s  \right) &&+ \nabla\cdot\left(  \rho_s \vec{u}  \right) &&=
@@ -503,7 +508,9 @@
       A noticeable feature of this model is the presence of a nonconservative term in the conservation equation of the electrons' energy: $\vec{u} \cdot \nabla p_e$.
       This term is due to the effect of the electric field.
       This is a known issue of this model, as the Finite Volume method handles better conservative terms.
-      Some work tried to transform this equation into a conservative one by using the electronic entropy instead of energy but by neglecting dissipation terms concerning the electrons \cite{CoquelMarmignon1995}.\LM{Je ne comprends pas la phrase..}
+      Some work tried to transform this equation into a conservative one by using the electronic entropy instead of energy but by neglecting dissipation terms concerning the electrons \cite{CoquelMarmignon1995}.
+      \LM{Je ne comprends pas la phrase..}
+      \PS{Des travaux ont tenté de la rendre conservative en utilisant l'entropie des electrons comme variable conservative au lieu de leur énergie. A reformuler avec toi}
       However, this simplification can lead to inaccuracy in the physical result, and it appears that using the nonconservative formulation is necessary to get physically accurate results \cite{Soubrie2006, KimGuelhanBoyd2012}.
       Not to go into too much detail, such models that account for thermodynamic disequilibrium are still under discussion as of today \cite{BlancoJosyula2020}.
 
