@@ -526,7 +526,7 @@ def rae_coefficients():
 def rae_residuals():
     with plt.rc_context({'font.size': 8, 'xtick.labelsize': 6, 'ytick.labelsize': 6}):
         fig = plt.figure(figsize=[5.78851, 3])
-        fig.suptitle(r"$L_2$ residual norms", y=0.95)
+        fig.suptitle(r"Residual 2-norms", y=0.95)
 
         ax11 = fig.add_subplot(221)
         ax12 = fig.add_subplot(222)
@@ -564,9 +564,9 @@ def rae_residuals():
 
 def fig_rae_residuals_fine():
     with plt.rc_context({'font.size': 8, 'xtick.labelsize': 6, 'ytick.labelsize': 6}):
-        for label, tag0, name in (('$L_2$', 'MOYENS', 'l2'), (r'$L_\infty$', 'MAXIMA', 'linf')):
+        for label, tag0, name in (('2', 'MOYENS', 'l2'), (r'$\infty$', 'MAXIMA', 'linf')):
             fig = plt.figure(figsize=[5.78851, 3])
-            fig.suptitle(r"{0} residual norms".format(label), y=0.95)
+            fig.suptitle("Residual {0}-norms".format(label), y=0.95)
 
             ax11 = fig.add_subplot(221)
             ax12 = fig.add_subplot(222)
