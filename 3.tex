@@ -37,11 +37,8 @@
   \GP{Comparison between full-Jacobian matrix and matrix-free formulations}
 
     \paragraph{}
-    \footnote{\PS{J'avais commencé par "From our analysis and implementation," pour faire une transition et dire que ça découle des chapitres précédents. Je trouve que là ça fait "vérité générale"}}
-    From our analysis and implementation, the main addition to the solver is the Jacobian-Free Newton--Krylov method, and in particular the matrix-free approach.
-    In this part, the new method that uses the matrix-free approach will be compared with the implicit Euler method as implicit time integration schemes.\footnote{\PS{Au lieu de "as we are interested in implicit time integration", je trouve que sans ça il y a moins d'enchaînement logique}}
-    % In this part, we will then compare two methods: the traditional method and the new one that uses the matrix-free approach.
-    % As we are interested in implicit time integration, we will use the implicit Euler method, for reasons previously discussed.
+    From the previous analysis and implementation, the main addition to the solver is the Jacobian-Free Newton--Krylov method, and in particular the matrix-free approach.
+    In this part, the new method that uses the matrix-free approach will be compared with the implicit Euler method as the interest is focused on implicit time integration schemes.
     The traditional method linearises the equation that the implicit Euler method produces, approximates the Jacobian matrix using the Jacobian matrix of the corresponding first-order scheme, and then solves the linear system with the Krylov subspace method GMRES.
     In order to understand the impact of a better Jacobian matrix, the only difference is how the Jacobian matrix is handled.
     The new method will then work in a similar way, except the matrix used in the linear solver is not actually computed, but the matrix-vector products are approximated using equation (\ref{eq:matrix_free}).
@@ -162,8 +159,10 @@
         \begin{equation}
           \norm[\infty]{\operatorname{F}_i} = \max_\mathcal{D} \left| \operatorname{F}_i \right|
         \end{equation}
-        In this fluid dynamics application, the residual norm is associated with the conservative variables: the density, the momentum components, the energy and the turbulent variable from the Spalart--Allmaras model $\nu_t$.
-        \PS{C'est quoi la variable conservée (facteur $\rho$) ?}
+        \PS{
+        In this fluid dynamics application, the residual norm is associated with the conservative variables: the density, the momentum components, the energy and the turbulent eddy viscosity $\nu_t$.
+        With the Spalart--Allmaras compressible model, the conservative variable in in fact the product of the density and the Spalart--Allmaras variable $\rho \tilde{\nu}$.
+        }
 
         \begin{figure}
           \centering
@@ -220,7 +219,7 @@
       \subsubsection{Analysis of the results}
 
         \paragraph{}
-        As before, the computation starts from an initial state constant in the domain and the scheme..
+        As before, the computation starts from an initial state constant in the domain.
         Then the computation is continued for a few more iterations with the traditional implicit Euler method.
         This is to reach a state close enough of the steady solution more quickly before analysing the convergence of our methods.
         After that, the computations are restarted, with the traditional method on one side and the matrix-free method on the other.
@@ -246,8 +245,7 @@
         This time, the traditional method is not able at all to reduce residual norms.
         It means there are some cells in the computational domain for which the method is not able to reduce the local residual.
         The JFNK method in orange does not have this issue and converges to a better solution.
-        Note that the width of the curve is due to data noise, as all lines use the same width.
-        \footnote{\PS{Ca me fait bizarre "Note that", ça "apostrophe"}}
+        The width of the curve is only due to data noise, as all lines use the same width.
 
         \begin{figure}
           \centering
@@ -273,7 +271,7 @@
           \centering
           \includegraphics[width=\textwidth]{figures/rae_field_fine.png}
           \caption{
-            $\tilde{\nu}$ \PS{(ça a un nom ?)} on the RAE 2822 wing profile for the traditional method (left) and the JFNK method (right).
+            Spalart--Allmaras variable $\tilde{\nu}$ on the RAE 2822 wing profile for the traditional method (left) and the JFNK method (right).
             The top views show the profile from above, and the bottom views from below.
             The highlighted region in green corresponds to cells where the absolute value of the residual on $\rho \tilde{\nu}$ is higher than $10^{1.8}$.
           }
@@ -308,10 +306,6 @@
         The refinement at the shock is a requirement of the spatial discretisation methods.
         In order to get a clean and slim shock, the cells near the shock must have a high aspect ratio.
         The mesh takes this into account and is made according to CEDRE best practices.
-        \GP{Je ne mettrais pas ça :
-        Otherwise, artificial vorticity is created when going through the shock, which will give wrong results downstream.}
-        \PS{Tu reformulerais ou tu enlèverais ?}
-        \LM{Est-ce que c'est l'aspect ratio ou le fait que les faces soient orientées selon le choc qui nous sauve ici.. A la limite, si on avait la possibilité de mailler hyper-fin avec des mailles isotropes alignées sur le choc, on aurait quand même de la vorticité artificielle?}
         This expected shock location is obtained from a previous computation, made with a coarser mesh.
         This mesh is used in a two-dimensional axisymmetric computation to get the flow around a three-dimensional solid sphere.
 

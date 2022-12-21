@@ -150,12 +150,12 @@
       In JAGUAR, the order $p$ range from 2 to 10, but $2 \le p \le 6$ for practical applications.
 
       \paragraph{}
-      The demonstration of the accuracy of the Spectral Difference method is proposed in a reference paper published recently \cite{Vanharen_JCP_337_2017}.
-      JAGUAR was optimised to be efficient for parallel computations \cite{Cassagne2015, CassagneMSc2014, MaraitMSC2015}.
+      The demonstration of the accuracy of the Spectral Difference method is proposed in a reference paper published recently \cite{VanharenPuigtVasseurEtAl2017}.
+      JAGUAR was optimised to be efficient for parallel computations \cite{Cassagne2014, CassagnePuigtBoussuge2015, Marait2015}.
       To perform Large Eddy Simulation, it is of paramount importance to implement unsteady characteristic boundary condition: Navier--Stokes Characteristic Boundary Condition, or NSCBC.
-      The initial formulation \cite{FievetJCP2020} was extended to deal with acoustic conditions and liner\footnote{\PS{liner ou linear ?}} optimisation \cite{CardesaJCP2022}.
-      Recently, the solver was extended to handle $h-p$ adaptation \cite{Hartmann2021} and the schemes were extended to triangles and tetrahedrons \cite{Veilleux2022a, Veilleux2022b}.
-      Another improvement concerns the treatment of combustion, with a PhD thesis funded by Safran \cite{Marchal2021}.
+      The initial formulation \cite{FievetDeniauPiot2020} was extended to deal with acoustic conditions and liner optimisation \cite{CardesaFievetPiotEtAl2022}.
+      Recently, the solver was extended to handle $h-p$ adaptation \cite{HartmannBalanBassiEtAl2021} and the schemes were extended to triangles and tetrahedrons \cite{VeilleuxPuigtDeniauEtAl2022, VeilleuxPuigtDeniauEtAl2022a}.
+      Another improvement concerns the treatment of combustion, with a PhD thesis funded by Safran \cite{MarchalDeniauBoussugeEtAl2021}.
       Finally, the last extension concerns the treatment of shocks \cite{DeniauPuigt2022}.
       This review shows the strong involvement of researchers on the solver.
 
@@ -262,7 +262,7 @@
       \PS{Comment ça ?}
 
       \paragraph{}
-      The period for those numerical values is $L / U_\infty = \num{0.0005759974000734113}\si{\seconds}$.
+      The period for those numerical values is $L / U_\infty = \num{0.0005759974000734113}\si{\second}$.
       After 20 periods, the vortex should recover the initial position and the 2-norm of the error between initial and computed solutions can be defined for any scalar variable $u\left(\vec{x}, t\right)$:
       \begin{equation}
         \operatorname{err}\left(u\right) = \left(\int_{\left[0, L\right]^2} \left(u\left(\vec{x}, 20T\right) - u\left(\vec{x}, 0\right)\right)^2 \mathrm{d}\vec{x} \right)^{1/2} .

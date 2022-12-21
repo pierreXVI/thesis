@@ -162,21 +162,21 @@ def steady_solve():
     y = ly - r - np.array([1, 2, 3, 4, 8, 9, 10, 11]) * ly / 16
 
     p = {'transform': transform, 'ec': 'k'}
-    fig.add_artist(plt.Circle((x[0], y[0]), r, fc='tab:green', alpha=0.4, **p))
-    fig.add_artist(plt.Circle((x[1], y[1]), r, fc='tab:green', alpha=0.4, **p))
+    fig.add_artist(plt.Circle((x[0], y[0]), r, fc='tab:green', alpha=0.4, hatch='//', **p))
+    fig.add_artist(plt.Circle((x[1], y[1]), r, fc='tab:green', alpha=0.4, hatch='//', **p))
     fig.add_artist(plt.Circle((x[2], y[2]), r, fc='tab:green', **p))
     fig.add_artist(plt.Circle((x[3], y[3]), r, fc='tab:green', **p))
-    fig.add_artist(plt.Circle((x[4], y[4]), r, fc='tab:blue', alpha=0.4, **p))
+    fig.add_artist(plt.Circle((x[4], y[4]), r, fc='tab:blue', alpha=0.4, hatch='//', **p))
     fig.add_artist(plt.Circle((x[5], y[5]), r, fc='tab:blue', **p))
     fig.add_artist(plt.Circle((x[6], y[6]), r, fc='tab:blue', **p))
     fig.add_artist(plt.Circle((x[7], y[7]), r, fc='tab:blue', **p))
 
     p = {'transform': transform, 'va': 'center', 'ha': 'center'}
-    fig.add_artist(plt.Text(x[0], y[0], "Physical\nmodel", alpha=0.7, **p))
-    fig.add_artist(plt.Text(x[1], y[1], "Spatial\ndiscretisation\nmethod", alpha=0.7, **p))
+    fig.add_artist(plt.Text(x[0], y[0], "Physical\nmodel", **p))
+    fig.add_artist(plt.Text(x[1], y[1], "Spatial\ndiscretisation\nmethod", **p))
     fig.add_artist(plt.Text(x[2], y[2], "Implicit\ntime\nintegration\nmethod", **p))
     fig.add_artist(plt.Text(x[3], y[3], "Linearisation", **p))
-    fig.add_artist(plt.Text(x[4], y[4], "Partial\ndifferential\nequation", alpha=0.7, **p))
+    fig.add_artist(plt.Text(x[4], y[4], "Partial\ndifferential\nequation", **p))
     fig.add_artist(plt.Text(x[5], y[5], "Ordinary\ndifferential\nequation", **p))
     fig.add_artist(plt.Text(x[6], y[6], "Nonlinear\nproblem", **p))
     fig.add_artist(plt.Text(x[7], y[7], "Linear\nproblem", **p))
@@ -526,7 +526,7 @@ def rae_coefficients():
 def rae_residuals():
     with plt.rc_context({'font.size': 8, 'xtick.labelsize': 6, 'ytick.labelsize': 6}):
         fig = plt.figure(figsize=[5.78851, 3])
-        fig.suptitle(r"$L_2$ residual norms", y=0.95)
+        fig.suptitle(r"Residual 2-norms", y=0.95)
 
         ax11 = fig.add_subplot(221)
         ax12 = fig.add_subplot(222)
@@ -564,9 +564,9 @@ def rae_residuals():
 
 def fig_rae_residuals_fine():
     with plt.rc_context({'font.size': 8, 'xtick.labelsize': 6, 'ytick.labelsize': 6}):
-        for label, tag0, name in (('$L_2$', 'MOYENS', 'l2'), (r'$L_\infty$', 'MAXIMA', 'linf')):
+        for label, tag0, name in (('2', 'MOYENS', 'l2'), (r'$\infty$', 'MAXIMA', 'linf')):
             fig = plt.figure(figsize=[5.78851, 3])
-            fig.suptitle(r"{0} residual norms".format(label), y=0.95)
+            fig.suptitle("Residual {0}-norms".format(label), y=0.95)
 
             ax11 = fig.add_subplot(221)
             ax12 = fig.add_subplot(222)
@@ -626,7 +626,7 @@ def sphere_mte_residuals():
             ax.semilogy(x, np.power(10, y), label='Midpoint method')
             p.reset_offset(['INIT/RUN_1', 'INIT/RUN_2'])
             x, y, _ = p.get('MF/RUN_1')
-            ax.semilogy(x, np.power(10, y),label='JFNK method')
+            ax.semilogy(x, np.power(10, y), label='JFNK method')
             ax.set_title('')
             ax.set_ylabel(title)
             ax.set_xlim(-500, 7999)
