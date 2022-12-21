@@ -16,7 +16,7 @@
 
   \paragraph{}
   Après avoir détaillé les raisons qui nous poussent à analyser les méthodes d'intégration implicite, plusieurs éléments interviennent dans la mise en place : le solveur non-linéaire, le solveur linéaire, et en particulier le passage de l'un à l'autre.
-  Ce passage étant jugé insatisfaisant pour notre solveur, nous présentons la méthode JFNK, ou plus généralement une formulation sans matrice, qui s'appuie sur des parties déjà présentes de CEDRE et corrige, {\it a priori}, ce défaut.
+  Ce passage étant jugé insatisfaisant pour notre solveur, nous présentons la méthode JFNK, ou plus généralement une formulation sans matrice, qui s'appuie sur des parties déjà présentes de CEDRE et corrige, {\it a priori \PS{Pourquoi italique ?}}, ce défaut.
 \end{tcolorbox}
 
 
@@ -84,14 +84,14 @@
     \begin{equation}
       \frac{\mathrm{d} \Xi}{\mathrm{d} t} - \operatorname{G}\left(\Xi\right) = 0 .
     \end{equation}
-    \PS{The difference here is that the function $\operatorname{G}$ is a function of a discrete vector whereas $\operatorname{F}$ was a function of continuous state variables that are in turn functions of the space variable, and therefore $\operatorname{G}$ does not use any spatial derivatives.}
+    The difference here is that the function $\operatorname{G}$ is a function of a discrete vector whereas $\operatorname{F}$ was a function of continuous state variables that are in turn functions of the space variable, and therefore $\operatorname{G}$ does not use any spatial derivatives.
     The negative sign is here so that this new equation is similar to the original partial differential equation (\ref{eq:pde}) and the new equation can be written in the form that corresponds to most of the literature:
     \begin{equation}\label{eq:ode}
       \frac{\mathrm{d} \Xi}{\mathrm{d} t} = \operatorname{G}\left(\Xi\right) .
     \end{equation}
     Thanks to the spatial discretisation method, the only derivative remaining is with regard to time.
     The rest is then up to the temporal integration method, which is the main topic of this thesis.
-    We will work from equation (\ref{eq:ode}) no matter where the function $\operatorname{G}$ comes from, but sometimes understanding the origin of this function can help so we will now introduce the spatial discretisation method used in our solver.
+    This integration method will works on equation (\ref{eq:ode}) no matter where the function $\operatorname{G}$ comes from, but sometimes understanding the origin of this function can help so we will now introduce the spatial discretisation method used in our solver.
 
 
   \section{Brief introduction to the spatial integration schemes}
@@ -129,7 +129,7 @@
       \paragraph{}
       As stated before, the spatial discretisation method does transform the partial differential equation into an ordinary differential equation.
       It tells to store quantities as their averaged values represented at the center of gravity of each cell as the vector $\Xi$.
-      An important aspect concerns the transformation of the divergence from equation (\ref{eq:pde_conservative}) into a flux surface average, \PS{and the flux computation is still here an open question}.
+      An important aspect concerns the transformation of the divergence from equation (\ref{eq:pde_conservative}) into a flux surface average, and the flux computation is still here an open question.
       The mesh cells are supposed to be polyhedrons and they have a finite number of planar faces.
       The integral over the boundary of the cell can be decomposed by the faces, to get the approximation:
       \begin{equation}
@@ -137,8 +137,8 @@
       \end{equation}
       where $\vec{s_{ij}}$ is the product of the face area and the unit normal vector directed outwards volume $i$ and $\vec{\operatorname{f}}_{ij} \cdot \vec{s_{ij}}$ is an approximation of the flux going through the face between cells $i$ and $j$.
       This approximation is a key element of the Finite Volume method and will be discussed later.
-      \PS{The function $\operatorname{G}$ from equation (\ref{eq:ode}) can now be computed: for each face of the mesh, one computes $\vec{\operatorname{f}}_{ij} \cdot \vec{s_{ij}}$, adds this value to the $i$th component and removes it from the $j$th component of the new vector.
-      Then, after adding the source terms, this yields the vector containing the result of $\operatorname{G}\left(\Xi\right)$.}
+      The function $\operatorname{G}$ from equation (\ref{eq:ode}) can now be computed: for each face of the mesh, one computes $\vec{\operatorname{f}}_{ij} \cdot \vec{s_{ij}}$, adds this value to the $i$th component and removes it from the $j$th component of the new vector.
+      Then, after adding the source terms, this yields the vector containing the result of $\operatorname{G}\left(\Xi\right)$.
       As can be seen, every contribution of the flux added in a cell is removed from another, and therefore this spatial discretisation method preserves the conservation of the underlying equation.
 
 
@@ -147,7 +147,7 @@
       \paragraph{}
       The last remaining problem with this presentation of the Finite Volume method is how to compute the flux going through cell interfaces.
       On the interfaces between two cells, the left and right quantities $\xi_L$ and $\xi_R$ are known and are used to compute the corresponding flux.
-      It is possible here to use a reconstruction method to get a better approximation of the quantities at the left and right sides of the interface, and therefore we end up using the left and right quantities $\xi_L^*$ and $\xi_R^*$.
+      It is possible here to use a reconstruction method to get a better approximation of the quantities at the left and right sides of the interface, and therefore the left and right quantities at the face $\xi_L^*$ and $\xi_R^*$ are used, rather than the quantities at the cell center.
       The idea is now to compute the flux going through the face as a function of $\xi_L^*$, $\xi_R^*$ and the surface vector $\vec{s}$.
       From the interface point of view, there are two possible different states, one from each side: this is what is called a Riemann problem.
       A Riemann problem is an initial value problem applied to a conservation equation, where the initial solution is piecewise constant with a single possible discontinuity.
@@ -199,7 +199,7 @@
 
 
       \paragraph{}
-      We briefly explained above the spatial discretisation method used in our solver, as it might help our analysis of the time integration part.
+      We briefly explained above the spatial discretisation method used in our solver, as it might help the analysis of the time integration part.
       The Finite Volume method averages the partial differential equation over each cell of the mesh, which transforms the flux divergence into a flux surface average.
       A reconstruction method, the $k$-exact method or the Multislope method, is then used to get a higher-order representation of the solution so that the surface flux can be computed at each face.
       Slope limiters are used to prevent the formation of local extrema, which can be harmful to the computation.
@@ -239,7 +239,7 @@
     \end{equation}
     A time integration method is going to produce a succession of solutions: starting from $\Xi_0$, it produces $\Xi_1$ at $t_1$, then $\Xi_2$ at $t_2$, and $\Xi_n$ at $t_n$, etc.
     Let $\Delta t_n$ be the time step $t_{n+1} - t_n$.
-    \PS{Sans le "we" c'est pas clair} \GP{Look at a single step of time integration methods in the following, the subscript on the time step can be drop as it is not meaningful}.
+    The following is related to a single step of the time integration method, so the subscript on the time step can be drop as it is not meaningful.
     For a steady problem, the evolution of the solution has no interest and it seems reasonable to want to "go fast" to the steady state, meaning to use as large a time step as possible.
     Unfortunately, not every time integration method allows large time steps due to the well-known Courant--Friedrichs--Lewy condition \cite{CourantFriedrichsLewy1967}.
     Some tools must be defined in order to help decide on the method to use.
@@ -271,11 +271,11 @@
           \norm{\Xi - \Xi_{exact}} = O\left(h^p\right)
         \end{equation}
         where $h$ is the spatial discretisation parameter.
-        We notice a difference between the two definitions: the error order of magnitude is $p+1$ for the temporal method and $p$ for the spatial one.
+        There is a difference between the two definitions: the error order of magnitude is $p+1$ for the temporal method and $p$ for the spatial one.
         This is due to the fact that the error in the spatial case is global: it sums the error over the whole domain.
         It would correspond to counting the error on each step for the temporal integration.
-        To convince oneself, we could say that when solving the differential equation on an interval $\left[0, T\right]$ with a fixed $T$, the global error of a $p$-order method would behave as $O\left(\Delta t^p\right)$ as it amounts to summing $T/\Delta t$ local errors of $O\left(\Delta t^{p+1}\right)$.
-        We then get the coherency with the definition of the order for spatial discretisation methods.
+        To convince oneself, one could say that when solving the differential equation on an interval $\left[0, T\right]$ with a fixed $T$, the global error of a $p$-order method would behave as $O\left(\Delta t^p\right)$ as it amounts to summing $T/\Delta t$ local errors of $O\left(\Delta t^{p+1}\right)$.
+        The coherency with the definition of the order for spatial discretisation methods is now clear.
         If this trick can help understand the difference between the two definitions, this is indeed just a mental trick and not a rigorous mathematical proof.
         To get this proof, more hypotheses on the method are required \cite{Iserles2008}.
 
@@ -284,7 +284,7 @@
 
         \paragraph{}
         A meaningful criterion in the choice of a time integration method is stability.
-        Depending on the application, we will expect different levels of stability in order to avoid a numerically induced divergence of the computation.
+        Depending on the application, different levels of stability are expected in order to avoid a numerically induced divergence of the computation.
 
         \paragraph{}
         The stability of a time integration method is usually analysed on the ordinary differential equation with a linear right-hand side \cite{HairerWanner1996}.
@@ -294,11 +294,10 @@
           \frac{\mathrm{d} y}{\mathrm{d} t} = J y .
         \end{equation}
         This new equation used to analyse the stability of time integration methods is the one called the Dahlquist test equation.
-        \GP{Now, the goal is to compute the eigenvalues and eigenvectors of the matrix $J$} in $\mathbb{C}$.
-        \footnote{PS pas le sens de départ : We look at this equation in $\mathbb{C}$, so that we can compute the eigenvalues and eigenvectors of the matrix $J$.}
+        This equation is studied in $\mathbb{C}$, so that eigenvalues and eigenvectors of the matrix $J$ exists.
 
         \paragraph{Note:}
-        When looking at a method applied to the Dahlquist test equation (\ref{eq:dahlquist}), we assume that the real parts of the eigenvalues of $J$ are all negative.
+        When looking at a method applied to the Dahlquist test equation (\ref{eq:dahlquist}), it is assumed that the real parts of the eigenvalues of $J$ are all negative.
         This choice may seem arbitrary but can be understood with the following example.
         Let us work in $\mathbb{C}^2$, with:
         \begin{equation}
@@ -308,7 +307,7 @@
         \begin{equation}
           y\left(t\right) = \begin{pmatrix} e^{-t} \\ 0 \end{pmatrix} .
         \end{equation}
-        As we solve the equation numerically, the floating point representation introduces some roundoff error.
+        As the equation is solved numerically, the floating point representation introduces some roundoff error.
         The initial condition may then be
         \begin{equation}
           y_0' = \begin{pmatrix} 1 \\ \epsilon \end{pmatrix}
@@ -338,9 +337,8 @@
         \begin{equation}
           y_n = \sum_{i=1}^N \lambda_i g\left(\Delta t \alpha_i\right)^n v_i .
         \end{equation}
-
-        It is now straightforward to deduce a stability condition for the single-step method: if for any $i$ we have $\left|g\left(\Delta t\alpha_i\right)\right| < 1$, then $y_n$ converges to 0.
-        This is how we can define the stability region of a time integration method:
+        It is now straightforward to deduce a stability condition for the single-step method: if for any $i$ there is $\left|g\left(\Delta t\alpha_i\right)\right| < 1$, then $y_n$ converges to 0.
+        This is how the stability region of a time integration method is defined:
         \begin{equation}
           \left\{ \, z \in \mathbb{C} \; \mid \; \left| g\left(z\right) \right| < 1 \, \right\} .
         \end{equation}
@@ -349,8 +347,8 @@
         \paragraph{}
         If an eigenvalue is not in the stability region, the associated eigendirection will be amplified and a numerical instability will lead to the divergence of the computation.
         We can see that the argument of the function $g$ is not $J$ but $\Delta t J$.
-        This means that stability can be achieved by choosing wisely the time step: with a small enough $\Delta t$ we can make sure that each eigenvalue falls into the stability region.
-        Unfortunately, this often forces the user to set a relatively small time step, which is an issue for our steady computations.
+        This means that stability can be achieved by choosing wisely the time step: with a small enough $\Delta t$ one can ensures that each eigenvalue falls into the stability region.
+        Unfortunately, this often forces the user to set a relatively small time step, which is an issue for steady computations.
 
 
         \paragraph{Multistep methods}
@@ -367,7 +365,7 @@
         \end{equation}
         which leads to identifying the polynomial $g_{\Delta t J}\left(\mu\right) = \mu^k - \sum_{i=0}^{k-1}g_i\left(\Delta t J\right)\mu^i$.
         If each root of this polynomial is of modulus less than 1, the solution converges to 0.
-        This is how we can define the stability region for multistep methods \cite{HairerWanner1996}:
+        This is how the stability region for multistep methods is defined \cite{HairerWanner1996}:
         \begin{equation}
           \left\{ \, z \in \mathbb{C} \; \mid \; \parbox{25em}{all roots of $X^k - \sum_{i=0}^{k-1}g_i\left(z\right)X^i$ are of modulus less or equal to 1, strictly less to 1 for roots with multiplicity}
            \, \right \} .
@@ -427,7 +425,7 @@
         \begin{equation}
           \int_{t_n}^{t{n,i}} \operatorname{G}\left(\Xi\left(t\right)\right) \mathrm{d}t \approx \sum_{j = 1}^{i-1} a_{ij} \operatorname{G}\left(\Xi\left(t_{n,j}\right)\right) .
         \end{equation}
-        Once each intermediate step is known, we finally integrate between $t_n$ and $t_{n+1}$ equation (\ref{eq:init_value_ode}) and approximate the integral using the intermediate steps.
+        Once each intermediate step is known, equation (\ref{eq:init_value_ode}) is integrated between $t_n$ and $t_{n+1}$ and the resulting integral is approximatex using the intermediate steps.
 
         \paragraph{}
         To sum up, a Runge--Kutta method iterates in the following way:
@@ -529,7 +527,7 @@
 
         \paragraph{}
         The idea is to apply a Lagrange interpolation of the function $\operatorname{G}$ from equation (\ref{eq:init_value_ode}) in the $k$ last computed points, and then replace $\operatorname{G}$ with the interpolation polynomial when integrating from $t_n$ to $t_{n+1}$.
-        Contrary to the Runge--Kutta methods, as we reuse previous information, a single $\operatorname{G}$ evaluation is required at each step.
+        Contrary to the Runge--Kutta methods, as this method reuses previous information, a single $\operatorname{G}$ evaluation is required at each step.
         Because of that, the cost of one iteration of the Adams--Bashforth method is quite inexpensive.
         The stability analysis for such methods is a bit more complex \cite{HairerNorsettWanner1993, HairerWanner1996}, and so the result obtained numerically is shown on figure \ref{fig:ab_stab} without giving the details.
         The conclusion is even worse than with Runge--Kutta methods, as the stability region decreases as the order increases.
@@ -588,7 +586,7 @@
         However, users usually stop at the 3-stage 6th order method, as the computational cost tends to be too much for higher order methods.
 
         \paragraph{}
-        When applying the stability analysis to a Runge--Kutta method, we can derive the function $g$ using the arrays $A$, $b$ and $c$:
+        When applying the stability analysis to a Runge--Kutta method, one can get the function $g$ using the matrix $A$ and the array $b$:
         \begin{equation}
           g\left(z\right) = 1 + z \transpose{b} \left(\operatorname{Id} - zA\right)^{-1} \transpose{\left(1, \dots, 1\right)} .
         \end{equation}
@@ -598,7 +596,7 @@
         \paragraph{Diagonally Implicit Runge--Kutta methods}
         The Diagonally Implicit Runge--Kutta methods \cite{Alexander1977}, or DIRK methods, are Runge--Kutta methods with a lower triangular matrix $A$.
         Then, each step is given as an implicit problem using the already known steps and the next one.
-        The difference is that instead of solving a full implicit system, we just need to solve each implicit step successively.
+        The difference is that instead of solving a full implicit system, one just needs to solve each implicit step successively.
         This help drastically reduces the cost of the method.
         Furthermore, if all quadrature coefficient $a_{ii}$ are all equals, as each step requires the inversion of the matrix
         \begin{equation}
@@ -654,15 +652,15 @@
       \subsubsection{Backward differentiation formula}
 
         \paragraph{}
-        As we extended the explicit Runge--Kutta methods to implicit methods, we can also extend the Adams--Bashforth method to an implicit one.
-        When interpolating the function $\operatorname{G}$, we add one point to the Lagrange interpolation: the point we want to compute.
+        As explicit Runge--Kutta methods are extended to implicit methods, Adams--Bashforth method also have their implicit counterparts.
+        The idea is to still compute the Lagrange interpolation of the function $\operatorname{G}$ but with one additional point: the point at the next time step.
         This new method is called the Adams--Moulton method.
         However, the stability region of Adams--Moulton is quite narrow, as they were originally not made for stiff equations \cite{Iserles2008}.
         This is why the Backward Differentiation Formula methods, or BDF methods, were introduced.
         Contrary to Adams--Bashforth and Adams--Moulton methods, they use the Lagrange interpolation of the solution $\Xi$ instead of the interpolation of the function $\operatorname{G}$.
         Then, the time derivative of the solution can be replaced by the time derivative of the interpolating polynomial, and the resulting equality is evaluated at the next time step $t_{n+1}$.
         This gives an implicit equation that is solved to get $\Xi_{n+1}$.
-        The name of those methods comes from the fact that if we use a constant time step between iterations, this equation can be written using the differentiating operator defined by $\nabla^0 \square_i = \square_i$ and $\nabla^{j+1} \square_i = \nabla^j \square_i - \nabla^j \square_{i-1}$:
+        The name of those methods comes from the fact that if it uses a constant time step between iterations, this equation can be written using the differentiating operator defined by $\nabla^0 \square_i = \square_i$ and $\nabla^{j+1} \square_i = \nabla^j \square_i - \nabla^j \square_{i-1}$:
         \begin{equation}
           \sum_{i=1}^k \frac{1}{i} \nabla^i \Xi_{n+1} = \Delta t \operatorname{G}\left(\Xi_{n+1}\right)
         \end{equation}
@@ -672,7 +670,7 @@
         These methods allow for an arbitrarily high order without increasing the cost, as the implicit equation is not harder to solve as the order increases.
         However, the stability analysis limits the higher order achievable.
         The stability analysis of the BDF methods can be done numerically.
-        At this stage, we can note that the first-order BDF method is in fact the implicit Euler method.
+        At this stage, one can note that the first-order BDF method is in fact the implicit Euler method.
         Also, methods of order 7 or higher are unstable, so we can limit our analysis to methods with orders from 1 to 6.
         The corresponding stability regions are satisfying, as can be seen in figure \ref{fig:bdf_stab}.
         Particularly, the first and second methods are A-stable.
@@ -690,7 +688,7 @@
       This introduction to the classic time integration methods helps us to decide what to do for our solver.
       As we said earlier, we want to solve an ordinary differential equation in order to recover the steady solution, reached after a long time.
       Then, explicit methods that constrain the time step are not well fitted.
-      Even if they cost more, algorithmically speaking, implicit methods are indeed the best choice for our stiff equations.
+      Even if they cost more, algorithmically speaking, implicit methods are indeed the best choice for stiff equations.
       It is often better to do a single expensive iteration over a large time step with an implicit method than make a lot of inexpensive iterations over small time steps with an explicit method.
       This is finally why we will continue working with the A-stable implicit Euler method.
       This method is already used in our solver as the base implicit method, for the same reasons we want to use it.
@@ -742,8 +740,8 @@
         \end{equation}
         where $A = f'\left(x_i\right)$, $b = -f\left(x_i\right)$ and $x = \left( x_{i+1} - x_i \right)$.
         The $x$ notation is reused as it is often used in the literature to name the unknown in linear problems.
-        We find such linear problems during the iterations of Newton's method, but each is solved for a given iteration number so there are no ambiguity from this notation.
-        A lot of methods were conceived to solve such linear problems, and we will discuss later how we will handle them.
+        Such linear problems are found during the iterations of Newton's method, but each is solved for a given iteration number so there are no ambiguity from this notation.
+        A lot of methods were conceived to solve such linear problems, and we will explain later how to handle them.
 
 
       \paragraph{}
@@ -794,7 +792,7 @@
       This transcribes into lots of zeros in the matrix, and therefore its sparsity.
       Such sparse matrices can be seen in figure \ref{fig:sparse}.
       Using the sparsity of the matrix is essential, as it would not be possible to store it as a dense matrix in the memory of a computer.
-      Instead, we use some clever formats such as the Compressed Sparse Row format \cite{Saad2003}.
+      Instead, some clever formats are used, such as the Compressed Sparse Row format \cite{Saad2003}.
       Some operations such as matrix-vector products are more efficiently done using such formats.
 
   		\begin{figure}
@@ -829,9 +827,9 @@
       Such methods are called direct methods, as they first do some work and then find directly the exact solution to the problem.
       But for problems with huge sizes such as the ones encountered in computational fluid dynamics, the amount of work is too much to be computed with today's means.
       It would take too much time as well as too much memory.
-      Instead, we can use iterative methods.
+      Instead, one can use iterative methods.
       An iterative method starts from an initial guess $x_0$ and produces as it iterates a supposedly better estimation of the solution $x_n$.
-      The subscript $n$ has nothing to do with the subscript used to identify the iterates of the time integration method: we work at a given fixed time step here.
+      The subscript $n$ has nothing to do with the subscript used to identify the iterates of the time integration method: this hapens at a given fixed time step.
       We can then decide when to stop the method, whether the solution estimate is good enough or the resolution is taking too much time.
       Iterative methods are the most well-fitted to solve large sparse linear problems, and they are the preferred solution in computational fluid dynamics.
 
@@ -840,7 +838,7 @@
       They are the Jacobi, Gauss--Seidel or Successive Over Relaxation methods.
       They decompose the matrix into $A = M - N$ with $M$ a matrix easily invertible.
       The choice of $M$ depends on the method.
-      Then, starting from a given $x_0$, at each step we compute $x_{n+1} = M^{-1} \left( N x_n + b \right)$.
+      Then, starting from a given $x_0$, each step computes $x_{n+1} = M^{-1} \left( N x_n + b \right)$.
       Those methods are often deemed not efficient enough for computational fluid dynamics applications.
       They are often used, however, as preconditioning methods, as we will see later.
 
@@ -865,7 +863,7 @@
       For example, $\mathcal{L}_n = \krylov{n}$ corresponds to a Galerkin condition, and $\mathcal{L}_n = A \krylov{n}$ is a minimum residual condition.
 
       \paragraph{}
-      To construct the growing Krylov subspace, we can use the Arnoldi iteration \cite{TrefethenBau1997}.
+      To construct the growing Krylov subspace, one can use the Arnoldi iteration \cite{TrefethenBau1997}.
       As a result, the matrix $A$ is only used through matrix-vector products.
       Indeed, Krylov subspace methods do not require the matrix $A$ to solve the linear system (\ref{eq:linear}), just to know how to compute matrix-vector products.
       We will use this property later on.
@@ -889,7 +887,7 @@
       \end{equation}
       and so it depends on the chosen norm.
       A problem is said to be well-conditioned when $\kappa = O\left(1\right)$, and ill-conditioned when $\kappa \gg 1$.
-      For the Euclidean norm $\norm[2]{\cdot}$, we have
+      For the Euclidean norm $\norm[2]{\cdot}$,
   		\begin{equation}\label{eq:conditioning}
   			\kappa\left( A \right) = \frac{\sigma_{\max}}{\sigma_{\min}}
   		\end{equation}
@@ -905,7 +903,7 @@
       An intriguing result is found in \cite{GreenbaumPtakStrakos1996}.
       For a given decreasing convergence curve and a given spectrum, it is possible to construct a linear problem such as the convergence of GMRES follows the given curve and the matrix has the given spectrum.
       In other words, there are ill-conditioned matrices for which GMRES converges quickly and well-conditioned matrices for which GMRES will be slow.
-      In particular, we can find a matrix with the best condition number possible, meaning 1, on which GMRES will make no progress until the last iteration.
+      In particular, one can find a matrix with the best condition number possible, meaning 1, on which GMRES will make no progress until the last iteration.
       This is because of the nonnormality of the matrix \cite{GreenbaumStrakos1994, GreenbaumPtakStrakos1996}.
       To handle it in the analysis of the convergence, one must not look at the spectrum but the pseudospectrum \cite{Trefethen1991, Trefethen1999}.
       This analysis is quite complex and is mostly done in an analytical context, not an industrial one.
@@ -986,10 +984,10 @@
       The Incomplete LU preconditioner, characterised by its index $k$, computes only the coefficients of the triangular factors that belong to the sparsity pattern of $A^{k+1}$.
       This way, the factorisation is incomplete in the sense that it does not recreate $A$, but it is still sparse and can be used as a preconditioner.
       The Incomplete LU factorisation is often used in computational fluid dynamics \cite{LiuZhangZhongEtAl2015, AhrabiMavriplis2020}, but it was not a good fit for our solver, due to the difficulty in developing the method in an industrial-size solver, and because it relies directly on the matrix.
-      Indeed, the matrix we have is not precise, as we will explain later, so using it as a preconditioner may not work as well as expected.
+      Indeed, the matrix available to us is not precise, as we will explain later, so using it as a preconditioner may not work as well as expected.
 
       \paragraph{}
-      As we do not need explicitly the preconditioning matrix $P$, and its effect should be near $A^{-1}$, one could take as a preconditioning procedure another Krylov subspace method: to apply the preconditioning to any vector $v$ would mean solving $Ax = v$ with a Krylov subspace method.
+      As the preconditioning matrix $P$ is not explicitely needed, and its effect should be near $A^{-1}$, one could take as a preconditioning procedure another Krylov subspace method: to apply the preconditioning to any vector $v$ would mean solving $Ax = v$ with a Krylov subspace method.
       However, applying a Krylov subspace method is not a linear operator.
       To handle this case, the GMRES algorithm must be modified into the Flexible Generalized minimal residual method, or FGMRES \cite{Saad1993, SimonciniSzyld2002}.
       GMRES can be preconditioned with an inner GMRES, and as GMRES was already written in our solver this idea was simple to implement.
@@ -1018,9 +1016,9 @@
       \paragraph{}
       If we can solve precisely linear problems, but the problem is not the one the nonlinear solver wants, it may hurt the nonlinear solver convergence.
       We then need to be able to get the right linear problem from the nonlinear one.
-      At this point, we know how to evaluate the function $f$ from equation (\ref{eq:nonlinear}), which is often expressed as a linear combination of previous states and $\operatorname{G}$ evaluations, where $\operatorname{G}$ is the function introduced in equation (\ref{eq:init_value_ode}), the function from our starting ordinary differential equation.
+      At this point, we know how to evaluate the function $f$ from equation (\ref{eq:nonlinear}), which is often expressed as a linear combination of previous states and $\operatorname{G}$ evaluations, where $\operatorname{G}$ is the function introduced in equation (\ref{eq:init_value_ode}), the function from the starting ordinary differential equation.
       On the other hand, computing its derivative with regard to $x$ is a different story.
-      As this derivative is the matrix we use when solving the linear problem, it is crucial to have a good representation of it.
+      As this derivative is the matrix used when solving the linear problem, it is crucial to have a good representation of it.
       This derivative $f'\left(x\right)$ uses the Jacobian matrix of the function $\operatorname{G}$.
       As the function $\operatorname{G}$ comes from the spatial discretisation method applied to the original partial differential equations (\ref{eq:pde}), it is quite complex to evaluate this Jacobian.
       The underlying algorithm is hard to fully understand and write, and the numerical evaluation is usually expensive.
@@ -1041,14 +1039,14 @@
       \paragraph{}
       A possible idea is to use an approximation of the Jacobian matrix that is inexpensive to compute.
       We said that the function $\operatorname{G}$ comes from the second-order or higher-order Finite Volume method used as the spatial discretisation method.
-      We can take the function $\operatorname{G}_1$ given by the first-order corresponding method, and use its Jacobian matrix instead.
+      One can then take the function $\operatorname{G}_1$ given by the first-order corresponding method, and use its Jacobian matrix instead.
       Indeed, computing $\operatorname{G}_1$ is inexpensive in comparison to $\operatorname{G}$, and the same goes for the corresponding Jacobian matrices.
-      Going further, we could also approximate the Jacobian matrix of $\operatorname{G}_1$: when $\operatorname{G}$ uses some complex models such as turbulence models, it is often decided to not include those models' contributions to the Jacobian matrix, for complexity and stability reasons \cite{ContentOuttierCinnella2013}.
+      Going further, one could also approximate the Jacobian matrix of $\operatorname{G}_1$: when $\operatorname{G}$ uses some complex models such as turbulence models, it is often decided to not include those models' contributions to the Jacobian matrix, for complexity and stability reasons \cite{ContentOuttierCinnella2013}.
       This is what is done originally in our in-house solver: using a cheap low-order approximation of the Jacobian matrix.
 
       \paragraph{}
       When we decided to use Krylov subspace methods as our linear solver, we highlighted the fact that they only need to know how to compute matrix-vector products.
-      Using this, and the fact that the matrix is a Jacobian matrix, we could approximate the matrix-vector product of $f'\left(x\right)$ with a vector $v$ by:
+      Using this, and the fact that the matrix is a Jacobian matrix, one could approximate the matrix-vector product of $f'\left(x\right)$ with a vector $v$ by:
       \begin{equation}\label{eq:matrix_free}
         f'\left(x\right) v \approx \frac{f\left(x + \varepsilon v\right) - f\left(x\right)}{\varepsilon}
       \end{equation}
@@ -1056,7 +1054,7 @@
       This is the finite difference approximation of the Jacobian matrix-vector product.
       A quick analysis shows that the error on this approximation is $o\left(\varepsilon\right)$.
       Usually, the value of $f\left(x\right)$ is previously computed, so one evaluation of $f$ is required for one matrix-vector product.
-      We could also use the centered finite difference approximation:
+      One could also use the centered finite difference approximation:
       \begin{equation}
         f'\left(x\right) v \approx \frac{f\left(x + \varepsilon v\right) - f\left(x - \varepsilon v\right)}{2\varepsilon}
       \end{equation}
@@ -1065,7 +1063,7 @@
 
       \paragraph{}
       Using this approximation, it is possible to recover the full Jacobian matrix.
-      If we apply the approximation (\ref{eq:matrix_free}) for each vector of the canonical basis as the vector $v$, we can gather each column of the Jacobian matrix.
+      If the approximation (\ref{eq:matrix_free}) is applied to each vector of the canonical basis as the vector $v$, one can gather each column of the Jacobian matrix.
       This gives what is often called the finite difference Jacobian matrix.
       Instead of computing a matrix-vector product for each direction, a technique consists of computing independent directions beforehand to get a colouring of the matrix: two directions are of the same colour if they are independent through the matrix.
       Then, a smaller number of matrix-vector product approximations are required: as many as there are colours.

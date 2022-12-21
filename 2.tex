@@ -51,7 +51,7 @@
       \item THERMOLIB is used to compute the different thermophysical properties such as heat capacities, or to compute the closure relations that can be complex in our applications.
     \end{itemize}
     Those libraries are the main engines of the solver.
-    When we do a computation with CHARME, it is in fact ASSEMBLAGE that tells CHARME when to initialise itself, to do a step of the time integration method, etc.
+    CEDRE does a computation with CHARME, it is in fact ASSEMBLAGE that tells CHARME when to initialise itself, to do a step of the time integration method, etc.
     When CHARME needs to compute the ordinary differential equation function, it is BIBCEDRE that does the higher-order polynomial reconstruction of the solution so that the Riemann solver can compute the interface flux.
     When CHARME needs to compute the primitive variables such as the pressure and temperature from the conservative variables, it is THERMOLIB that solves a nonlinear problem with Newton's method to compute the result.
 
@@ -110,7 +110,7 @@
       that takes three arguments: the \mintinline{fortran}{type_sys} instance, an index identifying the vector to multiply and an index identifying the vector where to put the result.
       As we explained when we introduced Krylov subspace methods, GMRES uses the linear system matrix through this matrix-vector product routine.
       Classically, a client solver such as CHARME fills the matrix coefficients and then lets BIBCEDRE solve the linear system.
-      In order to use the matrix-free approximation from equation (\ref{eq:matrix_free}), we only need to replace this routine with a new one that computes the approximation.
+      In order to use the matrix-free approximation from equation (\ref{eq:matrix_free}), one only needs to replace this routine with a new one that computes the approximation.
       Unfortunately, the approximation uses a function that belongs to the client solver.
       The library BIBCEDRE does not know this function and how to compute it, as it is part of CHARME or any other client solver.
       As we said, we want to write generic solutions, and so merging the library BIBCEDRE with the solver CHARME is not a good way to proceed.
@@ -145,7 +145,7 @@
       \paragraph{}
       The computational cost of the matrix-vector approximation is approximately the cost of one function evaluation.
       It requires some additional operations, such as vector subtractions, and vector scaling, but those operations are way less expensive.
-      Using a matrix-free algorithm is clearly less expensive in terms of memory, as we do not need to store the matrix at all.
+      Using a matrix-free algorithm is clearly less expensive in terms of memory, as the matrix does not need to be stored at all.
       Some even claim that it can lead to a less expensive method in terms of time \cite{AnWenFeng2011}.
       This happens when the alternative, which is computing the Jacobian matrix, is an expensive task.
       In CHARME, the Jacobian matrix that is traditionally used is inexpensive to compute, with a cost similar to a function evaluation.
@@ -161,13 +161,13 @@
     \subsection{Strategy for the choice of \texorpdfstring{$\varepsilon$}{epsilon}}
 
       \paragraph{}
-      When we introduced the approximation (\ref{eq:matrix_free}) we saw a new parameter $\varepsilon$.
+      When we introduced the approximation (\ref{eq:matrix_free}) it introduced a new parameter $\varepsilon$.
       It is easy to check that the truncation error on this approximation decreases linearly with regard to $\varepsilon$.
       It is natural to take a small value for $\varepsilon$.
-      But unfortunately, we work with floating-point arithmetic, so dividing by a small $\varepsilon$ introduces roundoff errors \cite{Martel2006}.
+      But unfortunately, when working with floating-point arithmetic, dividing by a small $\varepsilon$ introduces roundoff errors \cite{Martel2006}.
       This parameter needs to balance truncation and roundoff errors.
       We need to decide on a strategy for the choice of epsilon.
-      We could take for example $\varepsilon = \sqrt{\varepsilon_\textrm{mach}}$ where $\varepsilon_\textrm{mach}$ is the machine epsilon: around $10^{-6}$ for single precision and $10^{-15}$ for double precision.
+      One could take for example $\varepsilon = \sqrt{\varepsilon_\textrm{mach}}$ where $\varepsilon_\textrm{mach}$ is the machine epsilon: around $10^{-6}$ for single precision and $10^{-15}$ for double precision.
       This choice is often discarded as it is deemed too simplistic.
       Instead, works from the literature tend to use the same few options \cite{ParkNourgalievMartineauEtAl2009, LiuZhangZhongEtAl2015, AbhyankarBrownConstantinescuEtAl2018} that come from \cite{PerniceWalker1998} and \cite{DennisSchnabel1996}.
       Those options are well described in \cite{KnollKeyes2004}.
@@ -206,16 +206,16 @@
       This corresponds to a roundoff error-dominated region.
       Also, this increase is not smooth as the linear decrease, because roundoff errors tend to produce more chaotic results.
       The choice of $\varepsilon$ from \cite{PerniceWalker1998} is also shown in the figure, as the large blue dot.
-      As we can see, it falls into a low error region, not too much on the left, not too much on the right.
+      As can be seen, it falls into a low error region, not too much on the left, not too much on the right.
 
       \paragraph{}
       The issue we noticed is the following.
       Some references in the literature do not specify the norm used in equation (\ref{eq:epsilon_wp}).
       As it is most of the time the Euclidian norm $\norm[2]{\,\cdot\,}$, or 2-norm, we can assume that it is also the case when it is not specified.
       However, this means that in our example the value of $\varepsilon_\textrm{wp}$ will depend on the vector size.
-      With our example, if we increase the number of cells in our mesh the typical size of the vector components stays roughly the same, so the shape of the error as a function of $\varepsilon$ should not change much from the one in figure \ref{fig:epsilon_burgers_10}.
+      With our example, if one increases the number of cells in the mesh the typical size of the vector components stays roughly the same, so the shape of the error as a function of $\varepsilon$ should not change much from the one in figure \ref{fig:epsilon_burgers_10}.
       But if the vector components size stays the same, the 2-norm does increases with the vector dimension.
-      We can even see that when the dimension is $N \gg 1$, $\varepsilon_\textrm{wp} \sim N^{-1/4}$.
+      One can even see that when the dimension is $N \gg 1$, $\varepsilon_\textrm{wp} \sim N^{-1/4}$.
       Having $\varepsilon$ to depend on $N$ did not make sense to us, as we are working with possibly large vectors in our industrial applications.
       That is why we decided to use a variation from what is currently found in the literature: we will use the norm $\norm[2]{\,\cdot\,} / \sqrt{N}$ that can be seen as a scaled 2-norm.
       We then get a new strategy for the choice of $\varepsilon$ that we note $\varepsilon_{\textrm{wp}, N}$:
@@ -239,9 +239,9 @@
       Figure \ref{fig:epsilon_burgers} shows the result of this experiment.
       On the left, we see that the shape of the relative error as a function of $\varepsilon$ when $N = 10^7$ is similar to when $N = 10$, albeit the roundoff error-dominated region is more regular.
       In particular, the ideal trade-off between the two error types did not move a lot.
-      We see that as expected, the value of $\varepsilon_\textrm{wp}$ decreases: this translates as the fact that the blue dot moved to the left.
-      When looking at the error as a function of the dimension $N$, we can even recover the $-1/4$ expected slope.
-      In the right figure, we see in fact a $1/4$ slope but the error is inversely proportional to the value of $\varepsilon$ so if the error behaves as $N^{1/4}$, then $\varepsilon_\textrm{wp}$ behaves as $N^{-1/4}$.
+      The value of $\varepsilon_\textrm{wp}$ decreases as expected: this translates as the fact that the blue dot moved to the left.
+      When looking at the error as a function of the dimension $N$, one can even recover the $-1/4$ expected slope.
+      In the right figure, there is in fact a $1/4$ slope but the error is inversely proportional to the value of $\varepsilon$ so if the error behaves as $N^{1/4}$, then $\varepsilon_\textrm{wp}$ behaves as $N^{-1/4}$.
       Because of the shape of the error as a function of $\varepsilon$, if $\varepsilon_\textrm{wp}$ changes with $N$ it will eventually end up increasing the error.
       This is an undesired feature.
       Our new choice $\varepsilon_{\textrm{wp}, N}$ on the other hand does not change a lot when $N$ increases.
@@ -293,7 +293,7 @@
       Unfortunately, this is not possible for our applications.
       If it was, we would not even need to introduce the approximation (\ref{eq:matrix_free}) and therefore do this analysis.
       Using one-dimensional Burgers' equation and one-dimensional Euler equations with a simple Riemann solver was then a good compromise.
-      Those equations share similarities with the ones we work with in our solver, as they are nonlinear hyperbolic equations, but they are still simple enough so that we can use them here.
+      Those equations share similarities with the ones we work with in our solver, as they are nonlinear hyperbolic equations, but they are still simple enough so that they can be used here.
 
 
     \subsection{Linear system normalisation}
@@ -347,8 +347,8 @@
       \end{itemize}
       Handling the inner preconditioning with our matrix-free implementation is easy as those two operations are independent of each other.
       The outer preconditioning relies on the fact that the preconditioners available are simple, and therefore it is inexpensive to apply it to the whole matrix, and less expensive than applying after each matrix-vector product.
-      We lose this advantage with our matrix-free method.
-      We still apply once the left preconditioning to the right-hand side before the solve, but we now need to apply it after each matrix-vector approximation.
+      This advantage is lost with the matrix-free method.
+      The left preconditioning is still applied once to the right-hand side before the solve, but it is also applied after each matrix-vector approximation.
 
 
     \subsection{Local time-stepping}
