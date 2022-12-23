@@ -126,7 +126,7 @@ def rae_field_fine():
         pvs.Show(reader, views[i]).SetScalarBarVisibility(views[i], True)
         pvs.Show(reader, views[i + 1]).SetScalarBarVisibility(views[i + 1], True)
         threshold = pvs.Threshold(reader, Scalars=['CELLS', 'Residu~RhoNuTilde~'],
-                                  ThresholdMethod='Above Upper Threshold', UpperThreshold=1.8)
+                                  ThresholdMethod='Above Upper Threshold', UpperThreshold=1.9414055995803974 - 0.1)
         pvs.Show(threshold, views[i], Representation='Feature Edges', ColorArrayName=None, AmbientColor=[0, 1, 0],
                  LineWidth=3)
         pvs.Show(threshold, views[i + 1], Representation='Feature Edges', ColorArrayName=None, AmbientColor=[0, 1, 0],

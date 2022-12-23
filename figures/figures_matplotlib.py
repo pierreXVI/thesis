@@ -526,7 +526,7 @@ def rae_coefficients():
 def rae_residuals():
     with plt.rc_context({'font.size': 8, 'xtick.labelsize': 6, 'ytick.labelsize': 6}):
         fig = plt.figure(figsize=[5.78851, 3])
-        fig.suptitle(r"Residual 2-norms", y=0.95)
+        fig.suptitle(r"Residual 1-norms", y=0.95)
 
         ax11 = fig.add_subplot(221)
         ax12 = fig.add_subplot(222)
@@ -539,11 +539,12 @@ def rae_residuals():
             ax.grid(True)
             plotter = bibarch.HistoPlotter(ax, ('RESIDUS', 'MOYENS', tag), 'ITER', "/scratchm/pseize/RAE_2822")
             x, y, _ = plotter.get('BASE/INIT')
-            ax.semilogy(x, np.power(10, y), 'k', label='Initialisation')
+            y0 = y[0]
+            ax.semilogy(x, np.power(10, y - y0), 'k', label='Initialisation')
             x, y, _ = plotter.get('BASE/RUN_1')
-            ax.semilogy(x, np.power(10, y), label='Traditional method')
+            ax.semilogy(x, np.power(10, y - y0), label='Traditional method')
             x, y, _ = plotter.get('MF/RUN_1')
-            ax.semilogy(x, np.power(10, y), label='JFNK method')
+            ax.semilogy(x, np.power(10, y - y0), label='JFNK method')
             ax.set_title('')
             ax.set_ylabel(title)
 
@@ -564,7 +565,7 @@ def rae_residuals():
 
 def fig_rae_residuals_fine():
     with plt.rc_context({'font.size': 8, 'xtick.labelsize': 6, 'ytick.labelsize': 6}):
-        for label, tag0, name in (('2', 'MOYENS', 'l2'), (r'$\infty$', 'MAXIMA', 'linf')):
+        for label, tag0, name in (('1', 'MOYENS', 'l1'), (r'$\infty$', 'MAXIMA', 'linf')):
             fig = plt.figure(figsize=[5.78851, 3])
             fig.suptitle("Residual {0}-norms".format(label), y=0.95)
 
@@ -580,11 +581,12 @@ def fig_rae_residuals_fine():
                 plotter = bibarch.HistoPlotter(ax, ('RESIDUS', tag0, tag), 'ITER', "/tmp_user/sator/pseize/RAE_2822",
                                                plot_restarts=False)
                 x, y, _ = plotter.get(['BASE/RUN_0', 'BASE/RUN_1'])
-                ax.semilogy(x, np.power(10, y), 'k', label='Initialisation')
+                y0 = y[0]
+                ax.semilogy(x, np.power(10, y - y0), 'k', label='Initialisation')
                 x, y, _ = plotter.get(['BASE/RUN_2_1e-4', 'BASE/RUN_3_1e-4'])
-                ax.semilogy(x, np.power(10, y), label='Traditional method')
+                ax.semilogy(x, np.power(10, y - y0), label='Traditional method')
                 x, y, _ = plotter.get(['MF/RUN_{0}'.format(i) for i in range(9)])
-                ax.semilogy(x, np.power(10, y), label='JFNK method')
+                ax.semilogy(x, np.power(10, y - y0), label='JFNK method')
                 ax.set_title('')
                 ax.set_ylabel(title)
 
@@ -608,7 +610,7 @@ def fig_rae_residuals_fine():
 def sphere_mte_residuals():
     with plt.rc_context({'font.size': 8, 'xtick.labelsize': 6, 'ytick.labelsize': 6}):
         fig = plt.figure(figsize=[5.78851, 3])
-        fig.suptitle(r"$L_2$ residual norms", y=0.95)
+        fig.suptitle(r"Residual 1-norms", y=0.95)
 
         ax11 = fig.add_subplot(221)
         ax12 = fig.add_subplot(222)
@@ -621,12 +623,14 @@ def sphere_mte_residuals():
                                    "$\\operatorname{N}_2$ vibrational\nenergy", "Energy")):
             ax.grid(True)
             p = bibarch.HistoPlotter(ax, ('RESIDUS', 'MOYENS', tag), 'WALL', '/tmp_user/sator/pseize/SPHERE_LOBB_MTE')
+            x, y, _ = p.get('INIT/RUN_1')
+            y0 = y[0]
             p.reset_offset('INIT/RUN_1')
             x, y, _ = p.get('RK2/RUN_1')
-            ax.semilogy(x, np.power(10, y), label='Midpoint method')
+            ax.semilogy(x, np.power(10, y - y0), label='Midpoint method')
             p.reset_offset(['INIT/RUN_1', 'INIT/RUN_2'])
             x, y, _ = p.get('MF/RUN_1')
-            ax.semilogy(x, np.power(10, y), label='JFNK method')
+            ax.semilogy(x, np.power(10, y - y0), label='JFNK method')
             ax.set_title('')
             ax.set_ylabel(title)
             ax.set_xlim(-500, 7999)
@@ -641,7 +645,7 @@ def sphere_mte_residuals():
         fig.align_ylabels([ax11, ax21])
         fig.align_ylabels([ax12, ax22])
 
-        fig.subplots_adjust(0.1, 0.15, 0.99, 0.85, 0.30, 0.1)
+        fig.subplots_adjust(0.11, 0.15, 0.99, 0.85, 0.30, 0.1)
         fig.savefig('sphere_mte_residuals.png')
         # plt.show()
 

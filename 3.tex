@@ -151,25 +151,22 @@
         The name is quite adequate: for steady problems, the residual is what is left and still needs to be removed to find a steady solution.
         To decide on the convergence of a steady simulation, this residual norm is measured throughout the computational domain $\mathcal{D}$.
         More precisely, this residual is analysed component by component.
-        For example, the residual 2-norm associated with the $i$th component is:
-        \LM{J'avoue que mes souvenirs sont assez vague, mais il me semblait que la norme L2 était la racine de l'intégrale des carré; ce que tu écris ne serait pas la norme L1 plutôt?}
-        \PS{Oups ... en plus elle est normalisée par le volume.}
+        For example, the residual 1-norm associated with the $i$th component is:
         \begin{equation}
-          \norm[2]{\operatorname{F}_i} = \int_\mathcal{D} \left| \operatorname{F}_i \right| \mathrm{d}v
+          \norm[1]{\operatorname{F}_i} = \int_\mathcal{D} \left| \operatorname{F}_i \right| \mathrm{d}v
         \end{equation}
         and the $\infty$-norm is:
         \begin{equation}
-          \norm[\infty]{\operatorname{F}_i} = \max_\mathcal{D} \left| \operatorname{F}_i \right|
+          \norm[\infty]{\operatorname{F}_i} = \max_\mathcal{D} \left| \operatorname{F}_i \right| .
         \end{equation}
-        \PS{
         In this fluid dynamics application, the residual norm is associated with the conservative variables: the density, the momentum components, the energy and the turbulent eddy viscosity $\nu_t$.
         With the Spalart--Allmaras compressible model, the conservative variable in in fact the product of the density and the Spalart--Allmaras variable $\rho \tilde{\nu}$.
-        }
 
         \begin{figure}
           \centering
           \includegraphics{figures/rae_residuals.png}
-          \caption{Residual 2-norms for the two momentum components, energy and turbulent viscosity throughout the computation.}
+          \caption{Residual 1-norms for the two momentum components, energy and turbulent viscosity throughout the computation.
+          Values are normalised by the initial residual.}
           \label{fig:rae_residuals}
         \end{figure}
 
@@ -225,21 +222,22 @@
         Then the computation is continued for a few more iterations with the traditional implicit Euler method.
         This is to reach a state close enough of the steady solution more quickly before analysing the convergence of our methods.
         After that, the computations are restarted, with the traditional method on one side and the matrix-free method on the other.
-        The residuals are given in figure \ref{fig:rae_residuals_fine_l2}.
+        The residuals are given in figures \ref{fig:rae_residuals_fine_l1} and \ref{fig:rae_residuals_fine_linf}.
         Overall, it takes much more iterations to decrease residual norms on this test case compared to the previous one.
         It is due to the larger number of cells, and the presence of small flattened cells in the boundary layer.
 
         \paragraph{}
-        Figure \ref{fig:rae_residuals_fine_l2} shows that the reduction in residual 2-norms with the standard method is not satisfying.
+        Figure \ref{fig:rae_residuals_fine_l1} shows that the reduction in residual 1-norms with the standard method is not satisfying.
         Users usually expect the solver to reduce the order of magnitude of the residuals by 4 or 5, which is more than what our solver does.
         In contrast, the matrix-free method reduces residual norms much more efficiently, and converges to a more precise solution.
         The quality of the solution computed by the matrix-free method is then better.
 
         \begin{figure}
           \centering
-          \includegraphics{figures/rae_residuals_fine_l2.png}
-          \caption{Residual 2-norms for the horizontal and vertical momentum components, energy and turbulent viscosity throughout the computation.}
-          \label{fig:rae_residuals_fine_l2}
+          \includegraphics{figures/rae_residuals_fine_l1.png}
+          \caption{Residual 1-norms for the horizontal and vertical momentum components, energy and turbulent viscosity throughout the computation.
+          Values are normalised by the initial residual.}
+          \label{fig:rae_residuals_fine_l1}
         \end{figure}
 
         \paragraph{}
@@ -252,19 +250,19 @@
         \begin{figure}
           \centering
           \includegraphics{figures/rae_residuals_fine_linf.png}
-          \caption{Residual $\infty$-norms for the horizontal and vertical momentum components, energy and turbulent viscosity throughout the computation.}
+          \caption{Residual $\infty$-norms for the horizontal and vertical momentum components, energy and turbulent viscosity throughout the computation.
+          Values are normalised by the initial residual.}
           \label{fig:rae_residuals_fine_linf}
         \end{figure}
 
         \paragraph{}
-        The value of the turbulent variable $\tilde{\nu}$ in the first cell above the wing profile is provided for both computations in
-        figure \ref{fig:rae_field_fine}.
+        The value of the turbulent variable $\tilde{\nu}$ in the first cell above the wing profile is provided for both computations in figure \ref{fig:rae_field_fine}.
         The top views show the upper part of the airfoil, and the discontinuity due to the shock is visible, as expected.
         The bottom views show the lower part of the airfoil.
         The views on the right correspond to the JFNK computation, whereas the ones on the left to the computation with the traditional method.
         This traditional method using an approximated Jacobian matrix produces a solution of lower quality, as the pattern is not physical.
         In particular, there are cells for which $\tilde{\nu}$ is null in the computational domain, which should not happen with the standard Spalart--Allmaras model.
-        Figure \ref{fig:rae_residuals_fine_linf} shows that the $\infty$-norm of the residual on the conservative variable $\rho \tilde{\nu}$ is near $10^2$ \PS{TODO: pas d'unité}, so figure \ref{fig:rae_field_fine} highlights cells for which the residual is higher than $10^{1.8}$.
+        Figure \ref{fig:rae_residuals_fine_linf} shows that the $\infty$-norm of the residual on the conservative variable $\rho \tilde{\nu}$ normalised by the initial residual is near $10^0$, so figure \ref{fig:rae_field_fine} highlights cells for which the residual is higher than $10^{-0.1}$.
         Those cells correspond to the ones for which $\tilde{\nu} = 0$.
         It shows a flaw of the standard time integration method, as it has non-physical features in the solution that prevent the residual convergence.
         In contrast, it shows the quality of the JFNK method on this application.
@@ -275,7 +273,7 @@
           \caption{
             Spalart--Allmaras variable $\tilde{\nu}$ on the RAE 2822 wing profile for the traditional method (left) and the JFNK method (right).
             The top views show the profile from above, and the bottom views from below.
-            The highlighted region in green corresponds to cells where the absolute value of the residual on $\rho \tilde{\nu}$ is higher than $10^{1.8}$.
+            The highlighted region in green corresponds to cells where the absolute value of the residual on $\rho \tilde{\nu}$ is higher than $10^{-0.1}$.
           }
           \label{fig:rae_field_fine}
         \end{figure}
@@ -575,7 +573,8 @@
         \begin{figure}
           \centering
           \includegraphics{figures/sphere_mte_residuals.png}
-          \caption{Residual norms for the electron mass fraction, vertical momentum, \ce{N_2} vibrational energy and total energy for the Multi-TEmperature model computation.}
+          \caption{Residual 1-norms for the electron mass fraction, vertical momentum, \ce{N_2} vibrational energy and total energy for the Multi-TEmperature model computation.
+          Values are normalised by the initial residual.}
           \label{fig:sphere_mte_residuals}
         \end{figure}
 
