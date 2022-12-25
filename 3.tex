@@ -165,7 +165,7 @@
         \begin{figure}
           \centering
           \includegraphics{figures/rae_residuals.png}
-          \caption{Residual 1-norms for the two momentum components, energy and turbulent viscosity throughout the computation.
+          \caption{Residual 1-norms for the two momentum components, energy and turbulent viscosity throughout the computation for the turbulent transonic airfoil case.
           Values are normalised by the initial residual.}
           \label{fig:rae_residuals}
         \end{figure}
@@ -235,7 +235,7 @@
         \begin{figure}
           \centering
           \includegraphics{figures/rae_residuals_fine_l1.png}
-          \caption{Residual 1-norms for the horizontal and vertical momentum components, energy and turbulent viscosity throughout the computation.
+          \caption{Residual 1-norms for the horizontal and vertical momentum components, energy and turbulent viscosity throughout the computation for the turbulent transonic airfoil with boundary layer resolution case.
           Values are normalised by the initial residual.}
           \label{fig:rae_residuals_fine_l1}
         \end{figure}
@@ -250,7 +250,7 @@
         \begin{figure}
           \centering
           \includegraphics{figures/rae_residuals_fine_linf.png}
-          \caption{Residual $\infty$-norms for the horizontal and vertical momentum components, energy and turbulent viscosity throughout the computation.
+          \caption{Residual $\infty$-norms for the horizontal and vertical momentum components, energy and turbulent viscosity throughout the computation for the turbulent transonic airfoil with boundary layer resolution case.
           Values are normalised by the initial residual.}
           \label{fig:rae_residuals_fine_linf}
         \end{figure}
@@ -339,7 +339,7 @@
         Even if this case looks simplistic, it should not be taken lightly.
         When using unfit spatial discretisation methods, we ended up with a well-known problem of a such simulation called carbuncle \cite{MacCormack2013}.
         This phenomenon does not come from physics but is solely due to numerical methods.
-        It is shown in figure \ref{fig:sphere_carbuncle} from some of our earlier computations that were using a different mesh.
+        It is shown in figure \ref{fig:sphere_carbuncle} from some earlier computations that were using a different mesh.
         Simply put, it creates a recirculation bubble downstream of the shock, near the stagnation point.
         This bubble tends to push the shock farther from the sphere, and modify greatly the heat flux at this location.
         The choice of the Riemann solver ended up being the key element to getting rid of this undesirable effect: there is no recirculation with the AUSM+ scheme.
@@ -372,33 +372,58 @@
         \PS{Comparaison distance corps shock avec \cite{Lobb1964} ?}
 
         \paragraph{}
-        To analyse the result from this case, one might look at the residuals once again.
-        The first result correspond to a computaion without electrons or ions.
-        It means only 5 species are used.
-        This simplification makes sense as the case without ionisation still interest researchers but is easier in terms of numerical complexity.
+        To analyse the result from this case, one might once again look at the residuals.
+        The first result correspond to a computaion without reactive model.
+        This simplification makes sense as the case to better understand the behaviour of the methods on an easier problem in terms of numerical complexity.
         It also means a different mesh is used, as not accounting for ionisation means the shock location is slightly different, but the two meshes are built the same way.
-        The residual 1-norms are shown 
-        The advantage of the new method appears when we look at the residuals: we see in figure \PS{TODO} that the new method gives a better convergence.
+        The residual 1-norms are shown in figure \ref{fig:sphere_residuals}.
+        It shows that the new method gives a better convergence.
         The difference between the traditional method and the new one is that the traditional method uses the Jacobian matrix of the first-order spatial discretisation method, whereas the new one approximates the true Jacobian matrix using the approximation (\ref{eq:matrix_free}).
-        We decided to test this.
-        Because this simulation does not use complex models, the poor approximation used in the traditional model should give the Jacobian matrix of the first-order scheme.
-        If we use the approximation (\ref{eq:matrix_free}) but use the first-order evaluation of $f$, then we should also get the same Jacobian matrix.
-        We look at the residual norms from this method, which we can call the first-order JFNK method, and we see in figure \PS{TODO} that it is indistinguishable from the residual norms from the traditional method.
+        This can indeed be verified.
+        Because this simulation does not use complex models, the poor approximation used in the traditional model should use the Jacobian matrix of the first-order scheme.
+        If the approximation (\ref{eq:matrix_free}) uses the first-order evaluation of $f$, then it should approximate this same Jacobian matrix.
+        The evolutions of the residual norms from this method match the ones from the traditional method in figure \ref{fig:sphere_residuals}.
         It first validates the development of the matrix-free approximation, and that the unbridle method should then use the actual second-order Jacobian matrix.
         It also confirms that the traditional method uses the Jacobian matrix of the first-order spatial discretisation method.
         Finally, it validates the choice of $\varepsilon$ and the matrix-free approximation, as it is able to give the same result as when we use the Jacobian matrix.
 
         \paragraph{}
-        When we use the new method, using the true function $f$ with a second-order, we see that we can get a much smaller residual norm.
-        The only difference between the two methods is that the traditional one uses the Jacobian matrix of the first-order spatial discretisation method, but the JFNK method takes into account the MUSCL reconstruction when using the Jacobian matrix.
+        With the new method, using the true function $f$ with a second-order lead to much smaller residual norms.
+        The only difference between this method and the previously existing one is that the latter uses the Jacobian matrix of the first-order spatial discretisation method, but the JFNK method takes into account the MUSCL reconstruction when using the Jacobian matrix.
         Because it uses a better Jacobian matrix in the linear solve, it gives a better solution to the nonlinear solve, which gives in turn a better time integration.
         It confirms that using a better Jacobian matrix helps the overall convergence when solving steady problems and validates the choice of the Jacobian-Free Newton--Krylov method.
 
+        \begin{figure}
+          \includegraphics{figures/sphere_residuals.png}
+          \caption{Residual 1-norms for the horizontal and vertical momentum components, energy and \ce{N_2} mass throughout the computation for the hypersonic non-reactive sphere case.
+          Values are normalised by the initial residual.}
+          \label{fig:sphere_residuals}
+        \end{figure}
+
+        \paragraph{}
+        When adding the reactive model, the conclusion is not in favor of the JFNK method anymore.
+        The evolution of the residual norms are shown in figure \ref{fig:sphere_reac_residuals}.
+        This time, the JFNK method does not longer find smaller residuals than the traditional method.
+        In fact, when comparing figures \ref{fig:sphere_residuals} and \ref{fig:sphere_reac_residuals}, it appears that the traditional method converges better, enough so that it converges better than the JFNK method.
+        This appears to happend because the mesh quality is better in this computation, compared to the mesh used without reactive model.
+        However, understanding the mesh quality is hard even on this simple test case for the reconstruction methods used in CEDRE.
+        This is under current investigation by the responsible team.
+        Still, the difference in the convergence of both method is relatively small.
+        A possible interpretation of this result is that when the mesh is not ideal for the spatial discretisation methods, using the JFNK method leads to a better convergene as it uses more precise Jacobian matices for the linear system.
+        When the mesh quality is better, the JFNK method is slightly less converged.
+        Overall, it is still an improvement of the convergence on such test cases.
+
+        \begin{figure}
+          % \includegraphics{figures/sphere_reac_residuals.png}
+          \caption{\PS{TODO}Residual 1-norms for the horizontal and vertical momentum components, energy and \ce{N_2} mass throughout the computation for the hypersonic reactive sphere case.
+          Values are normalised by the initial residual.}
+          \label{fig:sphere_reac_residuals}
+        \end{figure}
 
     \paragraph{}
     In a previous part, we suggested that the poor quality of the Jacobian matrix used in our solver was an obstacle to achieving good convergence.
     We then proposed an improvement: the Jacobian-Free Newton--Krylov method using the matrix-free approximation (\ref{eq:matrix_free}).
-    We compared this new method with the traditional one on two simple yet representative applications of our solver.
+    We compared this new method with the traditional one on simple yet representative applications of our solver.
     This comparison showed that indeed, using a better Jacobian matrix leads to a lower residual norm.
     The new method can be useful when looking at quantities that require precise convergence, for instance, the derivatives of the flow variables.
     However, the main drawback of this new method is its computational cost.
@@ -409,7 +434,7 @@
   \section{Utilisation de la formulation sans matrice sur un nouveau modèle de fluide}
 
     \paragraph{}
-    In the previous section, we compared the new Jacobian-Free Newton--Krylov method to the traditional method that uses the first-order Jacobian matrix.
+    In the previous section, the new Jacobian-Free Newton--Krylov method was compared to the traditional method that uses the first-order Jacobian matrix.
     This first-order matrix is easily computed for the usual Navier--Stokes equations.
     But as CEDRE is under constant development, new models are added in order to handle more finely various multiphysics phenomena.
     For example, a new model was recently added to better handle multiphasic flows \cite{Cordesse2020}.
@@ -433,7 +458,7 @@
       Its difference from the traditional Navier--Stokes model is that it allows for a thermodynamic non-equilibrium of some flow components.
       A particle has multiple degrees of freedom: translation, rotation and vibration.
       In more traditional models, it is assumed that all modes are at equilibrium, and they are grouped in what we call energy.
-      We can define a time constant for each energy mode that corresponds to the number of collisions that are required to get to the equilibrium.
+      One can define a time constant for each energy mode that corresponds to the number of collisions that are required to get to the equilibrium.
       A few collisions are required for translation modes, and about ten for rotation modes.
       This gives a small time constant of order $10^{-9} \si{\second}$.
       For vibration modes, however, up to \num{20000} collisions are required.
@@ -486,8 +511,8 @@
             \Biggr)
         \end{alignedat}\right.
       \end{equation}
-      What we see first is that the equations of this physical model are more complex compared to the standard Navier--Stokes equations.
-      We notice there are multiple energies corresponding to the multiple temperatures: $e_e$ the energy of the electronic gas, $e_{v, m}$ the vibrational energy for each flow component that may be at disequilibrium, and $E$ the total energy.
+      The first noticeable feature is that the equations of this physical model are more complex compared to the standard Navier--Stokes equations.
+      Futrthermore, there are multiple energies corresponding to the multiple temperatures: $e_e$ the energy of the electronic gas, $e_{v, m}$ the vibrational energy for each flow component that may be at disequilibrium, and $E$ the total energy.
       It increases the number of conservative variables.
       The variables $y$ correspond to the mass fraction of the different flow components.
       The source terms $\omega$ correspond to chemical production or decay.
@@ -537,11 +562,11 @@
 
         \paragraph{}
         As before, the Jacobian-Free Newton--Krylov method needs some help at the beginning.
-        This is why we start the computation with some iterations of the Midpoint method.
-        Then, we continue the computation with the JFNK method using the first-order Finite Volume method, to quickly get a good enough approximation of the expected solution.
-        Finally, to get a finer result, we end the simulation using the second-order spatial discretisation method.
-        We use local time-stepping based on the CFL number.
-        We can not use preconditioners that use the matrix, so the only one available is the diagonal preconditioner based on the cell volumes.
+        This is why the computation starts with some iterations of the Midpoint method.
+        Then, it continues with the JFNK method using the first-order Finite Volume method, to quickly get a good enough approximation of the expected solution.
+        Finally, to get a finer result, the simulation uses the second-order spatial discretisation method.
+        Local time-stepping based on the CFL number is used.
+        The GMRES method can not use preconditioners that require the matrix, so the only one available is the diagonal preconditioner based on the cell volumes.
         It is not ideal as it is extremely simple, and some physics-based preconditioner would be preferable \cite{KnollKeyes2004} but none were available to us at the time.
         The spatial discretisation method used is the Multislope method, as it appears more robust than the $k$-exact method with the Multi-TEmperature model.
 
@@ -563,7 +588,7 @@
         \begin{figure}
           \centering
           \includegraphics{figures/sphere_mte_residuals.png}
-          \caption{Residual 1-norms for the electron mass fraction, vertical momentum, \ce{N_2} vibrational energy and total energy for the Multi-TEmperature model computation.
+          \caption{Residual 1-norms for the electron mass fraction, vertical momentum, \ce{N_2} vibrational energy and total energy for the Multi-TEmperature model computation throughout the computation.
           Values are normalised by the initial residual.}
           \label{fig:sphere_mte_residuals}
         \end{figure}

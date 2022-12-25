@@ -607,6 +607,89 @@ def fig_rae_residuals_fine():
             # plt.show()
 
 
+def sphere_residuals():
+    with plt.rc_context({'font.size': 8, 'xtick.labelsize': 6, 'ytick.labelsize': 6}):
+        fig = plt.figure(figsize=[5.78851, 3])
+        fig.suptitle(r"Residual 1-norms", y=0.95)
+
+        ax11 = fig.add_subplot(221)
+        ax12 = fig.add_subplot(222)
+        ax21 = fig.add_subplot(223, sharex=ax11)
+        ax22 = fig.add_subplot(224, sharex=ax12)
+
+        for ax, tag, title in zip((ax11, ax12, ax21, ax22),
+                                  ('RhoV_y', 'RhoV_y', 'RhoEtot', 'RhoY_N2'),
+                                  ("$x$ momentum", "$y$ momentum",
+                                   "Energy", "$\\operatorname{N}_2$ mass fraction")):
+            ax.grid(True)
+            p = bibarch.HistoPlotter(ax, ('RESIDUS', 'MOYENS', tag), 'ITER', '/scratchm/pseize/SPHERE_LOBB')
+            x, y, _ = p.get('BASE_NS/RUN_KEX')
+            y0 = y[0]
+            ax.semilogy(x, np.power(10, y - y0), label='Traditional method')
+            x, y, _ = p.get('JFNK_NS/RUN_KEX_j1')
+            ax.semilogy(x[::100], np.power(10, y[::100] - y0), '--', label=r'$1^\textrm{st}$ order JFNK method',
+                        c='tab:green')
+            x, y, _ = p.get('JFNK_NS/RUN_KEX')
+            ax.semilogy(x, np.power(10, y - y0), label='JFNK method')
+            ax.set_title('')
+            ax.set_ylabel(title)
+
+        ax11.tick_params(labelbottom=False)
+        ax12.tick_params(labelbottom=False)
+        ax11.set_xlabel('')
+        ax12.set_xlabel('')
+        ax21.set_xlabel('Iteration number', labelpad=10)
+        ax22.set_xlabel('Iteration number', labelpad=10)
+        fig.legend(*ax11.get_legend_handles_labels())
+        fig.align_ylabels([ax11, ax21])
+        fig.align_ylabels([ax12, ax22])
+
+        fig.subplots_adjust(0.10, 0.15, 0.99, 0.85, 0.30, 0.1)
+        fig.savefig('sphere_residuals.png')
+        # plt.show()
+
+
+def sphere_reac_residuals():
+    with plt.rc_context({'font.size': 8, 'xtick.labelsize': 6, 'ytick.labelsize': 6}):
+        fig = plt.figure(figsize=[5.78851, 3])
+        fig.suptitle(r"Residual 1-norms", y=0.95)
+
+        ax11 = fig.add_subplot(221)
+        ax12 = fig.add_subplot(222)
+        ax21 = fig.add_subplot(223, sharex=ax11)
+        ax22 = fig.add_subplot(224, sharex=ax12)
+
+        for ax, tag, title in zip((ax11, ax12, ax21, ax22),
+                                  ('RhoV_y', 'RhoV_y', 'RhoEtot', 'RhoY_N2'),
+                                  ("$x$ momentum", "$y$ momentum",
+                                   "Energy", "$\\operatorname{N}_2$ mass fraction")):
+            ax.grid(True)
+            p = bibarch.HistoPlotter(ax, ('RESIDUS', 'MOYENS', tag), 'ITER', '/tmp_user/sator/pseize/SPHERE_LOBB')
+            x, y, _ = p.get('BASE/RUN_Minmod')
+            y0 = y[0]
+            ax.semilogy(x, np.power(10, y - y0), label='Traditional method (Minmod)')
+            x, y, _ = p.get(['MF/RUN_1', 'MF/RUN_2', 'MF/RUN_3'])
+            ax.semilogy(x, np.power(10, y - y0), label='JFNK method')
+            ax.set_title('')
+            ax.set_ylabel(title)
+
+        ax11.tick_params(labelbottom=False)
+        ax12.tick_params(labelbottom=False)
+        ax11.get_xaxis().get_offset_text().set_visible(False)
+        ax12.get_xaxis().get_offset_text().set_visible(False)
+        ax11.set_xlabel('')
+        ax12.set_xlabel('')
+        ax21.set_xlabel('Iteration number', labelpad=10)
+        ax22.set_xlabel('Iteration number', labelpad=10)
+        fig.legend(*ax11.get_legend_handles_labels())
+        fig.align_ylabels([ax11, ax21])
+        fig.align_ylabels([ax12, ax22])
+
+        fig.subplots_adjust(0.10, 0.15, 0.99, 0.85, 0.30, 0.1)
+        fig.savefig('sphere_reac_residuals.png')
+        # plt.show()
+
+
 def sphere_mte_residuals():
     with plt.rc_context({'font.size': 8, 'xtick.labelsize': 6, 'ytick.labelsize': 6}):
         fig = plt.figure(figsize=[5.78851, 3])
@@ -1134,6 +1217,8 @@ if __name__ == '__main__':
     # rae_coefficients()
     # rae_residuals()
     # fig_rae_residuals_fine()
+    # sphere_residuals()
+    # sphere_reac_residuals()
     # sphere_mte_residuals()
     # sd_discontinuous()
     # sd_scheme()
