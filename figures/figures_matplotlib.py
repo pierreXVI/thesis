@@ -660,15 +660,16 @@ def sphere_reac_residuals():
         ax22 = fig.add_subplot(224, sharex=ax12)
 
         for ax, tag, title in zip((ax11, ax12, ax21, ax22),
-                                  ('RhoV_y', 'RhoV_y', 'RhoEtot', 'RhoY_N2'),
+                                  ('RhoV_x', 'RhoV_y', 'RhoEtot', 'RhoY_N2'),
                                   ("$x$ momentum", "$y$ momentum",
                                    "Energy", "$\\operatorname{N}_2$ mass fraction")):
             ax.grid(True)
             p = bibarch.HistoPlotter(ax, ('RESIDUS', 'MOYENS', tag), 'ITER', '/tmp_user/sator/pseize/SPHERE_LOBB')
             x, y, _ = p.get('BASE/RUN_Minmod')
+            x, y = x[x < 400000], y[x < 400000]
             y0 = y[0]
-            ax.semilogy(x, np.power(10, y - y0), label='Traditional method (Minmod)')
-            x, y, _ = p.get(['MF/RUN_1', 'MF/RUN_2', 'MF/RUN_3'])
+            ax.semilogy(x, np.power(10, y - y0), label='Traditional method')
+            x, y, _ = p.get(['MF/RUN_1', 'MF/RUN_2', 'MF/RUN_3', 'MF/RUN_4'])
             ax.semilogy(x, np.power(10, y - y0), label='JFNK method')
             ax.set_title('')
             ax.set_ylabel(title)
