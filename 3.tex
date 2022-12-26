@@ -543,9 +543,9 @@
         \paragraph{}
         As before, the Jacobian-Free Newton--Krylov method needs some help at the beginning.
         This is why we start the computation with some iterations of the Midpoint method.
-        Then, we continue the computation with the JFNK method using the first-order Finite Volume method, to quickly get a good enough approximation of the expected solution.
+        Then, we continue the computation with the JFNK method using the first-order Finite Volume method, to quickly get a good enough approximation of the expected solution.\LM{Pour les premières itérations avec la "midpoint method", on est à l'ordre 1 en espace ou pas? Et pour le passage au JFNK, l'ordre 1 c'est pour tout le schéma spatial, ou juste pour l'approximation de l'action de la matrice?}
         Finally, to get a finer result, we end the simulation using the second-order spatial discretisation method.
-        We use local time-stepping based on the CFL number.
+        We use local time-stepping based on the CFL number.\LM{je ne sais plus si c'est possible, mais il y a-t-il du pas de temps local pour les simulations "explicites"}
         We can not use preconditioners that use the matrix, so the only one available is the diagonal preconditioner based on the cell volumes.
         It is not ideal as it is extremely simple, and some physics-based preconditioner would be preferable \cite{KnollKeyes2004} but none were available to us at the time.
         The spatial discretisation method used is the Multislope method, as it appears more robust than the $k$-exact method with the Multi-TEmperature model.
@@ -597,7 +597,7 @@
         We will not go into such implementation details as it goes beyond the scope of this work, but the point is that having electrons is quite troublesome for numerical methods.
         According to users that work on such reentry applications, it is not always useful to compute fluid ionisation.
         We explained why it might be crucial for some simulations, but when we do not look at the electrons, their effect on other quantities is almost negligible.
-        Those users said that \PS{"ça craint de dire "il a dit que" ?"} it is acceptable, meaningful and still useful to do the same simulation but ignoring electrons.
+        Those users said that \PS{"ça craint de dire "il a dit que" ?"} \LM{Ben, si tu peux juste dire que l'on peut parfois se satisfaire des degrés de liberté d'energie de vibration en occultant ceux des électrons et que ça donne déjà des infos intéressantes en allégeant et simplifiant drastiquement le numérique, c'est déjà un peu plus vendeur, non?}it is acceptable, meaningful and still useful to do the same simulation but ignoring electrons.
         It is done by considering only the chemical components \ce{N_2}, \ce{O_2}, \ce{N}, \ce{O} and \ce{NO}.
 
         \paragraph{}
@@ -607,7 +607,7 @@
         We show the corresponding residual norms in figure \PS{TODO}, while still using the CPU time as the $x$-axis.
         The result is similar to the previous one, except it is even more in favour of the JFNK method.
         The implicit method reaches much lower residual norms than the explicit one.
-        With the full reactive model, the limiting factor for the implicit method came from the stiffness due to the electrons.
+        With the full reactive model, the limiting factor for the implicit method came from the stiffness due to the electrons.\LM{On est sûr que c'est la raideur, ou c'est le fait que l'on patche, lorsqu'il n'y a plus d'électrons, par un raccord non C1?}
         Without them, the convergence is significantly faster.
         The time step for the explicit method however is under the same limitations with both reactive models.
         The gain in CPU time is then huge, in favour of the JFNK method.
