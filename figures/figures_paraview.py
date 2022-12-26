@@ -126,7 +126,7 @@ def rae_field_fine():
         pvs.Show(reader, views[i]).SetScalarBarVisibility(views[i], True)
         pvs.Show(reader, views[i + 1]).SetScalarBarVisibility(views[i + 1], True)
         threshold = pvs.Threshold(reader, Scalars=['CELLS', 'Residu~RhoNuTilde~'],
-                                  ThresholdMethod='Above Upper Threshold', UpperThreshold=1.8)
+                                  ThresholdMethod='Above Upper Threshold', UpperThreshold=1.9414055995803974 - 0.1)
         pvs.Show(threshold, views[i], Representation='Feature Edges', ColorArrayName=None, AmbientColor=[0, 1, 0],
                  LineWidth=3)
         pvs.Show(threshold, views[i + 1], Representation='Feature Edges', ColorArrayName=None, AmbientColor=[0, 1, 0],
@@ -225,22 +225,24 @@ def sphere_fields():
     id_2 = layout.SplitVertical(id_2, 0.5)
     layout.AssignView(id_1, views[0])
     layout.AssignView(id_2, views[1])
-    layout.AssignView(id_2 + 1, views[2])
-    layout.AssignView(id_3, views[3])
+    layout.AssignView(id_2 + 1, views[3])
+    layout.AssignView(id_3, views[2])
     layout.AssignView(id_3 + 1, views[4])
     layout.SetSize(1157, 1000)
 
-    views[0].CameraPosition = [-0.0053, 0.0049, 1]
-    views[0].CameraFocalPoint = [-0.0053, 0.0049, 0]
+    views[0].CameraPosition = [-0.0054, 0.004, 1]
+    views[0].CameraFocalPoint = [-0.0054, 0.004, 0]
     views[0].CameraParallelScale = 0.0055
     for view in views[1:]:
-        view.CameraPosition = [-0.0037, 0.0045, 1]
-        view.CameraFocalPoint = [-0.0037, 0.0045, 0]
+        view.CameraPosition = [-0.0037, 0.00425, 1]
+        view.CameraFocalPoint = [-0.0037, 0.00425, 0]
         view.CameraParallelScale = 0.007
 
-    pvs.SaveScreenshot("sphere_fields.png", layout)
+    print("Please set the OrientationAxis manually in the mesh view")
+    views[0].OrientationAxesInteractivity = 1
+    plotter.draw(0, True)
 
-    pvs.SaveState('/d/pseize/pythonstate.pvsm')
+    # pvs.SaveScreenshot("sphere_fields.png", layout)
 
 
 def sphere_carbuncle():
