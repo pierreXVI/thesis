@@ -691,6 +691,37 @@ def sphere_reac_residuals():
         # plt.show()
 
 
+def sphere_mte_temperatures():
+    fig = plt.figure(figsize=[5.78851, 3])
+    ax = fig.add_subplot(111)
+    ax.grid(True)
+    ax.set_xlabel('$x$')
+    ax.set_ylabel('Temperatures (K)')
+
+    plotter = pvlib.Plotter()
+    filename = "/tmp_user/sator/pseize/SPHERE_LOBB_MTE/MF/RUN_1/_ENSIGHT_/archive_CHARME.volu.ins.case"
+    reader, _, _ = plotter.load_data(filename, ['T', 'Tv_F2:P1:N2v', 'Tv_F3:P1:O2v', 'Te'])
+    c2p = pvlib.pvs.CellDatatoPointData(reader, ProcessAllArrays=1)
+    plot = pvlib.pvs.PlotOnIntersectionCurves(c2p, SliceType='Plane')
+    plot.SliceType.Normal = [0, 1, 0]
+    plot.SliceType.Offset = 1e-10
+
+    coord, data = pvlib.get_point_data(plot, 'T')
+    ax.plot(coord[:, 0], data, label='$T$')
+    coord, data = pvlib.get_point_data(plot, 'Tv_F2:P1:N2v')
+    ax.plot(coord[:, 0], data, label=r'$T_{v, \textrm{N}_2}$')
+    coord, data = pvlib.get_point_data(plot, 'Tv_F3:P1:O2v')
+    ax.plot(coord[:, 0], data, label=r'$T_{v, \textrm{O}_2}$')
+    coord, data = pvlib.get_point_data(plot, 'Te')
+    ax.plot(coord[:, 0], data, label=r'$T_\textrm{e}$')
+
+    ax.legend()
+
+    fig.subplots_adjust(0.12, 0.15, 0.99, 0.99)
+    fig.savefig('sphere_mte_temperatures.png')
+    # plt.show()
+
+
 def sphere_mte_residuals():
     with plt.rc_context({'font.size': 8, 'xtick.labelsize': 6, 'ytick.labelsize': 6}):
         fig = plt.figure(figsize=[5.78851, 3])
@@ -1220,6 +1251,7 @@ if __name__ == '__main__':
     # fig_rae_residuals_fine()
     # sphere_residuals()
     # sphere_reac_residuals()
+    # sphere_mte_temperatures()
     # sphere_mte_residuals()
     # sd_discontinuous()
     # sd_scheme()
