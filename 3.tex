@@ -33,9 +33,7 @@
   We need to define test cases that represent well enough target applications so we can comment on the performances of our choices.
 
 
-  \section{Comparaison entre la matrice jacobienne explicite et la formulation sans matrice}
-  \GP{Comparison between full-Jacobian matrix and matrix-free formulations}
-  \GP{Version 2: Full-Jacobian approximation against Matrix-Free formulation}
+  \section{Comparison between matrix-free formulation and Jacobian matrix approximation}
 
     \paragraph{}
     From the previous analysis and implementation, the main addition to the solver is the Jacobian-Free Newton--Krylov method, and in particular the matrix-free approach.
@@ -434,7 +432,7 @@
     The recommended usage is then to start a computation using the inexpensive traditional method, and then achieve better convergence using the more precise yet more expensive new method.
 
 
-  \section{Utilisation de la formulation sans matrice sur un nouveau modèle de fluide}
+  \section{Using the matrix-free formulation with a new fluid model}
 
     \paragraph{}
     In the previous section, the new Jacobian-Free Newton--Krylov method was compared to the traditional method that uses the first-order Jacobian matrix.
