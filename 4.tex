@@ -101,8 +101,8 @@
     \begin{equation}
       \left\{\begin{aligned}
         \varphi_0 &: z \mapsto e^z \\
-        \forall k \in \mathbb{N}^*, \varphi_{k} &: z \mapsto \int_0^1 e^{\left(1 - \theta\right)z} \frac{\theta^{k-1}}{\left(k-1\right)!} \mathrm{d}\theta
-      \end{aligned}\right. .
+        \forall k \in \mathbb{N}^*, \varphi_{k} &: z \mapsto \int_0^1 e^{\left(1 - \theta\right)z} \frac{\theta^{k-1}}{\left(k-1\right)!} \mathrm{d}\theta .
+      \end{aligned}\right.
     \end{equation}
     We could also define them using the recurrence relation:
     \begin{equation}
@@ -206,8 +206,8 @@
     \begin{equation}
       \left\{\begin{aligned}
         y_{n+1} &= e^{\Delta t L} y_n + \Delta t \sum_{i = 1}^k b_i\left(\Delta t L\right) N\left(y_{n,i}\right) \\
-        \textrm{with}\quad y_{n,i} &= e^{c_i \Delta t L} y_n + \Delta t \sum_{j = 1}^{i-1} a_{ij}\left(\Delta t L\right) N\left(y_{n,j}\right)
-      \end{aligned}\right. .
+        \textrm{with}\quad y_{n,i} &= e^{c_i \Delta t L} y_n + \Delta t \sum_{j = 1}^{i-1} a_{ij}\left(\Delta t L\right) N\left(y_{n,j}\right) .
+      \end{aligned}\right.
     \end{equation}
     The Butcher tableau that we used to represent the Runge--Kutta methods is also used to represent the exponential Runge--Kutta methods.
     For instance, the Butcher tableau of the exponential Rosenbrock--Euler method, which is a special simple case of exponential Runge--Kutta methods, is shown in table \ref{tab:exprb_butcher}.
@@ -373,8 +373,8 @@
       \begin{equation}
         e^z \approx r_{k,m}\left(z\right) = \frac{p_{k,m}\left(z\right)}{q_{k,m}\left(z\right)} \quad\textrm{with} \left\{\begin{aligned}
           \quad p_{k,m} &= \sum_{i = 0}^k \frac{\left(k + m - i\right)! k!}{\left(k + m\right)! \left(k - i\right)!} \frac{z^i}{i!} \\
-          \quad q_{k,m} &= \sum_{i = 0}^m \frac{\left(k + m - i\right)! m!}{\left(k + m\right)! \left(m - i\right)!} \frac{\left(-z\right)^i}{i!}
-        \end{aligned}\right. .
+          \quad q_{k,m} &= \sum_{i = 0}^m \frac{\left(k + m - i\right)! m!}{\left(k + m\right)! \left(m - i\right)!} \frac{\left(-z\right)^i}{i!} .
+        \end{aligned}\right.
       \end{equation}
       It is best to use diagonal approximants, with $k = m$, as they are more accurate \cite{HighamAlMohy2010}.
 
@@ -473,8 +473,8 @@
       \left\{\begin{aligned}
         \vec{u} &= U_\infty \vec{e}_x + \beta U_\infty \frac{r}{R_0} e^{-r^2 / 2 R_0^2} \ \vec{e}_\theta \\[10pt]
         T &= T_\infty - \beta^2 U_\infty^2 \frac{\gamma - 1}{2 \gamma r_\textrm{gas}} e^{-r^2 / R_0^2} \\[10pt]
-        P &= P_\infty \left( 1 - \frac{\beta^2 U_\infty^2}{T_\infty} \frac{\gamma - 1}{2 \gamma r_\textrm{gas}} e^{-r^2 / R_0^2} \right)^{\gamma/\left(\gamma - 1\right)}
-      \end{aligned}\right. .
+        P &= P_\infty \left( 1 - \frac{\beta^2 U_\infty^2}{T_\infty} \frac{\gamma - 1}{2 \gamma r_\textrm{gas}} e^{-r^2 / R_0^2} \right)^{\gamma/\left(\gamma - 1\right)} .
+      \end{aligned}\right.
     \end{equation}
     The heat capacity ratio $\gamma$ is equal to $1.4$, and the specific gas constant is $r_\textrm{gas} = 1$.
     The vortex is defined by its characteristic radius $R_0 = 1$ and its intensity $\beta = 0.2$.

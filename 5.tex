@@ -230,15 +230,15 @@
       \left\{\begin{aligned}
         y_{n+1} &= y^{\left(k\right)} \\
         \textrm{with}\quad y^{\left(i\right)} &= \sum_{j = 0}^{i-1} \alpha_{ij} y^{\left(j\right)} + \Delta t \beta_{ij} f\left(y^{\left(j\right)}\right) , \quad 1 \leq i \leq k\\
-        \textrm{and}\quad y^{\left(0\right)} &= y_n
-      \end{aligned}\right. .
+        \textrm{and}\quad y^{\left(0\right)} &= y_n .
+      \end{aligned}\right.
     \end{equation}
     However, they are equivalent to traditional Runge--Kutta methods in the sense that they can be represented by the standard Butcher tableau, with:
     \begin{equation}
       \left\{\begin{aligned}
         a_{ij} &= \sum_{l = j+1}^{i-1} \alpha_{i-1, l-1} a_{l, j} + \beta_{i-1, j-1} \\
-        b_i &= \sum_{l = i+1}^{k} \alpha_{k, l-1} a_{l, i} + \beta_{k, i-1}
-      \end{aligned}\right. .
+        b_i &= \sum_{l = i+1}^{k} \alpha_{k, l-1} a_{l, i} + \beta_{k, i-1} .
+      \end{aligned}\right.
     \end{equation}
     We can finally say that we are indeed working with explicit Runge--Kutta methods, as they were introduced initially.
 

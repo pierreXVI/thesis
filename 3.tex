@@ -20,7 +20,7 @@
   Nous regardons ensuite un cas de rentrée atmosphérique avec une sphère placée dans un écoulement à haute énergie.
   Cela se traduit par un très fort choc, ainsi qu'une zone de déséquilibre thermodynamique où ont lieu d'intenses réactions chimiques.
   Dans un premier temps, nous regardons comme précédemment les deux méthodes pour comparer leur convergence.
-  Pour finir, nous utilisons un modèle de fluide récemment ajouté au solveur afin de représenter \GP{plus finement} le déséquilibre thermodynamique, \GP{en incluant plus d'effets thermiques}\footnote{J'essaye d'introduire la notion de multi température}.
+  Pour finir, nous utilisons un modèle de fluide récemment ajouté au solveur afin de représenter le déséquilibre thermodynamique en caractérisant l'écoulement par plusieurs températures distinctes.
   Avec les développements réalisés actuellement sur ce nouveau modèle, il n'est pas possible d'utiliser la méthode implicite préexistante, et les utilisateurs sont forcés d'employer des méthodes explicites.
   Nous montrons donc que la méthode JFNK peut elle être utilisée en l'état, sans nécessiter de développements supplémentaires, et permet d'accélérer les calculs ainsi que d'obtenir une meilleure convergence.
 \end{tcolorbox}
@@ -161,7 +161,7 @@
           \norm[\infty]{\operatorname{F}_i} = \max_\mathcal{D} \left| \operatorname{F}_i \right| .
         \end{equation}
         In this fluid dynamics application, the residual norm is associated with the conservative variables: the density, the momentum components, the energy and the turbulent eddy viscosity $\nu_t$.
-        With the Spalart--Allmaras compressible model, the conservative variable \GP{is} in fact the product of the density and the Spalart--Allmaras variable $\rho \tilde{\nu}$.
+        With the Spalart--Allmaras compressible model, the conservative variable is in fact the product of the density and the Spalart--Allmaras variable $\rho \tilde{\nu}$.
 
         \begin{figure}
           \centering
@@ -319,7 +319,7 @@
         The main feature of this test case is that it simulates a hypersonic flow.
         At the left, the input boundary condition feeds air at Mach 15.
         This will induce a strong shock, meaning a strong discontinuity in the flow.
-        \GP{It} is indeed seen in figure \ref{fig:sphere_fields} on the pressure and temperature.
+        It is indeed seen in figure \ref{fig:sphere_fields} on the pressure and temperature.
         As this is a typical application of our solver, it is of importance to us that the new method behaves well with such flow features.
         When going through a strong shock, the temperature of the flow will increase a lot.
         The flow is made of air, or a mixture of 77\% \ce{N_2} and 23\% \ce{O_2}.
@@ -374,7 +374,7 @@
 
         \paragraph{}
         To analyse the result from this case, one might once again look at the residuals.
-        The first result correspond to a \GP{computation} without reactive model.
+        The first result correspond to a computation without reactive model.
         This simplification makes sense as the case to better understand the behaviour of the methods on an easier problem in terms of numerical complexity.
         It also means a different mesh is used, as not accounting for ionisation means the shock location is slightly different, but the two meshes are built the same way.
         The residual 1-norms are shown in figure \ref{fig:sphere_residuals}.
@@ -391,7 +391,7 @@
         \paragraph{}
         With the new method, using the true function $f$ with a second-order lead to much smaller residual norms.
         The only difference between this method and the previously existing one is that the latter uses the Jacobian matrix of the first-order spatial discretisation method, but the JFNK method takes into account the MUSCL reconstruction when using the Jacobian matrix.
-        Because it uses a better Jacobian matrix in the linear solve, it gives a better solution to the nonlinear \GP{problem}\footnote{\GP{eviter repetition de solve}}, which gives in turn a better time integration.
+        Because it uses a better Jacobian matrix in the linear problem, it gives a better solution to the nonlinear solver, which gives in turn a better time integration.
         It confirms that using a better Jacobian matrix helps the overall convergence when solving steady problems and validates the choice of the Jacobian-Free Newton--Krylov method.
 
         \begin{figure}
@@ -444,7 +444,7 @@
     Adding a new model amount to writing the function $\operatorname{F}$ from equation (\ref{eq:pde}), or equivalently $\operatorname{G}$ from equation (\ref{eq:ode}).
     Usually, the development of this function is straightforward as it is given explicitly from the equations.
     However, the development of the Jacobian matrix is much more difficult.
-    This is why the new models can not compute \GP{yet} Jacobian matrices, and therefore can not use implicit methods.
+    This is why the new models can not yet compute Jacobian matrices, and therefore can not use implicit methods.
     \LM{Je dirais plutôt qu'on ne se précipite pas sur l'effort d'évaluation du jacobien, pas qu'on ne peut pas l'évaluer, non?}
     \PS{Concretement, on ne peux pas évaluer la jacobienne de MF5 et MTE, donc les deux ?}
     The Jacobian-Free Newton--Krylov method is then a nice way to use implicit methods as it does not require the Jacobian matrix.
@@ -644,7 +644,8 @@
         We show the corresponding residual norms in figure \PS{TODO}, while still using the CPU time as the $x$-axis.
         The result is similar to the previous one, except it is even more in favour of the JFNK method.
         The implicit method reaches much lower residual norms than the explicit one.
-        With the full reactive model, the limiting factor for the implicit method came from the stiffness due to the electrons.\LM{On est sûr que c'est la raideur, ou c'est le fait que l'on patche, lorsqu'il n'y a plus d'électrons, par un raccord non C1?}\GP{Lionel, je comprends pas ce que tu sous entend... Il faudra qu'on clarifie après les vacances...}
+        With the full reactive model, the limiting factor for the implicit method came from the stiffness due to the electrons.
+        \LM{On est sûr que c'est la raideur, ou c'est le fait que l'on patche, lorsqu'il n'y a plus d'électrons, par un raccord non C1?}\GP{Lionel, je comprends pas ce que tu sous entend... Il faudra qu'on clarifie après les vacances...}
         Without them, the convergence is significantly faster.
         The time step for the explicit method however is under the same limitations with both reactive models.
         The gain in CPU time is then huge, in favour of the JFNK method.
