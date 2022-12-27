@@ -16,7 +16,7 @@
 
   \paragraph{}
   Après avoir détaillé les raisons qui nous poussent à analyser les méthodes d'intégration implicite, plusieurs éléments interviennent dans la mise en place : le solveur non-linéaire, le solveur linéaire, et en particulier le passage de l'un à l'autre.
-  Ce passage étant jugé insatisfaisant pour notre solveur, nous présentons la méthode JFNK, ou plus généralement une formulation sans matrice, qui s'appuie sur des parties déjà présentes de CEDRE et corrige, {\it a priori \PS{Pourquoi italique ?}}, ce défaut.
+  Ce passage étant jugé insatisfaisant pour notre solveur, nous présentons la méthode JFNK, ou plus généralement une formulation sans matrice, qui s'appuie sur des parties déjà présentes de CEDRE et corrige, {\it a priori}, ce défaut.
 \end{tcolorbox}
 
 
@@ -54,14 +54,16 @@
         &\partial_t\left(\rho         \right) &&+ \nabla\cdot\left( \rho \vec{u} \right) &&= 0 \\
         &\partial_t\left(\rho \vec{u} \right) &&+ \nabla\cdot\left( \rho \vec{u} \otimes \vec{u} + p \mat{\operatorname{Id}} \right) &&= \nabla\cdot \mat{\tau}\\
         &\partial_t\left( \rho E      \right) &&+ \nabla\cdot\left( \left(\rho E + p\right) \vec{u} \right) &&=
-          \nabla\cdot\left( \mat{\tau} \cdot \vec{u} \right)
+          \nabla\cdot\left( \mat{\tau} \cdot \vec{u} \GP{- \vec{q}}\right)
       \end{aligned}\right.
     \end{equation}
-    with the closing relation $\rho E = \frac{p}{\gamma - 1} + \rho\frac{\vec{u} \cdot \vec{u}}{2}$.
+    with the closing relation $\rho E = \frac{p}{\gamma - 1} + \rho\frac{\vec{u} \cdot \vec{u}}{2}$. 
     This relation is quite simple, as it is the one that corresponds to ideal gas with constant heat capacity.
     In the solver CEDRE, this relation is usually more complex as we are working with multifluid flows and with variable heat capacities.
     The deviatoric stress tensor $\tau$ accounts for the fluid's viscosity, and its computation depends on the model used.
-    Without it, one recovers the Euler equations.
+    \GP{The heat flux term $\vec{q}$ enables heat exchange in the fluid, through the heat diffusivity, and it is generally  
+    related with the tempreature gradient.}
+    Without \GP{those terms}, one recovers the Euler equations.
     To this simple form can be added source terms from the reactive model, source terms from the turbulence model, divergence terms from a molecular diffusion model, etc.
     Yet it is clear that with a bit of rewriting, it is possible to get back to the starting form (\ref{eq:pde}) and even the conservative form with source terms (\ref{eq:pde_conservative}).
     The quantity $\xi$ is no longer a scalar but a vector with the density $\rho$, each component of the momentum $\rho\vec{u}$ and the energy $\rho E$ as its components.
@@ -70,7 +72,7 @@
     \paragraph{}
     When solving equations like (\ref{eq:pde}) numerically, the domain of interest is first bounded since infinite domain cannot be represented by a discrete set of variables.
     Let $\mathcal{D}$ be this computational domain.
-    For a numerical computation, the different quantities, such as the state variable $\xi$, are represented discretely over the domain $\mathcal{D}$ and store it in the memory of a computer.
+    For a numerical computation, the different quantities, such as the state variable $\xi$, are represented discretely over the domain $\mathcal{D}$ and \GP{they are stored} in the memory of a computer.
     To do so, the domain $\mathcal{D}$ is split into a finite number of cells, or elements, associated to the Degrees of Freedom of the solution: this is the mesh.
     Those cells are small disjoints volumes in 3D, faces in the two-dimensional space or segments in 1D, such as their union recovers the original domain.
     Interest quantities, such as the fluid velocity, density, \dots, are then stored at each node, averaged at the center of each cell or sometimes in a more complex fashion depending on the method.
@@ -107,7 +109,7 @@
       The spatial discretisation method used in the fluid solver CHARME is called the Finite Volume method \cite{EymardGallouetHerbin2000, Leterrier2003}.
       This method is particularly well fitted for conservative equations such as equation (\ref{eq:pde_conservative}).
       Such equation has the property that the quantity $\xi$ is conserved: without source terms, the variation of the total quantity $\xi$ over the domain $\mathcal{D}$ is equal to the flux $f\left(\xi\right)$ coming through the boundary $\partial\mathcal{D}$.
-      In the case of the Navier--Stokes equations (\ref{eq:ns}), the density, the momentum and the energy are conserved throughout time, apart from what comes in and out of the domain.
+      In the case of the Navier--Stokes equations (\ref{eq:ns}), the density, the momentum and the energy are conserved throughout time, apart from what comes in and out of the domain \GP{and more generally from the set of boundary conditions\footnote{paroi isotherme à 1700K apporte de la chaleur au fluide... et in et out me fait penser aux directions des ondes hyperboliques...}}.
       In a close domain where nothing comes in or out, they are indeed conserved.
       The main interest of the Finite Volume method is that this property stays true through the spatial discretisation step.
 
@@ -627,8 +629,8 @@
             \Xi_{n+1} &= \Xi_n + \Delta t \sum_{i = 1}^k b_i \operatorname{G}_{n,i} \\
             \textrm{with}\quad \operatorname{G}_{n,i} &=
               \operatorname{G}\left(\Xi_n + \Delta t \sum_{j = 1}^{i-1} a_{ij} \operatorname{G}_{n,j}\right)
-              + \Delta t \frac{\mathrm{d} \operatorname{G}}{\mathrm{d} \Xi}\left(\Xi_n\right) \sum_{j = 1}^{i} \gamma_{ij} \operatorname{G}_{n,j}
-          \end{aligned}\right. .
+              + \Delta t \frac{\mathrm{d} \operatorname{G}}{\mathrm{d} \Xi}\left(\Xi_n\right) \sum_{j = 1}^{i} \gamma_{ij} \operatorname{G}_{n,j}.
+          \end{aligned}\right.
         \end{equation}
         This corresponds to classical Rosenbrock methods when all $\gamma_{ij}$ are null, except for $\gamma_{ii}$ that correspond to the $a_{ii}$.
         However, the distinction is not made very often, and Rosenbrock--Wanner methods are simply called Rosenbrock methods.
@@ -662,7 +664,7 @@
         This gives an implicit equation that is solved to get $\Xi_{n+1}$.
         The name of those methods comes from the fact that if it uses a constant time step between iterations, this equation can be written using the differentiating operator defined by $\nabla^0 \square_i = \square_i$ and $\nabla^{j+1} \square_i = \nabla^j \square_i - \nabla^j \square_{i-1}$:
         \begin{equation}
-          \sum_{i=1}^k \frac{1}{i} \nabla^i \Xi_{n+1} = \Delta t \operatorname{G}\left(\Xi_{n+1}\right)
+          \sum_{i=1}^k \frac{1}{i} \nabla^i \Xi_{n+1} = \Delta t \operatorname{G}\left(\Xi_{n+1}\right).
         \end{equation}
 
         \paragraph{}
@@ -752,7 +754,7 @@
       Newton's method used to solve such problems is going to produce a succession of linear problems in the form of equation (\ref{eq:linear}).
       This complicated sequence of operations describes the time integration procedure used in our solver to find the solution to steady problems.
       It is schematised in figure \ref{fig:steady_solve}, where the blue circles correspond to the problems being solved, while green circles correspond to the methods used to solve them.
-      In this thesis, we are interested in the non-hatched parts.\GP{J'ai pas compris ce qui est non grisé... Aurais-je un souci d'affichage ?}
+      In this thesis, we are interested in the non-hatched parts.%\GP{J'ai pas compris ce qui est non grisé... Aurais-je un souci d'affichage ?}\GP{C'est tout bon maintenant !!!}
 
       \begin{figure}
         \centering
@@ -1118,7 +1120,8 @@
     \paragraph{}
     In this section, we described how an implicit method operates: the method itself produces one or several nonlinear problems at each time step.
     Those problems are solved with a nonlinear solver that uses linearisation to transform them into linear systems, that are then solved with a linear solver like a preconditioned GMRES method in the case of our solver.
-    We explained that this linearisation in CEDRE is done by using Jacobian matrices that are poorly approximates.
-    It means that we do not solve the correct linear systems, which hinders the nonlinear solve and the time integration method ends up finding an incorrect increment.
+    We explained that this linearisation in CEDRE is done by using Jacobian matrices that are \GP{poor} approximates.
+    It means that we do not solve the correct linear systems, which hinders the nonlinear %solve 
+    \GP{equation} and the time integration method ends up finding an incorrect increment.
     The Jacobian-Free Newton--Krylov method, that is compatible with other algorithms already available in CEDRE such as the GMRES method,  should rectify this issue.
     For this reason, we will continue this work with this method for our time integration method.
