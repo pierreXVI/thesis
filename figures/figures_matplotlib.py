@@ -534,8 +534,8 @@ def rae_residuals():
         ax22 = fig.add_subplot(224, sharex=ax12)
 
         for ax, tag, title in zip((ax11, ax12, ax21, ax22),
-                                  ('RhoV_x', 'RhoV_y', 'RhoEtot', 'RhoNuTilde'),
-                                  ("$x$ momentum", "$y$ momentum", "Energy", "Turbulent viscosity")):
+                                  ('RhoV_x', 'RhoV_y', 'RhoNuTilde', 'RhoEtot'),
+                                  ("$x$ momentum", "$y$ momentum", "Turbulent viscosity", "Energy")):
             ax.grid(True)
             plotter = bibarch.HistoPlotter(ax, ('RESIDUS', 'MOYENS', tag), 'ITER', "/scratchm/pseize/RAE_2822")
             x, y, _ = plotter.get('BASE/INIT')
@@ -575,8 +575,8 @@ def fig_rae_residuals_fine():
             ax22 = fig.add_subplot(224, sharex=ax12)
 
             for ax, tag, title in zip((ax11, ax12, ax21, ax22),
-                                      ('RhoV_x', 'RhoV_z', 'RhoEtot', 'RhoNuTilde'),
-                                      ("$x$ momentum", "$z$ momentum", "Energy", "Turbulent viscosity")):
+                                      ('RhoV_x', 'RhoV_z', 'RhoNuTilde', 'RhoEtot'),
+                                      ("$x$ momentum", "$z$ momentum", "Turbulent viscosity", "Energy")):
                 ax.grid(True)
                 plotter = bibarch.HistoPlotter(ax, ('RESIDUS', tag0, tag), 'ITER', "/tmp_user/sator/pseize/RAE_2822",
                                                plot_restarts=False)
@@ -618,9 +618,8 @@ def sphere_residuals():
         ax22 = fig.add_subplot(224, sharex=ax12)
 
         for ax, tag, title in zip((ax11, ax12, ax21, ax22),
-                                  ('RhoV_y', 'RhoV_y', 'RhoEtot', 'RhoY_N2'),
-                                  ("$x$ momentum", "$y$ momentum",
-                                   "Energy", "$\\operatorname{N}_2$ mass fraction")):
+                                  ('RhoV_y', 'RhoV_y', 'RhoY_N2', 'RhoEtot'),
+                                  ("$x$ momentum", "$y$ momentum", "$\\operatorname{N}_2$ mass fraction", "Energy")):
             ax.grid(True)
             p = bibarch.HistoPlotter(ax, ('RESIDUS', 'MOYENS', tag), 'ITER', '/scratchm/pseize/SPHERE_LOBB')
             x, y, _ = p.get('BASE_NS/RUN_KEX')
@@ -660,9 +659,8 @@ def sphere_reac_residuals():
         ax22 = fig.add_subplot(224, sharex=ax12)
 
         for ax, tag, title in zip((ax11, ax12, ax21, ax22),
-                                  ('RhoV_x', 'RhoV_y', 'RhoEtot', 'RhoY_N2'),
-                                  ("$x$ momentum", "$y$ momentum",
-                                   "Energy", "$\\operatorname{N}_2$ mass fraction")):
+                                  ('RhoV_x', 'RhoV_y', 'RhoY_N2', 'RhoEtot'),
+                                  ("$x$ momentum", "$y$ momentum", "$\\operatorname{N}_2$ mass fraction", "Energy")):
             ax.grid(True)
             p = bibarch.HistoPlotter(ax, ('RESIDUS', 'MOYENS', tag), 'ITER', '/tmp_user/sator/pseize/SPHERE_LOBB')
             x, y, _ = p.get('BASE/RUN_Minmod')
@@ -733,7 +731,7 @@ def sphere_mte_residuals():
         ax22 = fig.add_subplot(224, sharex=ax12)
 
         for ax, tag, title in zip((ax11, ax12, ax21, ax22),
-                                  ('RhoY_F4:P1:e', 'RhoV_y', 'RhoEtot', 'RhoF2:P1:N2v_EvF2:P1:N2v'),
+                                  ('RhoY_F4:P1:e', 'RhoV_y', 'RhoF2:P1:N2v_EvF2:P1:N2v', 'RhoEtot'),
                                   ("Electron\nmass fraction", "$y$ momentum",
                                    "$\\operatorname{N}_2$ vibrational\nenergy", "Energy")):
             ax.grid(True)

@@ -166,7 +166,7 @@
         \begin{figure}
           \centering
           \includegraphics{figures/rae_residuals.png}
-          \caption{Residual 1-norms for the two momentum components, energy and turbulent viscosity throughout the computation for the turbulent transonic airfoil case.
+          \caption{Residual 1-norms for the two momentum components, turbulent viscosity and energy throughout the computation for the turbulent transonic airfoil case.
           Values are normalised by the initial residual.}
           \label{fig:rae_residuals}
         \end{figure}
@@ -236,7 +236,7 @@
         \begin{figure}
           \centering
           \includegraphics{figures/rae_residuals_fine_l1.png}
-          \caption{Residual 1-norms for the horizontal and vertical momentum components, energy and turbulent viscosity throughout the computation for the turbulent transonic airfoil with boundary layer resolution case.
+          \caption{Residual 1-norms for the horizontal and vertical momentum components, turbulent viscosity and energy throughout the computation for the turbulent transonic airfoil with boundary layer resolution case.
           Values are normalised by the initial residual.}
           \label{fig:rae_residuals_fine_l1}
         \end{figure}
@@ -251,7 +251,7 @@
         \begin{figure}
           \centering
           \includegraphics{figures/rae_residuals_fine_linf.png}
-          \caption{Residual $\infty$-norms for the horizontal and vertical momentum components, energy and turbulent viscosity throughout the computation for the turbulent transonic airfoil with boundary layer resolution case.
+          \caption{Residual $\infty$-norms for the horizontal and vertical momentum components, turbulent viscosity and energy throughout the computation for the turbulent transonic airfoil with boundary layer resolution case.
           Values are normalised by the initial residual.}
           \label{fig:rae_residuals_fine_linf}
         \end{figure}
@@ -395,8 +395,9 @@
         It confirms that using a better Jacobian matrix helps the overall convergence when solving steady problems and validates the choice of the Jacobian-Free Newton--Krylov method.
 
         \begin{figure}
+          \centering
           \includegraphics{figures/sphere_residuals.png}
-          \caption{Residual 1-norms for the horizontal and vertical momentum components, energy and \ce{N_2} mass throughout the computation for the hypersonic non-reactive sphere case.
+          \caption{Residual 1-norms for the horizontal and vertical momentum components, \ce{N_2} volumic mass and energy throughout the computation for the hypersonic non-reactive sphere case.
           Values are normalised by the initial residual.}
           \label{fig:sphere_residuals}
         \end{figure}
@@ -415,8 +416,9 @@
         Overall, it is still an improvement of the convergence on such test cases.
 
         \begin{figure}
+          \centering
           \includegraphics{figures/sphere_reac_residuals.png}
-          \caption{Residual 1-norms for the horizontal and vertical momentum components, energy and \ce{N_2} mass throughout the computation for the hypersonic reactive sphere case.
+          \caption{Residual 1-norms for the horizontal and vertical momentum components, \ce{N_2} volumic mass and energy throughout the computation for the hypersonic reactive sphere case.
           Values are normalised by the initial residual.}
           \label{fig:sphere_reac_residuals}
         \end{figure}
@@ -591,12 +593,12 @@
         What matters to us and a typical user is not the number of iterations but the time spent waiting for the result.
         It is called the elapsed real time or wall-clock time.
         As the computations run each time in the same parallel environment, with a fixed number of CPU cores, the elapsed time is proportional to the CPU time.
-        The $x$-axis will then be the CPU time: the actual time it took to get to the current residual.
+        The $x$-axis will then be the elapsed real time: the actual time it took to get to the current residual.
 
         \begin{figure}
           \centering
           \includegraphics{figures/sphere_mte_residuals.png}
-          \caption{Residual 1-norms for the electron mass fraction, vertical momentum, \ce{N_2} vibrational energy and total energy for the Multi-TEmperature model computation throughout the computation.
+          \caption{Residual 1-norms for the electron mass fraction, vertical momentum, \ce{N_2} vibrational energy and total energy throughout the computation for the hypersonic reactive sphere case using the Multi-TEmperature model.
           Values are normalised by the initial residual.}
           \label{fig:sphere_mte_residuals}
         \end{figure}
@@ -635,7 +637,7 @@
         We decided to do the same comparison as before but this time with the simplified reactive model.
         We once again start the computation with a few iterations of the Midpoint method and use that as a common initialisation.
         Then, we compare the explicit method with the Jacobian-Free Newton--Krylov method.
-        We show the corresponding residual norms in figure \PS{TODO}, while still using the CPU time as the $x$-axis.
+        We show the corresponding residual norms in figure \ref{fig:sphere_tv_residuals}, while still using the elapsed real time as the $x$-axis.
         The result is similar to the previous one, except it is even more in favour of the JFNK method.
         The implicit method reaches much lower residual norms than the explicit one.
         With the full reactive model, the limiting factor for the implicit method came from the stiffness due to the electrons.
@@ -644,3 +646,11 @@
         Without them, the convergence is significantly faster.
         The time step for the explicit method however is under the same limitations with both reactive models.
         The gain in CPU time is then huge, in favour of the JFNK method.
+
+        \begin{figure}
+          \centering
+          \includegraphics{figures/sphere_tv_residuals.png}
+          \caption{Residual 1-norms for the electron mass fraction, vertical momentum, \ce{N_2} vibrational energy and total energy throughout the computation for the hypersonic reactive sphere case using the Multi-TEmperature model without ionisation.
+          Values are normalised by the initial residual.}
+          \label{fig:sphere_tv_residuals}
+        \end{figure}
