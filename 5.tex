@@ -27,11 +27,11 @@
 
     \paragraph{}
     JAGUAR means proJect of an Aerodynamic solver using General Unstructured grids And high ordeR schemes.
-    It is a reactive Navier--Stokes solver originally developed at CERFACS, \PS{the European center for research and advanced training in scientific computing\footnote{je vois pas l'intérêt de le mettre en anglais, soit ça soit j'enlève}}, and is jointly own by ONERA and CERFACS for four years.
+    It is a reactive Navier--Stokes solver originally developed at CERFACS, and is jointly own by ONERA and CERFACS for four years.
     It is made for unstructured grids and uses a Large Eddy Simulation model to solve unsteady turbulence effects.
     It means that the large turbulence scales are computed explicitly while the smaller ones are modelled.
     Its particularity is that it uses a spectral method as spatial discretisation scheme: the Spectral Difference method.
-    \PS{The Spectral Difference method follows some principles of the Discontinuous Galerkin formulation, in the sense that both are families of schemes of arbitrary order using polynomial approximations, but their mathematical foundations differ.}
+    The Spectral Difference method follows some principles of the Discontinuous Galerkin formulation, in the sense that both are families of schemes of arbitrary order using polynomial approximations, but their mathematical foundations differ.
 
 
     \subsection{The Spectral Difference method}
@@ -141,7 +141,7 @@
       \end{figure}
 
       \paragraph{}
-      As a side note, the Spectral Difference method with $p = 0$ corresponds roughly\footnote{\PS{Pourquoi roughly?}} to the first-order Finite Volume method.
+      As a side note, the Spectral Difference method with $p = 0$ corresponds roughly to the first-order Finite Volume method.
       Indeed, the solution is assumed constant in the cell, represented by the value at its barycenter.
       The flux balance is made at the cell interfaces with a Riemann solver.
       This corresponds to the placement of the solution and flux points in figure \ref{fig:sd_points} when $p = 0$.
@@ -186,8 +186,8 @@
       It was decided instead to reuse the work from the previous part: the Jacobian matrix will not be formed, but its effect will be computed by a finite difference approximation.
       Another reason to work with the SLEPc library is that using a finite difference approximation is easy with it.
       More precisely, it is PETSc that handles this approximation.
-      \PS{To sum up, to compute $\varphi_k\left(L\right)b$ that is required for the exponential methods with $L = f'\left(y\right)$, $L$ is created with the appropriate PETSc data type.
-      As it is a Jacobian matrix of a function, PETSc only needs to know the function to compute matrix-vector products.}
+      To sum up, to compute $\varphi_k\left(L\right)b$ that is required for the exponential methods with $L = f'\left(y\right)$, $L$ is created with the appropriate PETSc data type.
+      As it is a Jacobian matrix of a function, PETSc only needs to know the function to compute matrix-vector products.
       Then, after setting the MFN object of SLEPc, the library can compute the desired result
       The Arnoldi iteration, the Scaling and Squaring algorithm and the exponential evaluation are all handled internally by the library.
       Overall, this procedure is extremely simple from our perspective and requires only a few lines of code to implement.
@@ -259,7 +259,6 @@
 
       \paragraph{}
       \GP{Quel solveur de Riemann ???? Tu ne l'as pas dit...}
-      \PS{Comment ça ?}
 
       \paragraph{}
       The period for those numerical values is $L / U_\infty = \num{0.0005759974000734113}\si{\second}$.
@@ -267,14 +266,9 @@
       \begin{equation}
         \operatorname{err}\left(u\right) = \left(\int_{\left[0, L\right]^2} \left(u\left(\vec{x}, 20T\right) - u\left(\vec{x}, 0\right)\right)^2 \mathrm{d}\vec{x} \right)^{1/2} .
       \end{equation}
-      \PS{
-      %\GP{ Je vire ca car c'est pas tout à fait vrai... Because it is a periodic case, the initial value corresponds to the exact solution.
-      %This error corresponds then to the error of the time integration method.}\\
-      %Je mets ça à la place:
       Once the vortex moves in the domain, the numerical solution is subject to two schemes and errors are a consequence of both.
       Once the spatial scheme is defined, the mesh is chosen sufficiently refined in order to transport the vortex accurately and the goal is to have a much lower influence of the spatial scheme than of the time integration scheme on the total error.
       The order of our time integration methods can be determined by looking at this error as a function of the time step.
-      }
 
       \paragraph{}
       The error at the end of the simulation is the global truncation error: the error the method makes while getting to a fixed time, no matter how many iterations it took.
@@ -437,11 +431,7 @@
       \end{equation}
       the mean enstrophy, defined by
       \begin{equation}
-        \mathcal{E} = \frac{1}{\rho_\infty \left|\Omega\right|} \int_\Omega \rho \frac{\norm{\nabla \times \vec{u}}^2}{2} \mathrm{d}\Omega ,
-      \end{equation}
-      and the kinetic energy dissipation rate, that follows the relation \PS{MAIS EN FAIT JE LA MONTRE PAS}:
-      \begin{equation}
-        \epsilon = -\frac{\mathrm{d} E_k}{\mathrm{d} t} = 2 \mu \mathcal{E} .
+        \mathcal{E} = \frac{1}{\rho_\infty \left|\Omega\right|} \int_\Omega \rho \frac{\norm{\nabla \times \vec{u}}^2}{2} \mathrm{d}\Omega .
       \end{equation}
       Those values computed by the present simulation are compared with the reference values.
 
@@ -452,13 +442,13 @@
       The goal is to see if the result from the simulation matches reference data up to $20 t_c$, and how much CPU time the computation took.
       The RKo6s, TVDRK(3, 3) and SSPRK(5, 4) methods are the already existing reference methods, and the exponential Rosenbrock--Euler, ExpRB32 and ExpRB42 methods are the newly implemented methods.
       For the exponential Rosenbrock methods, Krylov subspaces of dimension 20 are used for the first stage, and of dimension 5 for the additional stages for the ExpRB32 and ExpRB42 method.
-      \PS{The time step is constant in a simulation, and some effort was done to use the highest time step compatible for each method.
+      The time step is constant in a simulation, and some effort was done to use the highest time step compatible for each method.
       Above this upper bound on the time step, either the computation fails or the quality of the solution is not satisfying anymore.
       However, this higher time step can be increased for exponential methods by increasing the dimension of the Krylov subspaces used to compute $\varphi$-functions.
       By doing so, the computational cost of a single iteration is higher, but it reduces the error in the $\varphi$-functions evaluations.
       Symmetrically, it was also tried to reduce the dimension of the Krylov subspaces.
       It means that the method can not work with the same time step as before as it is now too high, but this reduces the iterations cost.
-      This is to see if making more iterations that are cheaper, or in the opposite less that are more expensive can be a good idea.}
+      This is to see if making more iterations that are cheaper, or in the opposite less that are more expensive can be a good idea.
       From now on, ExpEuler($d$) method refers to the exponential Rosenbrock--Euler method that uses a Krylov subspace of dimension $d$.
 
       \paragraph{}

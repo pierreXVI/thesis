@@ -20,7 +20,7 @@
   Nous regardons ensuite un cas de rentrée atmosphérique avec une sphère placée dans un écoulement à haute énergie.
   Cela se traduit par un très fort choc, ainsi qu'une zone de déséquilibre thermodynamique où ont lieu d'intenses réactions chimiques.
   Dans un premier temps, nous regardons comme précédemment les deux méthodes pour comparer leur convergence.
-  Pour finir, nous utilisons un modèle de fluide récemment ajouté au solveur afin de représenter le déséquilibre thermodynamique en caractérisant l'écoulement par plusieurs températures distinctes.
+  Pour finir, nous utilisons un modèle de fluide récemment ajouté au solveur afin de représenter plus finement le déséquilibre thermodynamique en caractérisant l'écoulement par plusieurs températures distinctes.
   Avec les développements réalisés actuellement sur ce nouveau modèle, il n'est pas possible d'utiliser la méthode implicite préexistante, et les utilisateurs sont forcés d'employer des méthodes explicites.
   Nous montrons donc que la méthode JFNK peut elle être utilisée en l'état, sans nécessiter de développements supplémentaires, et permet d'accélérer les calculs ainsi que d'obtenir une meilleure convergence.
 \end{tcolorbox}
@@ -444,7 +444,7 @@
     Adding a new model amount to writing the function $\operatorname{F}$ from equation (\ref{eq:pde}), or equivalently $\operatorname{G}$ from equation (\ref{eq:ode}).
     Usually, the development of this function is straightforward as it is given explicitly from the equations.
     However, the development of the Jacobian matrix is much more difficult.
-    This is why the new models can not yet compute Jacobian matrices, and therefore can not use implicit methods.
+    This is why the new models can not yet compute Jacobian matrices, and therefore can not use implicit methods as of today.
     \LM{Je dirais plutôt qu'on ne se précipite pas sur l'effort d'évaluation du jacobien, pas qu'on ne peut pas l'évaluer, non?}
     \PS{Concretement, on ne peux pas évaluer la jacobienne de MF5 et MTE, donc les deux ?}
     The Jacobian-Free Newton--Krylov method is then a nice way to use implicit methods as it does not require the Jacobian matrix.
@@ -476,7 +476,7 @@
 
       \paragraph{}
       To account for the disequilibrium, the Navier--Stokes equations (\ref{eq:ns}) are modified into the following:
-      \begin{equation}
+      \begin{equation}\label{eq:mte}
         \left\{\begin{alignedat}{5}
           &\partial_t\left(  \rho_s  \right) &&+ \nabla\cdot\left(  \rho_s \vec{u}  \right) &&=
             \nabla\cdot\bigl( \rho D_s \nabla y_s\bigr) + \dot \omega_s \\[10pt]
@@ -522,11 +522,11 @@
       A noticeable feature of this model is the presence of a nonconservative term in the conservation equation of the electrons' energy: $\vec{u} \cdot \nabla p_e$.
       This term is due to the effect of the electric field.
       This is a known issue of this model, as the Finite Volume method handles better conservative terms.
-      Some work tried to transform this equation into a conservative one by using the electronic entropy instead of energy but by neglecting dissipation terms concerning the electrons \cite{CoquelMarmignon1995}.
-      \LM{Je ne comprends pas la phrase..}
-      \PS{Des travaux ont tenté de la rendre conservative en utilisant l'entropie des electrons comme variable conservative au lieu de leur énergie. A reformuler avec toi}
-      \GP{Je crois que ce qui gene le plus est "but by neglecting dissipation terms concerning the electrons". Tu veux dire que les termes de dissipation sont supprimés ou modélisés différemment ? }
+      There are two ways of handling this issue.
+      The first one uses the electronic entropy instead of energy as a conservative variable \cite{CoquelMarmignon1995}.
+      To do so, it makes some simplifications concerning electronic dissipation terms.
       However, this simplification can lead to inaccuracy in the physical result, and it appears that using the nonconservative formulation is necessary to get physically accurate results \cite{Soubrie2006, KimGuelhanBoyd2012}.
+      The other approach is the one used in our model, that handles the nonconservative term from equation (\ref{eq:mte}).
       Not to go into too much detail, such models that account for thermodynamic disequilibrium are still under discussion as of today \cite{BlancoJosyula2020}.
 
       \paragraph{}
@@ -566,14 +566,8 @@
         As before, the Jacobian-Free Newton--Krylov method needs some help at the beginning.
         This is why the computation starts with some iterations of the Midpoint method and uses the first-order Finite Volume method.
         Then, it continues with the JFNK method, still using the first-order Finite Volume method, to quickly get a good enough approximation of the expected solution.
-        \LM{Pour les premières itérations avec la "midpoint method", on est à l'ordre 1 en espace ou pas?}
-        \PS{Oui, c'est précisé}
-        \LM{Et pour le passage au JFNK, l'ordre 1 c'est pour tout le schéma spatial, ou juste pour l'approximation de l'action de la matrice?}
-        \PS{Tout, je dis qu'on utilise la méthode FV d'ordre 1, ça m'a pas l'air ambigu, je dois mieux préciser ?}
-        Finally, to get a finer result, the simulation uses the second-order spatial discretisation method.
-        Local time-stepping based on the CFL number is used.
-        \LM{je ne sais plus si c'est possible, mais il y a-t-il du pas de temps local pour les simulations "explicites"}
-        \PS{Non, pourquoi ?}
+        Finally, to get a finer result, the simulation switches the second-order spatial discretisation method.
+        Local time-stepping based on the CFL number is used with the implicit simulation using the JFNK method.
         The GMRES method can not use preconditioners that require the matrix, so the only one available is the diagonal preconditioner based on the cell volumes.
         It is not ideal as it is extremely simple, and some physics-based preconditioner would be preferable \cite{KnollKeyes2004} but none were available to us at the time.
         The spatial discretisation method used is the Multislope method, as it appears more robust than the $k$-exact method with the Multi-TEmperature model.
@@ -645,7 +639,8 @@
         The result is similar to the previous one, except it is even more in favour of the JFNK method.
         The implicit method reaches much lower residual norms than the explicit one.
         With the full reactive model, the limiting factor for the implicit method came from the stiffness due to the electrons.
-        \LM{On est sûr que c'est la raideur, ou c'est le fait que l'on patche, lorsqu'il n'y a plus d'électrons, par un raccord non C1?}\GP{Lionel, je comprends pas ce que tu sous entend... Il faudra qu'on clarifie après les vacances...}
+        \LM{On est sûr que c'est la raideur, ou c'est le fait que l'on patche, lorsqu'il n'y a plus d'électrons, par un raccord non C1?}
+        \GP{Lionel, je comprends pas ce que tu sous entend... Il faudra qu'on clarifie après les vacances...}
         Without them, the convergence is significantly faster.
         The time step for the explicit method however is under the same limitations with both reactive models.
         The gain in CPU time is then huge, in favour of the JFNK method.
