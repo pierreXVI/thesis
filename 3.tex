@@ -578,24 +578,23 @@
 
         \paragraph{}
         The goal of this thesis is not the physical analysis of this test case so it will be left out, but according to the MTE model users, the results are in agreement with the literature.
-        We show in figure \PS{TODO} the various temperatures along the symmetry axis.
+        Figure \ref{fig:sphere_mte_temperatures} the various temperatures along the symmetry axis.
         This justifies the use of the Multi-Temperature model: the region downstream of the shock is indeed in a thermodynamic non-equilibrium state.
-        \PS{Hypothétique : Comparaison AET MTE}
 
         \begin{figure}
           \centering
           \includegraphics{figures/sphere_mte_temperatures.png}
-          \caption{\PS{TODO}}
+          \caption{Temperature on the symmetry axis for the Multi-TEmperature model.}
           \label{fig:sphere_mte_temperatures}
         \end{figure}
 
         \paragraph{}
         We will also look at the residuals for this analysis.
-        But this time, we will not be using the number of iterations as the $x$-axis as it will be unfair to the explicit method.
+        But this time, using the number of iterations as the $x$-axis would be unfair to the explicit method.
         Indeed the cost of one iteration is a lot smaller for the explicit method than for the implicit JFNK one.
         What matters to us and a typical user is not the number of iterations but the time spent waiting for the result.
         It is called the elapsed real time or wall-clock time.
-        As we will run our computations each time in the same parallel environment, with a fixed number of CPU cores, the elapsed time is proportional to the CPU time.
+        As the computations run each time in the same parallel environment, with a fixed number of CPU cores, the elapsed time is proportional to the CPU time.
         The $x$-axis will then be the CPU time: the actual time it took to get to the current residual.
 
         \begin{figure}
@@ -609,12 +608,12 @@
         \paragraph{}
         Figure \ref{fig:sphere_mte_residuals} shows the residual norms for the two computations.
         The leftmost black curve corresponds to the initialisation: a few iterations of the explicit time integration method.
-        From then we can continue the computation with the Midpoint method on one side and the Jacobian-Free Newton--Krylov method on the other.
+        From then the computation can continue with the Midpoint method on one side and the Jacobian-Free Newton--Krylov method on the other.
         We see that the residual norm obtained with the JFNK method is lower than its explicit counterpart.
         Indeed, the explicit method is limited to small time steps because of the shock and the stiff reactive model.
         \PS{C'est sûr ça ? Parce que l'explicite n'a même pas l'air de bouger ...}
         The implicit method however is not.
-        The fact that the implicit method can use larger time steps is not new, but with this specific model, it was not possible to use implicit methods until we added the matrix-free approximation.
+        The fact that the implicit method can use larger time steps is not new, but with this specific model, it was not possible to use implicit methods until the matrix-free approximation was added.
         The JFNK method even ends up being cheaper in terms of CPU time.
         This means that for a user, it is faster to use the newly implemented Jacobian-Free Newton--Krylov method than to use explicit methods.
         Our method gives a better alternative to users working on problems with the Multi-TEmperature model.
@@ -630,8 +629,10 @@
         The question one must ask is then how to compute quantities such as the electronic temperature $T_e$ where there are no free electrons.
         We will not go into such implementation details as it goes beyond the scope of this work, but the point is that having electrons is quite troublesome for numerical methods.
         According to users that work on such reentry applications, it is not always useful to compute fluid ionisation.
-        We explained why it might be crucial for some simulations, but when we do not look at the electrons, their effect on other quantities is almost negligible.
-        Those users said that \PS{"ça craint de dire "il a dit que" ?"} \LM{Ben, si tu peux juste dire que l'on peut parfois se satisfaire des degrés de liberté d'energie de vibration en occultant ceux des électrons et que ça donne déjà des infos intéressantes en allégeant et simplifiant drastiquement le numérique, c'est déjà un peu plus vendeur, non?}it is acceptable, meaningful and still useful to do the same simulation but ignoring electrons.
+        We explained why it might be crucial for some simulations, but the impact of ionisation on other quantities is almost negligible but when the interest if not on the electrons.
+        Sometimes, disregarding degrees of freedom corresponding to the electrons lead to simpler yet meaningful computations.
+        The corresponding computation is drastically simplified as the contribution of the electrons is difficult to handle.
+        The result is however still gives interesting informations, when one is not interested in the effects of ionisation.
         It is done by considering only the chemical components \ce{N_2}, \ce{O_2}, \ce{N}, \ce{O} and \ce{NO}.
 
         \paragraph{}
