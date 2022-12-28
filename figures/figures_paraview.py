@@ -51,7 +51,7 @@ def rae_field():
     display = pvs.Show(reader, view, ColorArrayName=['CELLS', 'P'])
     color_bar = pvs.GetScalarBar(pvs.GetColorTransferFunction('P'), view)
     color_bar.WindowLocation = 'Lower Center'
-    color_bar.Title = r'$P \quad \left( \operatorname{Pa} \right)$'
+    color_bar.Title = '$P$ (Pa)'
     color_bar.ComponentTitle = ''
     color_bar.Orientation = 'Horizontal'
     color_bar.TitleFontSize = 20
@@ -199,8 +199,7 @@ def sphere_fields():
     views = [view]
     for var, label, fmt in zip(
             ('P', 'T', 'Y_NO', 'Y_e'),
-            (r'$P\quad\left(\operatorname{Pa}\right)$', r'$T\quad\left(\operatorname{K}\right)$',
-             r'$NO$ mass fraction', r'$e$ mass fraction'),
+            ('$P$ (Pa)', '$T$ (K)', 'NO mass fraction', 'e mass fraction'),
             ('%.0f', '%.0f', '%.2g', '%.2g')):
         view = pvs.CreateRenderView(InteractionMode='2D')
         view.OrientationAxesVisibility = 0
@@ -264,7 +263,7 @@ def sphere_carbuncle():
     view_bar.OrientationAxesVisibility = 0
     color_bar = pvs.GetScalarBar(pvs.GetColorTransferFunction('P'), view_bar)
     color_bar.WindowLocation = 'Lower Center'
-    color_bar.Title = r'$P \quad \left( \operatorname{Pa} \right)$'
+    color_bar.Title = '$P$ (Pa)'
     color_bar.ComponentTitle = ''
     color_bar.Orientation = 'Horizontal'
     color_bar.TitleFontSize = 24
@@ -288,7 +287,7 @@ def sphere_carbuncle():
     plotter.draw(0, True)
 
     pvs.GetAnimationScene().GoToLast()
-    pvs.SaveScreenshot("sphere_carbuncle.png", layout)
+    # pvs.SaveScreenshot("sphere_carbuncle.png", layout)
 
 
 def covo_cedre_mesh():
