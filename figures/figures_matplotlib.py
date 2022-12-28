@@ -763,6 +763,49 @@ def sphere_mte_residuals():
         # plt.show()
 
 
+def sphere_tv_residuals():
+    with plt.rc_context({'font.size': 8, 'xtick.labelsize': 6, 'ytick.labelsize': 6}):
+        fig = plt.figure(figsize=[5.78851, 3])
+        fig.suptitle(r"Residual 1-norms", y=0.95)
+
+        ax11 = fig.add_subplot(221)
+        ax12 = fig.add_subplot(222)
+        ax21 = fig.add_subplot(223, sharex=ax11)
+        ax22 = fig.add_subplot(224, sharex=ax12)
+
+        for ax, tag, title in zip((ax11, ax12, ax21, ax22),
+                                  ('RhoV_x', 'RhoV_y', 'RhoF2:P1:N2v_EvF2:P1:N2v', 'RhoEtot'),
+                                  ("$x$ momentum", "$y$ momentum", "$\\operatorname{N}_2$ vibrational\nenergy",
+                                   "Energy")):
+            ax.grid(True)
+            p = bibarch.HistoPlotter(ax, ('RESIDUS', 'MOYENS', tag), 'WALL', '/tmp_user/sator/pseize/SPHERE_LOBB_Tv')
+            x, y, _ = p.get('INIT/RUN_1')
+            y0 = y[0]
+            p.reset_offset('INIT/RUN_1')
+            x, y, _ = p.get('RK2/RUN_1')
+            ax.semilogy(x, np.power(10, y - y0), label='Midpoint method')
+            p.reset_offset(['INIT/RUN_1', 'INIT/RUN_2'])
+            x, y, _ = p.get('MF/RUN_1')
+            ax.semilogy(x, np.power(10, y - y0), label='JFNK method')
+            ax.set_title('')
+            ax.set_ylabel(title)
+            ax.set_xlim(-500, 5999)
+
+        ax11.tick_params(labelbottom=False)
+        ax12.tick_params(labelbottom=False)
+        ax11.set_xlabel('')
+        ax12.set_xlabel('')
+        ax21.set_xlabel('Elapsed real time (s)', labelpad=10)
+        ax22.set_xlabel('Elapsed real time (s)', labelpad=10)
+        fig.legend(*ax11.get_legend_handles_labels())
+        fig.align_ylabels([ax11, ax21])
+        fig.align_ylabels([ax12, ax22])
+
+        fig.subplots_adjust(0.11, 0.15, 0.99, 0.85, 0.30, 0.1)
+        fig.savefig('sphere_tv_residuals.png')
+        # plt.show()
+
+
 def sd_discontinuous():
     class Lagrange2D:
         def __init__(self, x, y, z):
@@ -1251,6 +1294,7 @@ if __name__ == '__main__':
     # sphere_reac_residuals()
     # sphere_mte_temperatures()
     # sphere_mte_residuals()
+    # sphere_tv_residuals()
     # sd_discontinuous()
     # sd_scheme()
     # sd_points()
