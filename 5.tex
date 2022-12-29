@@ -148,9 +148,9 @@
       Indeed, the solution is assumed constant in the cell, represented by the value at its barycenter.
       The flux balance is made at the cell interfaces with a Riemann solver.
       This corresponds to the placement of the solution and flux points in figure \ref{fig:sd_points} when $p = 0$.
-      For higher $p$, the proposed Spectral Difference method is naturally of order $p$
+      For \GP{any polynomial degree $p-1$ of the solution}, the proposed Spectral Difference method is naturally of order $p$.
       Indeed, the method can represent exactly any polynomial of degree $p\!-\!1$ and, as a consequence, the error term is of order $p$.
-      In JAGUAR, the order $p$ range from 2 to 10, but $2 \le p \le 6$ for practical applications.
+      In JAGUAR, the \GP{polynomial} order $p$ ranges from 2 to 10, but $2 \le p \le 6$ for practical applications.
 
       \paragraph{}
       The demonstration of the accuracy of the Spectral Difference method is proposed in a reference paper published recently \cite{VanharenPuigtVasseurEtAl2017}.
@@ -264,7 +264,8 @@
       \GP{Quel solveur de Riemann ???? Tu ne l'as pas dit...}
 
       \paragraph{}
-      The period for those numerical values is $L / U_\infty = \num{0.0005759974000734113}\si{\second}$.
+      %The period for those numerical values is $L / U_\infty = \num{0.0005759974000734113}\si{\second}$.
+      \GP{The period for those numerical values is $L / U_\infty \simeq \num{0.000576}\si{\second}$.}
       After 20 periods, the vortex should recover the initial position and the 2-norm of the error between initial and computed solutions can be defined for any scalar variable $u\left(\vec{x}, t\right)$:
       \begin{equation}
         \operatorname{err}\left(u\right) = \left(\int_{\left[0, L\right]^2} \left(u\left(\vec{x}, 20T\right) - u\left(\vec{x}, 0\right)\right)^2 \mathrm{d}\vec{x} \right)^{1/2} .
@@ -410,7 +411,7 @@
       \end{equation}
       over the domain $\left(x, y, z\right) \in \left[-\pi L, \pi L\right]^3$, as seen in figure \ref{fig:tgv_fields}.
       Even if $\vec{u}_z = 0$ at the initialisation, it becomes non-null afterwards and the problem is fully three-dimensional.
-      The initial flow transition to turbulence: the initial large scales decay into smaller ones, that end up dissipated.
+      The initial flow transitions to turbulence: the initial large scales decay into smaller ones, that end up dissipated.
 
       \begin{figure}
         \centering
@@ -456,12 +457,12 @@
 
       \paragraph{}
       The result of all simulation is shown in figure \ref{fig:tgv_curves}.
-      As a simulation correspond to the computation with the largest time step for which the results are satisfying, this figure does not give much information: all methods produce results that are close to reference data.
+      As a simulation correspond to the computation with the largest time step for which the results are satisfying, this figure does not give much information: \GP{all methods produce results that are close to reference data}.
       There are some differences with the reference, but all JAGUAR computations are almost undistinguishable from one another.
       As a consequence, one can argue that the error from the spatial discretisation method is the origin of the difference between
       the reference and JAGUAR computations.
-      In the following, the assumption that the exact solution is provided is assumed, even if it is a numerical solution and not an algebraic one.\footnote{\PS{pas compris la phrase}}
-      \PS{Apart from this error, all curves are all gathered around the same solution.}
+      In the following, \GP{the numerical solution provided by the workshop is assumed to be the exact solution, even if it is a numerical solution and not an algebraic one.}\footnote{\PS{pas compris la phrase}}\GP{C'est mieux ?}
+      %Je vire : dit plus haut dans le \GP... \PS{Apart from this error, all curves are all gathered around the same solution.}
       Indeed, we compare methods that give similar physical results, and what interests us is their statistics.
 
       \begin{figure}

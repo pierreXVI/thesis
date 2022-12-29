@@ -20,7 +20,7 @@
   When compared with the traditional method, the new one that is matrix-free gives similar results when looking at flow data.
   The improvement is solely on the convergence, as the JFNK method converges.
   The second application is the same wing profile, but this time using a much finer mesh to finely represent the boundary layer.
-  This time, the traditional method lack the ability to converge satisfyingly when the JFNK method, however, does.
+  This time, the traditional method lacks the ability to converge satisfyingly when the JFNK method, however, does.
   It shows that the JFNK method improves the convergence of the solver on such applications.
 
   \paragraph{}
@@ -40,7 +40,7 @@
   Such newly implemented model often do not give access to their Jacobian matrices, as it would require much more work from developpers and is not a priority.
   It means that users must restrict themselves to using explicit time integration methods.
   As the JFNK method does not require Jacobian matrices, it is a good candidate to be used as a time integration method with such models.
-  It was then compare with the explicit Midpoint method.
+  It was then compared with the explicit Midpoint method.
   In the end, the JFNK method converges better than the explicit method, and is also quicker in terms of CPU time.
   The result is even more in favor of the implicit method when using a simplified version of the reactive model that disregards ionisation.
 
