@@ -15,6 +15,7 @@
   Pour finir, nous utilisons les méthodes exponentielles sur un cas plus significatif car proche d'une application réelle du solveur: une aube de turbine.
 \end{tcolorbox}
 
+  \vspace{1cm}
   \paragraph{}
   We want to analyse time exponential integration methods in a framework that gives us access to high-order spatial discretisation methods.
   It is possible to use high-order Finite Volume methods, but this means using larger stencils which hurts parallelism.
@@ -48,13 +49,6 @@
       The key to the Spectral Difference method is how to compute a $p + 1$-order $F\left(u\right)$ from a $p$-order $u$.
       This method uses key elements that were first mentioned by \cite{Kopriva1996}, and were later developed by \cite{LiuVinokurWang2006}.
 
-      \begin{figure}
-        \centering
-        \includegraphics{figures/sd_discontinuous.png}
-        \caption{Continuous function (left) and discontinuous representation made by the Spectral Difference method (right).}
-        \label{fig:sd_discontinuous}
-      \end{figure}
-
       \paragraph{}
       Because the solution is represented in each cell by a polynomial, there is no reason for the solution to be continuous throughout cell interfaces.
       Indeed, the Spectral Difference method uses a piecewise representation of the solution.
@@ -75,6 +69,14 @@
       However, to respect the underlying conservation property of equation (\ref{eq:pde_2}), it is necessary for $F$ to be continuous over the whole computational domain.
       The Spectral Difference method will then make sure that the polynomial representations of the flux density are continuous throughout cell interfaces.
 
+      \begin{figure}
+        \centering
+        \includegraphics{figures/sd_discontinuous.png}
+        \caption{Continuous function (left) and discontinuous representation made by the Spectral Difference method (right).}
+        \label{fig:sd_discontinuous}
+      \end{figure}
+
+      \pagebreak
       \paragraph{}
       To better understand how this method works, let us take a one-dimensional cell: the segment $\left[0, 1\right]$.
       Because the following is done at a fixed time, the dependency on the time is dropped, but the solution and the coefficients are in reality functions of the time, not scalars.

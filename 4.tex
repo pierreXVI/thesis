@@ -21,6 +21,7 @@
 \end{tcolorbox}
 
 
+  \vspace{1cm}
   \paragraph{}
   In this thesis, we were interested in finding solutions to steady problems.
   As we explained in the previous part, we use implicit time integration methods to efficiently get solutions to such problems.
@@ -118,6 +119,7 @@
     This analytic formula ensures it is well-defined for squared matrices.
 
 
+  \pagebreak
   \section{Exponential Rosenbrock--Euler method}
 
     \subsection{Definition of the exponential Rosenbrock--Euler method}
@@ -315,7 +317,6 @@
       Moreover, exponential methods do not need to evaluate the exponential or the $\varphi$-functions of the matrix, but their effect when applied to a vector.
       For instance, the exponential Rosenbrock--Euler method from equation (\ref{eq:expeuler}) does not need to compute $\varphi_1\left(\Delta t L\right)$ but $\varphi_1\left(\Delta t L\right)f\left(y_n\right)$.
       It means we do not need to evaluate the function $g$ on the matrix $A$, but to compute the effect of $g\left(A\right)$ on the vector $b$.
-      \PS{GP tu avais mis en italique, c'était juste pour mettre en valeur ta correction ?}
       The idea, originally developed to approximate eigenvalues of a large sparse matrix, is to use a Krylov subspace method to approximate $g\left(A\right)b$ \cite{Saad1992, Sidje1998}.
       In fact, it is similar to using a Krylov subspace method to solve the linear system $Ax = b$: it means taking $g = z \mapsto z^{-1}$.
       The Krylov subspace method produces with the Arnoldi iteration the relation, at the $m$-th iteration:

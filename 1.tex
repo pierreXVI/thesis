@@ -20,12 +20,14 @@
 \end{tcolorbox}
 
 
+  \vspace{1cm}
   \paragraph{}
   As we aim to enhance the performances of the solver CEDRE on steady problems, we first have to define some notions.
   In particular, we need to explain what performance means.
   In this chapter, we will introduce the general problem, and the tools used to solve it.
   We will confirm some choices already made in the solver, and identify the features we would like to modify or replace.
 
+  \pagebreak
   \section{Problem setup}
 
     \paragraph{}
@@ -199,8 +201,9 @@
         Once again, this reconstruction might create local maxima or minima, and therefore it uses slope limiters \cite{Venkatakrishnan1993, BergerAftosmis2005} to prevent it.
 
 
+      \pagebreak
       \paragraph{}
-      We briefly explained above the spatial discretisation method used in our solver, as it might help the analysis of the time integration part.
+      We briefly explained the spatial discretisation method used in our solver, as it might help the analysis of the time integration part.
       The Finite Volume method averages the partial differential equation over each cell of the mesh, which transforms the flux divergence into a flux surface average.
       A reconstruction method, the $k$-exact method or the Multislope method, is then used to get a higher-order representation of the solution so that the surface flux can be computed at each face.
       Slope limiters are used to prevent the formation of local extrema, which can be harmful to the computation.
@@ -388,6 +391,7 @@
       We can now look at methods from this literature, starting with the simpler explicit methods.
 
 
+    \pagebreak
     \subsection{Explicit methods}
 
       \paragraph{}
@@ -538,7 +542,7 @@
         \begin{figure}
           \centering
           \includegraphics{figures/ab_stab.png}
-          \caption{Stability regions (in colour) of the four first Adams--Bashforth methods.}
+          \caption{Stability regions (in colour) of the forst four Adams--Bashforth methods.}
           \label{fig:ab_stab}
         \end{figure}
 

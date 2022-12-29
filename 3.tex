@@ -125,6 +125,14 @@
           \label{fig:rae_coefficients}
         \end{figure}
 
+        \begin{figure}
+          \centering
+          \includegraphics{figures/rae_residuals.png}
+          \caption{Residual 1-norms for the two momentum components, turbulent viscosity and energy throughout the computation for the turbulent transonic airfoil case.
+          Values are normalised by the initial residual.}
+          \label{fig:rae_residuals}
+        \end{figure}
+
         \paragraph{}
         The global flow is shown in figure \ref{fig:rae_field} through the pressure field near the airfoil.
         The shock is clearly seen on the upper part.
@@ -141,7 +149,6 @@
         The new JFNK method however achieves proper convergence.
         Even if the figure shows an advantage of the new method, the result is almost meaningless as the oscillation of the blue curve is numerically insignificant.
         Looking at other data is necessary to properly conclude on the convergence of the two methods.
-
 
         \paragraph{}
         The residual is the best way to measure if a method can help the convergence of the solver.
@@ -161,14 +168,6 @@
         In this fluid dynamics application, the residual norm is associated with the conservative variables: the density, the momentum components, the energy and the turbulent eddy viscosity $\nu_t$.
         With the Spalart--Allmaras compressible model, the conservative variable is in fact the product of the density and the Spalart--Allmaras variable $\rho \tilde{\nu}$.
 
-        \begin{figure}
-          \centering
-          \includegraphics{figures/rae_residuals.png}
-          \caption{Residual 1-norms for the two momentum components, turbulent viscosity and energy throughout the computation for the turbulent transonic airfoil case.
-          Values are normalised by the initial residual.}
-          \label{fig:rae_residuals}
-        \end{figure}
-
         \paragraph{}
         Figure \ref{fig:rae_residuals} shows the residual norms from both computations.
         The gain from using the JFNK method appears clearly.
@@ -182,6 +181,7 @@
         This validates our method on a first simple case, albeit with turbulence modelling and a shock.
 
 
+    \pagebreak
     \subsection{Turbulent transonic airfoil with boundary layer resolution}
 
       \subsubsection{Definition of the test case}
@@ -607,7 +607,6 @@
         From then the computation can continue with the Midpoint method on one side and the Jacobian-Free Newton--Krylov method on the other.
         We see that the residual norm obtained with the JFNK method is lower than its explicit counterpart.
         Indeed, the explicit method is limited to small time steps because of the shock and the stiff reactive model.
-        \PS{C'est sûr ça ? Parce que l'explicite n'a même pas l'air de bouger ...}
         The implicit method however is not.
         The fact that the implicit method can use larger time steps is not new, but with this specific model, it was not possible to use implicit methods until the matrix-free approximation was added.
         The JFNK method even ends up being cheaper in terms of CPU time.
@@ -633,7 +632,7 @@
 
         \paragraph{}
         We decided to do the same comparison as before but this time with the simplified reactive model.
-        We once again start the computation with a few iterations of the Midpoint method and use that as a common initialisation.
+        The computation starts once again with a few iterations of the Midpoint method and use that as a common initialisation.
         Then, we compare the explicit method with the Jacobian-Free Newton--Krylov method.
         We show the corresponding residual norms in figure \ref{fig:sphere_tv_residuals}, while still using the elapsed real time as the $x$-axis.
         The result is similar to the previous one, except it is even more in favour of the JFNK method.
@@ -652,3 +651,15 @@
           Values are normalised by the initial residual.}
           \label{fig:sphere_tv_residuals}
         \end{figure}
+
+
+  \paragraph{}
+  This chapter compared the performances of the Jacobian-Free Newton--Krylov method with already existing methods of CEDRE on typical applications.
+  When compared to the traditional implicit method on turbulent RANS computations, it showed that the JFNK achieves better convergence in the residual norms, when the convergence of traditional method is unsatisfactory.
+  The conclusion is similar on typical reentry applications.
+  When the traditional method is able to converge well, however, the result is no longer in favor of the JFNK method, although the difference between the two method is not significant.
+  Finally, the matrix-free method aws used with a newly implemented fluid model that does not give access to a Jacobian matrix yet.
+  For this reason, using the JFNK method is the only way of using an implicit method.
+  It was compared to the explicit Midpoint method that is currently used for computaions with this fluid model.
+  The results are once again in favor of the JFNK method, both in terms of convergence and speed.
+  The superiority of the matrix-free method depends on the level of complexity of the model: the required time to reach the same convergence in residual norms is divided by 2 with the full model, and by 4 with the model without ionisation.
