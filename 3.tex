@@ -58,7 +58,7 @@
         This first test case is chosen for multiple reasons.
         Firstly, it is a simple case in the field of computational fluid dynamics.
         It is a standard aerodynamics case, with a small mesh in comparison to many other three-dimensional cases.
-        This allows to test our methods inexpensively.
+        This allows testing our methods inexpensively.
         Secondly, this case belongs to the tutorial suite of our solver.
         It means that it is already well mastered by the team.
         Thirdly, even if it is only a standard aerodynamics case it still has some stiff features, such as turbulence modelling and a shock.
@@ -87,8 +87,8 @@
         The Spalart--Allmaras turbulence model is chosen to close the RANS equation.
         It is well known for being one of the simplest turbulence models, which is fine to set up a simple first test case.
         Figure \ref{fig:rae_mesh} shows that the mesh near the wall boundary is not particularly fine, and therefore it is not fine enough to compute the boundary layer.
-        It is indeed because this computation uses turbulence wall model that replaces the standard no-slip boundary condition by a more complex relation between the variables and their derivatives.
-        Physics of the boundary layer is introduced in the model, which limits the stiffness of the system.
+        It is indeed because this computation uses a turbulence wall model that replaces the standard no-slip boundary condition with a more complex relationship between the variables and their derivatives.
+        The physics of the boundary layer is introduced in the model, which limits the stiffness of the system.
         Such models are known to be troublesome with some more complex turbulence models such as the $k-\epsilon$ model but are used with others such as the one we use here.
         Turbulence wall modelling may be nonconventional in aerodynamic simulations but it is a commonly used feature of our solver, so it is interesting to see how our new method behaves on such test cases.
         The spatial discretisation method is a second-order Finite Volume method, using the HLLC Riemann solver and Multislope method \cite{LeTouzeMurroneGuillard2015} with a Van--Leer slope limiter.
@@ -219,7 +219,7 @@
         \paragraph{}
         As before, the computation starts from an initial state constant in the domain.
         Then the computation is continued for a few more iterations with the traditional implicit Euler method.
-        This is to reach a state close enough of the steady solution more quickly before analysing the convergence of our methods.
+        This is to reach a state close enough to the steady solution more quickly before analysing the convergence of our methods.
         After that, the computations are restarted, with the traditional method on one side and the matrix-free method on the other.
         The residuals are given in figures \ref{fig:rae_residuals_fine_l1} and \ref{fig:rae_residuals_fine_linf}.
         Overall, it takes much more iterations to decrease residual norms on this test case compared to the previous one.
@@ -228,7 +228,7 @@
         \paragraph{}
         Figure \ref{fig:rae_residuals_fine_l1} shows that the reduction in residual 1-norms with the standard method is not satisfying.
         Users usually expect the solver to reduce the order of magnitude of the residuals by 4 or 5, which is more than what our solver does.
-        In contrast, the matrix-free method reduces residual norms much more efficiently, and converges to a more precise solution.
+        In contrast, the matrix-free method reduces residual norms much more efficiently and converges to a more precise solution.
         The quality of the solution computed by the matrix-free method is then better.
 
         \begin{figure}
@@ -372,7 +372,7 @@
 
         \paragraph{}
         To analyse the result from this case, one might once again look at the residuals.
-        The first result correspond to a computation without reactive model.
+        The first result corresponds to a computation without a reactive model.
         This simplification makes sense as the case to better understand the behaviour of the methods on an easier problem in terms of numerical complexity.
         It also means a different mesh is used, as not accounting for ionisation means the shock location is slightly different, but the two meshes are built the same way.
         The residual 1-norms are shown in figure \ref{fig:sphere_residuals}.
@@ -401,17 +401,17 @@
         \end{figure}
 
         \paragraph{}
-        When adding the reactive model, the conclusion is not in favor of the JFNK method anymore.
-        The evolution of the residual norms are shown in figure \ref{fig:sphere_reac_residuals}.
+        When adding the reactive model, the conclusion is not in favour of the JFNK method anymore.
+        The evolution of the residual norms is shown in figure \ref{fig:sphere_reac_residuals}.
         This time, the JFNK method does not longer find smaller residuals than the traditional method.
         In fact, when comparing figures \ref{fig:sphere_residuals} and \ref{fig:sphere_reac_residuals}, it appears that the traditional method converges better, enough so that it converges better than the JFNK method.
-        This appears to happend because the mesh quality is better in this computation, compared to the mesh used without reactive model.
+        This appears to happen because the mesh quality is better in this computation, compared to the mesh used without a reactive model.
         However, understanding the mesh quality is hard even on this simple test case for the reconstruction methods used in CEDRE.
         This is under current investigation by the responsible team.
-        Still, the difference in the convergence of both method is relatively small.
-        A possible interpretation of this result is that when the mesh is not ideal for the spatial discretisation methods, using the JFNK method leads to a better convergene as it uses more precise Jacobian matices for the linear system.
+        Still, the difference in the convergence of both methods is relatively small.
+        A possible interpretation of this result is that when the mesh is not ideal for the spatial discretisation methods, using the JFNK method leads to a better convergence as it uses more precise Jacobian matrices for the linear system.
         When the mesh quality is better, the JFNK method is slightly less converged.
-        Overall, it is still an improvement of the convergence on such test cases.
+        Overall, it is still an improvement in the convergence on such test cases.
 
         \begin{figure}
           \centering
@@ -513,7 +513,7 @@
         \end{alignedat}\right.
       \end{equation}
       The first noticeable feature is that the equations of this physical model are more complex compared to the standard Navier--Stokes equations.
-      Futrthermore, there are multiple energies corresponding to the multiple temperatures: $e_e$ the energy of the electronic gas, $e_{v, m}$ the vibrational energy for each flow component that may be at disequilibrium, and $E$ the total energy.
+      Furthermore, there are multiple energies corresponding to the multiple temperatures: $e_e$ the energy of the electronic gas, $e_{v, m}$ the vibrational energy for each flow component that may be at disequilibrium, and $E$ the total energy.
       It increases the number of conservative variables.
       The variables $y$ correspond to the mass fraction of the different flow components.
       The source terms $\omega$ correspond to chemical production or decay.
@@ -523,10 +523,10 @@
       This term is due to the effect of the electric field.
       This is a known issue of this model, as the Finite Volume method handles better conservative terms.
       There are two ways of handling this issue.
-      The first one uses the electronic entropy instead of energy as a conservative variable \cite{CoquelMarmignon1995}.
+      The first one uses electronic entropy instead of energy as a conservative variable \cite{CoquelMarmignon1995}.
       To do so, it makes some simplifications concerning electronic dissipation terms.
       However, this simplification can lead to inaccuracy in the physical result, and it appears that using the nonconservative formulation is necessary to get physically accurate results \cite{Soubrie2006, KimGuelhanBoyd2012}.
-      The other approach is the one used in our model, that handles the nonconservative term from equation (\ref{eq:mte}).
+      The other approach is the one used in our model, which handles the nonconservative term from equation (\ref{eq:mte}).
       Not to go into too much detail, such models that account for thermodynamic disequilibrium are still under discussion as of today \cite{BlancoJosyula2020}.
 
       \paragraph{}
@@ -608,7 +608,7 @@
         We see that the residual norm obtained with the JFNK method is lower than its explicit counterpart.
         Indeed, the explicit method is limited to small time steps because of the shock and the stiff reactive model.
         The implicit method however is not.
-        The fact that the implicit method can use larger time steps is not new, but with this specific model, it was not possible to use implicit methods until the matrix-free approximation was added.
+        The fact that the implicit method can use larger time steps is not new, but with this specific model, it was impossible to use implicit methods until the matrix-free approximation was added.
         The JFNK method even ends up being cheaper in terms of CPU time.
         This means that for a user, it is faster to use the newly implemented Jacobian-Free Newton--Krylov method than to use explicit methods.
         Our method gives a better alternative to users working on problems with the Multi-TEmperature model.
@@ -624,10 +624,10 @@
         The question one must ask is then how to compute quantities such as the electronic temperature $T_e$ where there are no free electrons.
         We will not go into such implementation details as it goes beyond the scope of this work, but the point is that having electrons is quite troublesome for numerical methods.
         According to users that work on such reentry applications, it is not always useful to compute fluid ionisation.
-        We explained why it might be crucial for some simulations, but the impact of ionisation on other quantities is almost negligible but when the interest if not on the electrons.
-        Sometimes, disregarding degrees of freedom corresponding to the electrons lead to simpler yet meaningful computations.
+        We explained why it might be crucial for some simulations, but the impact of ionisation on other quantities is almost negligible when the interest is not on the electrons.
+        Sometimes, disregarding degrees of freedom corresponding to the electrons leads to simpler yet meaningful computations.
         The corresponding computation is drastically simplified as the contribution of the electrons is difficult to handle.
-        The result is however still gives interesting informations, when one is not interested in the effects of ionisation.
+        The result however still gives interesting information, when one is not interested in the effects of ionisation.
         It is done by considering only the chemical components \ce{N_2}, \ce{O_2}, \ce{N}, \ce{O} and \ce{NO}.
 
         \paragraph{}
@@ -655,11 +655,11 @@
 
   \paragraph{}
   This chapter compared the performances of the Jacobian-Free Newton--Krylov method with already existing methods of CEDRE on typical applications.
-  When compared to the traditional implicit method on turbulent RANS computations, it showed that the JFNK achieves better convergence in the residual norms, when the convergence of traditional method is unsatisfactory.
-  The conclusion is similar on typical reentry applications.
-  When the traditional method is able to converge well, however, the result is no longer in favor of the JFNK method, although the difference between the two method is not significant.
+  When compared to the traditional implicit method on turbulent RANS computations, it showed that the JFNK achieves better convergence in the residual norms, when the convergence of the traditional method is unsatisfactory.
+  The conclusion is similar with typical reentry applications.
+  When the traditional method is able to converge well, however, the result is no longer in favour of the JFNK method, although the difference between the two methods is not significant.
   Finally, the matrix-free method was used with a newly implemented fluid model that does not give access to a Jacobian matrix yet.
   For this reason, using the JFNK method is the only way of using an implicit method.
-  It was compared to the explicit Midpoint method that is currently used for computaions with this fluid model.
-  The results are once again in favor of the JFNK method, both in terms of convergence and speed.
-  The superiority of the matrix-free method depends on the level of complexity of the model: the required time to reach the same convergence in residual norms is divided by 2 with the full model, and by 4 with the model without ionisation.
+  It was compared to the explicit Midpoint method that is currently used for computations with this fluid model.
+  The results are once again in favour of the JFNK method, both in terms of convergence and speed.
+  The superiority of the matrix-free method depends on the model's complexity level: the required time to reach the same convergence in residual norms is divided by 2 with the full model, and by 4 without ionisation.

@@ -50,7 +50,7 @@
     \begin{itemize}
       \item ASSEMBLAGE acts as the conductor by handling the overall simulation, telling the solvers what to do and when to do it, when to exchange data and with which other coupled solver
       \item BIBCEDRE contains tools for geometrical operations, linear algebra methods, mesh handling, parallel communications and other general functionalities
-      \item THERMOLIB is used to compute the different thermophysical properties such as heat capacities, or to compute the closure relations that can be complex in our applications.
+      \item THERMOLIB is used to compute the different thermophysical properties such as heat capacities or to compute the closure relations that can be complex in our applications.
     \end{itemize}
     Those libraries are the main engines of the solver.
     CEDRE does a computation with CHARME, it is in fact ASSEMBLAGE that tells CHARME when to initialise itself, to do a step of the time integration method, etc.
@@ -115,10 +115,10 @@
       In order to use the matrix-free approximation from equation (\ref{eq:matrix_free}), one only needs to replace this routine with a new one that computes the approximation.
       Unfortunately, the approximation uses a function that belongs to the client solver.
       The library BIBCEDRE does not know this function and how to compute it, as it is part of CHARME or any other client solver.
-      As we said, we want to write generic solutions, and so merging the library BIBCEDRE with the solver CHARME is not a good way to proceed.
+      As we said, we want to write generic solutions, so merging the library BIBCEDRE with the solver CHARME is not a good way to proceed.
       What we need here is to allow BIBCEDRE to use a callback from the client solver.
       We did that using the Fortran 2003 feature: polymorphism.
-      The Fortran 2003 standard is almost ten years old as of today, and many may consider that the functionalities added to the previous Fortran 95 standard are therefore not that innovative.
+      The Fortran 2003 standard is almost twenty years old today, and many may consider that the functionalities added to the previous Fortran 95 standard are therefore not that innovative.
       But in the context of a project as large as CEDRE, developed by researchers and used by industrial partners, even the Fortran 2003 standard and polymorphism in particular are innovative.
       Without going into too much detail, we added a member to the type \mintinline{fortran}{type_sys} that contains the context to evaluate a matrix-vector product:
 \begin{minted}{fortran}

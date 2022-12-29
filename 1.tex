@@ -31,7 +31,7 @@
   \section{Problem setup}
 
     \paragraph{}
-    In order to set the mathematical framework for this study, let us start from a partial differential equation arising from the physical model, in the form of
+    In order to set the mathematical framework for this study, let us start with a partial differential equation arising from the physical model, in the form of
     \begin{equation}\label{eq:pde}
       \frac{\partial \xi}{\partial t} + \operatorname{F}\left(\xi\right) = 0
     \end{equation}
@@ -63,7 +63,7 @@
     This relation is quite simple, as it is the one that corresponds to ideal gas with constant heat capacity.
     In the solver CEDRE, this relation is usually more complex as we are working with multifluid flows and with variable heat capacities.
     The deviatoric stress tensor $\tau$ accounts for the fluid's viscosity, and its computation depends on the model used.
-    The heat flux term $\vec{q}$ enables heat exchange in the fluid, through the heat diffusivity, and it is generally related with the tempreature gradient.
+    The heat flux term $\vec{q}$ enables heat exchange in the fluid, through the heat diffusivity, and it is generally related to the temperature gradient.
     Without those last two terms, one recovers the Euler equations.
     To this simple form can be added source terms from the reactive model, source terms from the turbulence model, divergence terms from a molecular diffusion model, etc.
     Yet it is clear that with a bit of rewriting, it is possible to get back to the starting form (\ref{eq:pde}) and even the conservative form with source terms (\ref{eq:pde_conservative}).
@@ -71,10 +71,10 @@
     Apart from this small change, the idea is the same.
 
     \paragraph{}
-    When solving equations like (\ref{eq:pde}) numerically, the domain of interest is first bounded since infinite domain cannot be represented by a discrete set of variables.
+    When solving equations like (\ref{eq:pde}) numerically, the domain of interest is first bounded since the infinite domain cannot be represented by a discrete set of variables.
     Let $\mathcal{D}$ be this computational domain.
-    For a numerical computation, the different quantities, such as the state variable $\xi$, are represented discretely over the domain $\mathcal{D}$ and are stored in the memory of a computer.
-    To do so, the domain $\mathcal{D}$ is split into a finite number of cells, or elements, associated to the Degrees of Freedom of the solution: this is the mesh.
+    For numerical computation, the different quantities, such as the state variable $\xi$, are represented discretely over the domain $\mathcal{D}$ and are stored in the memory of a computer.
+    To do so, the domain $\mathcal{D}$ is split into a finite number of cells, or elements, associated with the degrees of freedom of the solution: this is the mesh.
     Those cells are small disjoints volumes in 3D, faces in the two-dimensional space or segments in 1D, such as their union recovers the original domain.
     Interest quantities, such as the fluid velocity, density, \dots, are then stored at each node, averaged at the center of each cell or sometimes in a more complex fashion depending on the method.
     They are no longer mathematically represented by a function of the continuous physical domain $\xi: \mathcal{D} \rightarrow \mathbb{R}$ but by a finite-sized vector $\Xi$ gathering all the information across the discretised domain.
@@ -109,7 +109,7 @@
       \paragraph{}
       The spatial discretisation method used in the fluid solver CHARME is called the Finite Volume method \cite{EymardGallouetHerbin2000, Leterrier2003}.
       This method is particularly well fitted for conservative equations such as equation (\ref{eq:pde_conservative}).
-      Such equation has the property that the quantity $\xi$ is conserved: without source terms, the variation of the total quantity $\xi$ over the domain $\mathcal{D}$ is equal to the flux $f\left(\xi\right)$ coming through the boundary $\partial\mathcal{D}$.
+      A such equation has the property that the quantity $\xi$ is conserved: without source terms, the variation of the total quantity $\xi$ over the domain $\mathcal{D}$ is equal to the flux $f\left(\xi\right)$ coming through the boundary $\partial\mathcal{D}$.
       In the case of the Navier--Stokes equations (\ref{eq:ns}), the density, the momentum and the energy are conserved throughout time, apart from fluxes going through domain boundaries.
       In a close domain where nothing comes in or out, they are indeed conserved.
       The main interest of the Finite Volume method is that this property stays true through the spatial discretisation step.
@@ -158,7 +158,7 @@
       Then it is possible to evaluate the flux associated with this state going through the surface.
       This approach can be called the exact Riemann solver as it uses the exact solution of the Riemann problem.
       But the drawback of this approach usually is the computational cost required to find this exact solution and people generally revert to approximate Riemann solvers, compromising between speed and accuracy.
-      Several approximate Riemann solvers are available to the user in our solver, such as the well known Roe, HLLC or AUSM+ schemes \cite{Roe1981, Toro2009}.
+      Several approximate Riemann solvers are available to the user in our solver, such as the well-known Roe, HLLC or AUSM+ schemes \cite{Roe1981, Toro2009}.
 
 
     \subsection{Gradient reconstruction methods}
@@ -168,7 +168,7 @@
       This corresponds to a first-order discretisation method.
       Simply put, it means that it can represent quantities exactly as 0-order polynomials locally to each cell.
       There are ways to achieve higher-order representation such as with the MUSCL approach \cite{VanLeer1979}.
-      It consists in handling the surface flux evaluation as explained in the Riemann problem part on one hand, and deciding what left and right quantities to feed to this flux computation on the other hand.
+      It consists in handling the surface flux evaluation as explained in the Riemann problem part on one hand and deciding what left and right quantities to feed to this flux computation on the other hand.
       In our solver, there are two ways to construct high-order states to give to the flux computation method.
       They are described in the following parts.
       For both of them, the idea is to use neighbouring data to enhance the order of the local representation.
@@ -193,7 +193,7 @@
         The second method used to reconstruct high-order quantities is called the \emph{Multislope} method.
         This method is a direct adaptation of the structured directional method to unstructured grids.
         It consists in defining local directions for the interpolation of the unknown on the face.
-        For a given cell and one of its face, one can draw the line from their centers.
+        For a given cell and one of its faces, one can draw the line from their centers.
         Information is interpolated on this line using neighbouring cells to get the local slope.
         The mechanism to define the slopes and the geometric treatment is quite complex and it won't be discussed here.
         The details are provided in \cite{LeTouzeMurroneGuillard2015}.
@@ -243,7 +243,7 @@
     \end{equation}
     A time integration method is going to produce a succession of solutions: starting from $\Xi_0$, it produces $\Xi_1$ at $t_1$, then $\Xi_2$ at $t_2$, and $\Xi_n$ at $t_n$, etc.
     Let $\Delta t_n$ be the time step $t_{n+1} - t_n$.
-    The following is related to a single step of the time integration method, so the subscript on the time step can be drop as it is not meaningful.
+    The following is related to a single step of the time integration method, so the subscript on the time step can be dropped as it is not meaningful.
     For a steady problem, the evolution of the solution has no interest and it seems reasonable to want to "go fast" to the steady state, meaning to use as large a time step as possible.
     Unfortunately, not every time integration method allows large time steps due to the well-known Courant--Friedrichs--Lewy condition \cite{CourantFriedrichsLewy1967}.
     Some tools must be defined in order to help decide on the method to use.
@@ -298,7 +298,7 @@
           \frac{\mathrm{d} y}{\mathrm{d} t} = J y .
         \end{equation}
         This new equation used to analyse the stability of time integration methods is the one called the Dahlquist test equation.
-        This equation is studied in $\mathbb{C}$, so that eigenvalues and eigenvectors of the matrix $J$ exists.
+        This equation is studied in $\mathbb{C}$, so that eigenvalues and eigenvectors of the matrix $J$ exist.
 
         \paragraph{Note:}
         When looking at a method applied to the Dahlquist test equation (\ref{eq:dahlquist}), it is assumed that the real parts of the eigenvalues of $J$ are all negative.
@@ -337,7 +337,7 @@
         \end{equation}
         For most time integration methods, $g$ is an analytic function.
         The initial value $y_0$ can be decomposed on a basis of eigenvectors of $J$, $v_1, \dots, v_N$, associated with the eigenvalues $\alpha_1, \dots, \alpha_N$: $y_0 = \sum_{i=1}^N \lambda_i v_i$.
-        Because $g$ is an analytic function, it comes immediatly:
+        Because $g$ is an analytic function, it comes immediately:
         \begin{equation}
           y_n = \sum_{i=1}^N \lambda_i g\left(\Delta t \alpha_i\right)^n v_i .
         \end{equation}
@@ -351,7 +351,7 @@
         \paragraph{}
         If an eigenvalue is not in the stability region, the associated eigendirection will be amplified and a numerical instability will lead to the divergence of the computation.
         We can see that the argument of the function $g$ is not $J$ but $\Delta t J$.
-        This means that stability can be achieved by choosing wisely the time step: with a small enough $\Delta t$ one can ensures that each eigenvalue falls into the stability region.
+        This means that stability can be achieved by choosing wisely the time step: with a small enough $\Delta t$ one can ensure that each eigenvalue falls into the stability region.
         Unfortunately, this often forces the user to set a relatively small time step, which is an issue for steady computations.
 
 
@@ -387,7 +387,7 @@
 
       \paragraph{}
       Having defined the concepts of stability and order of time integration methods, we are now equipped to analyse them.
-      We see from the literature that time integration methods are usually split into two groups: explicit and inplicit methods.
+      We see from the literature that time integration methods are usually split into two groups: explicit and implicit methods.
       We can now look at methods from this literature, starting with the simpler explicit methods.
 
 
@@ -420,7 +420,7 @@
       \subsubsection{Runge--Kutta methods}
 
         \paragraph{}
-        Instead of making one step forward in time as the explicit Euler method, Runge--Kutta methods will make a set of intermediate steps, and find the final solution as a combination of those intermediate steps.
+        Instead of making one step forward in time as the explicit Euler method, Runge--Kutta method will make a set of intermediate steps, and find the final solution as a combination of those intermediate steps.
         It starts from the value of $\Xi_n$ known in $t_n$ and given intermediates steps $t_{n, i} = t_n + c_i\Delta t$ for $1 \leq i \leq k$, with a fixed $k$.
         An exact integration between $t_n$ and $t_{n, i}$ of equation (\ref{eq:init_value_ode}) leads to:
         \begin{equation}
@@ -430,7 +430,7 @@
         \begin{equation}
           \int_{t_n}^{t{n,i}} \operatorname{G}\left(\Xi\left(t\right)\right) \mathrm{d}t \approx \sum_{j = 1}^{i-1} a_{ij} \operatorname{G}\left(\Xi\left(t_{n,j}\right)\right) .
         \end{equation}
-        Once each intermediate step is known, equation (\ref{eq:init_value_ode}) is integrated between $t_n$ and $t_{n+1}$ and the resulting integral is approximatex using the intermediate steps.
+        Once each intermediate step is known, equation (\ref{eq:init_value_ode}) is integrated between $t_n$ and $t_{n+1}$ and the resulting integral is approximated using the intermediate steps.
 
         \paragraph{}
         To sum up, a Runge--Kutta method iterates in the following way:
@@ -488,7 +488,7 @@
 
         \paragraph{}
         We note that the coefficients $c_i$ do not appear in the definition from equation (\ref{eq:rk}).
-        It is because the differential equation (\ref{eq:ode}) is autonomous: the function $\operatorname{G}$ does not depends explicitly on the time.
+        It is because the differential equation (\ref{eq:ode}) is autonomous: the function $\operatorname{G}$ does not depend explicitly on the time.
         If it did, the equation would then be non-autonomous, and $\operatorname{G}$ would be a function of two variables: the state vector $\Xi$ and the time $t$.
         Equation (\ref{eq:rk}) becomes then:
         \begin{equation}
@@ -534,7 +534,7 @@
         The idea is to apply a Lagrange interpolation of the function $\operatorname{G}$ from equation (\ref{eq:init_value_ode}) in the $k$ last computed points, and then replace $\operatorname{G}$ with the interpolation polynomial when integrating from $t_n$ to $t_{n+1}$.
         Contrary to the Runge--Kutta methods, as this method reuses previous information, a single $\operatorname{G}$ evaluation is required at each step.
         Because of that, the cost of one iteration of the Adams--Bashforth method is quite inexpensive.
-        The stability analysis for such methods is a bit more complex \cite{HairerNorsettWanner1993, HairerWanner1996}, and so the result obtained numerically is shown on figure \ref{fig:ab_stab} without giving the details.
+        The stability analysis for such methods is a bit more complex \cite{HairerNorsettWanner1993, HairerWanner1996}, and so the result obtained numerically is shown in figure \ref{fig:ab_stab} without giving the details.
         The conclusion is even worse than with Runge--Kutta methods, as the stability region decreases as the order increases.
         The Adams--Bashforth methods can reach a high order of accuracy while staying computationally inexpensive, but they drastically lack stability, and that is why they are often not used in computational fluid dynamics computations.
         More generally, an explicit multistep method cannot be A-stable \cite{Dahlquist1963}.
@@ -542,7 +542,6 @@
         \begin{figure}
           \centering
           \includegraphics{figures/ab_stab.png}
-          %\caption{Stability regions (in colour) of the forst four Adams--Bashforth methods.}
           \caption{Stability regions (in colour) of the first four Adams--Bashforth methods.}
           \label{fig:ab_stab}
         \end{figure}
@@ -571,7 +570,7 @@
         and the next state $\Xi_{n+1}$ is given as the solution of a nonlinear problem, the root of a nonlinear function.
 
         \paragraph{}
-        After checking that this is a first-order method, the stability analysis gives the corresponding function $g\left(z\right) = \left(1 - z\right)^{-1}$, that gives a stability region equal to the whole complex plane minus the closed unity disk centered in 1.
+        After checking that this is a first-order method, the stability analysis gives the corresponding function $g\left(z\right) = \left(1 - z\right)^{-1}$, which gives a stability region equal to the whole complex plane minus the closed unity disk centered in 1.
         Therefore this method is A-stable.
 
 
@@ -608,7 +607,7 @@
         \begin{equation}
           \operatorname{Id} - a_{ii} \Delta t \frac{\mathrm{d} \operatorname{G}}{\mathrm{d} \Xi}\left(\Xi_n\right) ,
         \end{equation}
-        this can help solving the linear problem.
+        this can help solve the linear problem.
         This variant is called Singly Diagonally Implicit Runge--Kutta methods (SDIRK) \cite{HairerWanner1996}.
 
         \paragraph{Rosenbrock methods}
@@ -658,7 +657,7 @@
       \subsubsection{Backward differentiation formula}
 
         \paragraph{}
-        As explicit Runge--Kutta methods are extended to implicit methods, Adams--Bashforth method also have their implicit counterparts.
+        As explicit Runge--Kutta methods are extended to implicit methods, Adams--Bashforth methods also have their implicit counterparts.
         The idea is to still compute the Lagrange interpolation of the function $\operatorname{G}$ but with one additional point: the point at the next time step.
         This new method is called the Adams--Moulton method.
         However, the stability region of Adams--Moulton is quite narrow, as they were originally not made for stiff equations \cite{Iserles2008}.
@@ -711,7 +710,7 @@
       If we want to use implicit methods, we then need to be able to solve a nonlinear problem.
       We will continue our discussion using the implicit Euler method, but everything can easily be adapted for any other implicit method.
       For Diagonally Implicit Runge--Kutta methods, we apply the nonlinear solver successively for each step.
-      For BDF methods, we apply the nonlinear solver on a slightly different equation.
+      For BDF methods, we apply the nonlinear solver to a slightly different equation.
 
 
       \subsubsection{From a nonlinear problem \dots}
@@ -740,13 +739,13 @@
       \subsubsection{\dots to a linear one}
 
         \paragraph{}
-        Equation (\ref{eq:nonlinear_linearised}) can be rewriten into the classic linear problem:
+        Equation (\ref{eq:nonlinear_linearised}) can be rewritten into the classic linear problem:
         \begin{equation}\label{eq:linear}
           Ax = b
         \end{equation}
         where $A = f'\left(x_i\right)$, $b = -f\left(x_i\right)$ and $x = \left( x_{i+1} - x_i \right)$.
         The $x$ notation is reused as it is often used in the literature to name the unknown in linear problems.
-        Such linear problems are found during the iterations of Newton's method, but each is solved for a given iteration number so there are no ambiguity from this notation.
+        Such linear problems are found during the iterations of Newton's method, but each is solved for a given iteration number so there is no ambiguity in this notation.
         A lot of methods were conceived to solve such linear problems, and we will explain later how to handle them.
 
 
@@ -835,7 +834,7 @@
       It would take too much time as well as too much memory.
       Instead, one can use iterative methods.
       An iterative method starts from an initial guess $x_0$ and produces as it iterates a supposedly better estimation of the solution $x_n$.
-      The subscript $n$ has nothing to do with the subscript used to identify the iterates of the time integration method: this hapens at a given fixed time step.
+      The subscript $n$ has nothing to do with the subscript used to identify the iterates of the time integration method: this happens at a given fixed time step.
       We can then decide when to stop the method, whether the solution estimate is good enough or the resolution is taking too much time.
       Iterative methods are the most well-fitted to solve large sparse linear problems, and they are the preferred solution in computational fluid dynamics.
 
@@ -993,7 +992,7 @@
       Indeed, the matrix available to us is not precise, as we will explain later, so using it as a preconditioner may not work as well as expected.
 
       \paragraph{}
-      As the preconditioning matrix $P$ is not explicitely needed, and its effect should be near $A^{-1}$, one could take as a preconditioning procedure another Krylov subspace method: to apply the preconditioning to any vector $v$ would mean solving $Ax = v$ with a Krylov subspace method.
+      As the preconditioning matrix $P$ is not explicitly needed, and its effect should be near $A^{-1}$, one could take as a preconditioning procedure another Krylov subspace method: to apply the preconditioning to any vector $v$ would mean solving $Ax = v$ with a Krylov subspace method.
       However, applying a Krylov subspace method is not a linear operator.
       To handle this case, the GMRES algorithm must be modified into the Flexible Generalized minimal residual method, or FGMRES \cite{Saad1993, SimonciniSzyld2002}.
       GMRES can be preconditioned with an inner GMRES, and as GMRES was already written in our solver this idea was simple to implement.
@@ -1113,18 +1112,18 @@
       This choice is then perfectly aligned with the direction our solver is aiming: towards a better implicit cross-solver mechanism.
 
       \paragraph{}
-      Some specific situations are known to be troublesome for the JFNK method, such as shocks, reaction fronts of discontinuities arising from high order advection schemes \cite{KnollKeyes2004}.
-      Unfortunately those features are precisely at the center of our solver.
-      We are hopping that the difficulties of the method will be overbalanced by its advantages: getting a better convergence, allowing a fully coupled implicit solve and allowing implicit integration method for new models.
+      Some specific situations are known to be troublesome for the JFNK method, such as shocks, reaction fronts or discontinuities arising from high-order advection schemes \cite{KnollKeyes2004}.
+      Unfortunately, those features are precisely at the center of our solver.
+      We are hoping that the difficulties of the method will be overbalanced by its advantages: getting a better convergence, allowing a fully coupled implicit solve and allowing an implicit integration method for new models.
       It means that we do not expect the method to enhance the robustness of the solver, but we hope that because it uses a better Jacobian matrix than the one already in use it will help the convergence.
       And once again, the second advantage is that the matrix-free method would allow us to do coupled implicit time integration.
-      We will come back on the third advantage later in the applications part.
+      We will come back to the third advantage later in the application's part.
 
 
     \paragraph{}
     In this section, we described how an implicit method operates: the method itself produces one or several nonlinear problems at each time step.
-    Those problems are solved with a nonlinear solver that uses linearisation to transform them into linear systems, that are then solved with a linear solver like a preconditioned GMRES method in the case of our solver.
+    Those problems are solved with a nonlinear solver that uses linearisation to transform them into linear systems, which are then solved with a linear solver like a preconditioned GMRES method in the case of our solver.
     We explained that this linearisation in CEDRE is done by using Jacobian matrices that are poorly approximated.
     It means that we do not solve the correct linear systems, which hinders the nonlinear resolution and the time integration method ends up finding an incorrect increment.
-    The Jacobian-Free Newton--Krylov method, that is compatible with other algorithms already available in CEDRE such as the GMRES method,  should rectify this issue.
+    The Jacobian-Free Newton--Krylov method, which is compatible with other algorithms already available in CEDRE such as the GMRES method,  should rectify this issue.
     For this reason, we will continue this work with this method for our time integration method.
