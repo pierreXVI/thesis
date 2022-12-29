@@ -2,47 +2,50 @@
 \addcontentsline{toc}{chapter}{Conclusion and perspectives}
 \markboth{}{CONCLUSION AND PERSPECTIVES}
 
-  \paragraph{}
-  This thesis was interested in solving efficiently steady problems for multiphysic applications.
-  It means improving the convergence, stability and speed of already existing methods, particularly for the software system CEDRE.
-  A preliminary analysis of existing methods whithin CEDRE and the literature focussed our effort on improving the nonlinear and linear resolutions required by implicit time integration methods.
-  In particular, the Jacobian-Free Newton--Krylov method caught our interest.
-  This is first because it reuses many algorithms that were already available in CEDRE.
-  The other reason is that it is a better alternative to what was currently done, which is using a poor approximation of the Jacobian matrix.
-  Indeed, using the JFNK method amounts to using a full Jacobian matrix that accounts for all numerical models.
-  Our hope was that using a more accurate matrix for the linear problem would improve the quality of the nonlinear solution, which would in turn improve the overall quality of the implicit time integration method.
-  With a carefull implementation, it was added to the software system to ensure compatibility with other solvers and existing algorithms.
+  \section*{Using the Jacobian-Free Newton--Krylov for implicit time integration}
 
-  \paragraph{}
-  To check the quality of the Jacobian-Free Newton--Krylov method, it was tested on several applications.
-  Those applications were choosen to represent typical CEDRE computations, to evaluate if the method is interesting for the solver.
-  The first application was the simulation of the turbulent flow around a wing profile in two-dimensions.
-  When compared with the traditional method, the new one that is matrix-free gives similar results when looking at flow data.
-  The improvement is solely on the convergence, as the JFNK method converges.
-  The second application is the same wing profile, but this time using a much finer mesh to finely represent the boundary layer.
-  This time, the traditional method lacks the ability to converge satisfyingly when the JFNK method, however, does.
-  It shows that the JFNK method improves the convergence of the solver on such applications.
+    \paragraph{}
+    This thesis was interested in solving efficiently steady problems for multiphysic applications.
+    It means improving the convergence, stability and speed of already existing methods, particularly for the software system CEDRE.
+    A preliminary analysis of existing methods whithin CEDRE and the literature focussed our effort on improving the nonlinear and linear resolutions required by implicit time integration methods.
+    In particular, the Jacobian-Free Newton--Krylov method caught our interest.
+    This is first because it reuses many algorithms that were already available in CEDRE.
+    The other reason is that it is a better alternative to what was currently done, which is using a poor approximation of the Jacobian matrix.
+    Indeed, using the JFNK method amounts to using a full Jacobian matrix that accounts for all numerical models.
+    Our hope was that using a more accurate matrix for the linear problem would improve the quality of the nonlinear solution, which would in turn improve the overall quality of the implicit time integration method.
+    With a carefull implementation, it was added to the software system to ensure compatibility with other solvers and existing algorithms.
 
-  \paragraph{}
-  As CEDRE aims to solve problems in the field of multiphysics, it is not enough to test the new method on aerodynamics test cases.
-  This is why the next choosen application was the simulation of the hypersonic reactive flow around a solid sphere.
-  It is a simplified typical reentry application.
-  Similar results are found when looking at the non-reactive equivalent of this test case: the JFNK method convergence is better.
-  However, when using fine mesh with the reactive model, the conclusion is no longer in favor of the matrix-free method as the older method converges better.
-  Still, the difference in the convergence between the two method is small compared to the same difference on the non-reactive case.
-  A possible conclusion is that on the best case scenario, when the traditional method converges well, the JFNK does not improve the quality of the solution.
-  When the traditional method struggle to find a steady solution, however, the JFNK method becomes interesting.
+    \paragraph{}
+    To check the quality of the Jacobian-Free Newton--Krylov method, it was tested on several applications.
+    Those applications were choosen to represent typical CEDRE computations, to evaluate if the method is interesting for the solver.
+    The first application was the simulation of the turbulent flow around a wing profile in two-dimensions.
+    When compared with the traditional method, the new one that is matrix-free gives similar results when looking at flow data.
+    The improvement is solely on the convergence, as the JFNK method converges.
+    The second application is the same wing profile, but this time using a much finer mesh to finely represent the boundary layer.
+    This time, the traditional method lacks the ability to converge satisfyingly when the JFNK method, however, does.
+    It shows that the JFNK method improves the convergence of the solver on such applications.
 
-  \paragraph{}
-  Finally, the Jacobian-Free Newton--Krylov method was tested on a newly implemented fluid model.
-  Indeed, as CEDRE is under current developpement, new fluid models are sometimes added to represent flow features with higher fidelity.
-  For instance, the new model used here accounts more precisely for thermodynamic disequilibriums.
-  Such newly implemented model often do not give access to their Jacobian matrices, as it would require much more work from developpers and is not a priority.
-  It means that users must restrict themselves to using explicit time integration methods.
-  As the JFNK method does not require Jacobian matrices, it is a good candidate to be used as a time integration method with such models.
-  It was then compared with the explicit Midpoint method.
-  In the end, the JFNK method converges better than the explicit method, and is also quicker in terms of CPU time.
-  The result is even more in favor of the implicit method when using a simplified version of the reactive model that disregards ionisation.
+    \paragraph{}
+    As CEDRE aims to solve problems in the field of multiphysics, it is not enough to test the new method on aerodynamics test cases.
+    This is why the next choosen application was the simulation of the hypersonic reactive flow around a solid sphere.
+    It is a simplified typical reentry application.
+    Similar results are found when looking at the non-reactive equivalent of this test case: the JFNK method convergence is better.
+    However, when using fine mesh with the reactive model, the conclusion is no longer in favor of the matrix-free method as the older method converges better.
+    Still, the difference in the convergence between the two method is small compared to the same difference on the non-reactive case.
+    A possible conclusion is that on the best case scenario, when the traditional method converges well, the JFNK does not improve the quality of the solution.
+    When the traditional method struggle to find a steady solution, however, the JFNK method becomes interesting.
+
+    \paragraph{}
+    Finally, the Jacobian-Free Newton--Krylov method was tested on a newly implemented fluid model.
+    Indeed, as CEDRE is under current developpement, new fluid models are sometimes added to represent flow features with higher fidelity.
+    For instance, the new model used here accounts more precisely for thermodynamic disequilibriums.
+    Such newly implemented model often do not give access to their Jacobian matrices, as it would require much more work from developpers and is not a priority.
+    It means that users must restrict themselves to using explicit time integration methods.
+    As the JFNK method does not require Jacobian matrices, it is a good candidate to be used as a time integration method with such models.
+    It was then compared with the explicit Midpoint method.
+    In the end, the JFNK method converges better than the explicit method, and is also quicker in terms of CPU time.
+    The result is even more in favor of the implicit method when using a simplified version of the reactive model that disregards ionisation.
+    
 
   \paragraph{}
   In the end,
