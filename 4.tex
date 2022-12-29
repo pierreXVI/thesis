@@ -29,7 +29,7 @@
   The reason is that they can use larger time steps than their explicit counterparts.
   Because of this advantage, they are also often used when solving unsteady problems but with large time steps.
   Indeed, solving an unsteady problem with large time steps is similar to solving a steady problem.
-  Most of what is done towards solving the steady problem can therefore be reused for unsteady problem with large time steps.
+  Most of what is done towards solving the steady problem can therefore be reused for unsteady problems with large time steps.
 
   \paragraph{}
   Even if implicit time integration methods are quite standard when solving problems with large time steps, there are other less conventional methods we could choose from.
@@ -157,7 +157,7 @@
           &= \int_{t_n}^{t_{n+1}} e^{\left(t_{n+1} - t\right) L} \left( N\left(y\left(t\right)\right) - N\left(y_n\right) \right)
         \end{aligned}
       \end{equation}
-      We take the Taylor series of the nonlinearity:
+      We take the Taylor series of the nonlinear part:
       \begin{equation}
         N\left(y\right) = \sum_{i = 0}^{+\infty} \frac{N^{\left(i\right)}\left(y_n\right)}{i!}\left(y - y_n\right)^i
       \end{equation}
@@ -461,10 +461,10 @@
     \end{figure}
 
     \paragraph{}
-    To test the method, we decided to use a simple academic test case, adapted from the one proposed on the International Workshop on High Order CFD Methods (HiOCFD).
+    To test the method, we decided to use a simple academic test case, adapted from the one proposed at the International Workshop on High Order CFD Methods (HiOCFD).
     It is a two-dimensional inviscid isentropic vortex that is convected in a periodic box.
-    This vortex is an known exact solution of the unsteady Euler equations and is generally considered as a good test case to analyse accuracy of both spatial discretisation and time integration methods.
-    It is a non dimensionalised computation, and the mesh is regular over a square of length $L = 20$, with $100^2$ cells.
+    This vortex is a known exact solution of the unsteady Euler equations and is generally considered a good test case to analyse the accuracy of both spatial discretisation and time integration methods.
+    It is a non-dimensionalised computation, and the mesh is regular over a square of length $L = 20$, with $100^2$ cells.
     It is shown in figure \ref{fig:covo_cedre_mesh}.
     The vortex is convected in a flow at a Mach number of $\operatorname{Ma} = 0.5$, with the dimensioning parameters $P_\infty = 1$ and $T_\infty = 1$.
     The undisturbed velocity is then $U_\infty \vec{e}_x$ with $U_\infty = \operatorname{Ma} \sqrt{\gamma r_\textrm{gas} T_\infty}$ and the vortex is defined using the polar coordinates system $\left(\vec{e}_r, \vec{e}_\theta\right)$:
