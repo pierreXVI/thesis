@@ -5,9 +5,9 @@
   \section*{Jacobian-Free Newton--Krylov for implicit time integration}
 
     \paragraph{}
-    This thesis was interested in solving efficiently steady problems for multiphysic applications.
+    This thesis was interested in solving efficiently steady problems for multiphysics applications.
     It means improving the convergence, stability and speed of already existing methods, particularly for the software system CEDRE.
-    A preliminary analysis of existing methods whithin CEDRE and the literature focussed our effort on improving the nonlinear and linear resolutions required by implicit time integration methods.
+    A preliminary analysis of existing methods within CEDRE and the literature focussed our effort on improving the nonlinear and linear resolutions required by implicit time integration methods.
     In particular, the Jacobian-Free Newton--Krylov method caught our interest.
     This is first because it reuses many algorithms that were already available in CEDRE.
     The other reason is that it is a better alternative to what was currently done, which is using a poor approximation of the Jacobian matrix.
@@ -17,8 +17,8 @@
 
     \paragraph{}
     To check the quality of the Jacobian-Free Newton--Krylov method, it was tested on several applications.
-    Those applications were choosen to represent typical CEDRE computations, to evaluate if the method is interesting for the solver.
-    The first application was the simulation of the turbulent flow around a wing profile in two-dimensions.
+    Those applications were chosen to represent typical CEDRE computations, to evaluate if the method is interesting for the solver.
+    The first application was the simulation of the turbulent flow around a wing profile in two dimensions.
     When compared with the traditional method, the new one that is matrix-free gives similar results when looking at flow data.
     The improvement is solely on the convergence, as the JFNK method converges.
     The second application is the same wing profile, but this time using a much finer mesh to finely represent the boundary layer.
@@ -27,36 +27,36 @@
 
     \paragraph{}
     As CEDRE aims to solve problems in the field of multiphysics, it is not enough to test the new method on aerodynamics test cases.
-    This is why the next choosen application was the simulation of the hypersonic reactive flow around a solid sphere.
+    This is why the next chosen application was the simulation of the hypersonic reactive flow around a solid sphere.
     It is a simplified typical reentry application.
     Similar results are found when looking at the non-reactive equivalent of this test case: the JFNK method convergence is better.
-    However, when using fine mesh with the reactive model, the conclusion is no longer in favor of the matrix-free method as the older method converges better.
-    Still, the difference in the convergence between the two method is small compared to the same difference on the non-reactive case.
-    A possible conclusion is that on the best case scenario, when the traditional method converges well, the JFNK does not improve the quality of the solution.
-    When the traditional method struggle to find a steady solution, however, the JFNK method becomes interesting.
+    However, when using a fine mesh with the reactive model, the conclusion is no longer in favour of the matrix-free method as the older method converges better.
+    Still, the difference in the convergence between the two methods is small compared to the same difference in the non-reactive case.
+    A possible conclusion is that in the best-case scenario, when the traditional method converges well, the JFNK does not improve the quality of the solution.
+    When the traditional method struggles to find a steady solution, however, the JFNK method becomes interesting.
 
     \paragraph{}
     Finally, the Jacobian-Free Newton--Krylov method was tested on a newly implemented fluid model.
-    Indeed, as CEDRE is under current developpement, new fluid models are sometimes added to represent flow features with higher fidelity.
-    For instance, the new model used here accounts more precisely for thermodynamic disequilibriums.
-    Such newly implemented model often do not give access to their Jacobian matrices, as it would require much more work from developpers and is not a priority.
+    Indeed, as CEDRE is under current development, new fluid models are sometimes added to represent flow features with higher fidelity.
+    For instance, the new model used here accounts more precisely for thermodynamic disequilibrium.
+    A newly implemented model often does not give access to their Jacobian matrices, as it would require much more work from developers and is not a priority.
     It means that users must restrict themselves to using explicit time integration methods.
     As the JFNK method does not require Jacobian matrices, it is a good candidate to be used as a time integration method with such models.
     It was then compared with the explicit Midpoint method.
-    In the end, the JFNK method converges better than the explicit method, and is also quicker in terms of CPU time.
-    The result is even more in favor of the implicit method when using a simplified version of the reactive model that disregards ionisation.
+    In the end, the JFNK method converges better than the explicit method and is also quicker in terms of CPU time.
+    The result is even more in favour of the implicit method when using a simplified version of the reactive model that disregards ionisation.
 
     \paragraph{}
     The downfall of the Jacobian-Free Newton--Krylov method is its slowness.
-    Indeed, it require multiple right-hand side evaluations, and such evaluations are quite expensive in our solver.
-    It means that for a user, there are no interest to use the JFNK methods on problems for which the traditional method gives satisfying results and convergence.
+    Indeed, it requires multiple right-hand side evaluations, and such evaluations are quite expensive in our solver.
+    It means that for a user, there is no interest to use the JFNK methods on problems for which the traditional method gives satisfying results and convergence.
     It is still useful to achieve precise convergence when the traditional method fails to do so.
-    However, improving the efficiency of right-hand side evaluations is an active research topic whithin the team in charge of the solver.
+    However, improving the efficiency of right-hand side evaluations is an active research topic within the team in charge of the solver.
     Such improvement will benefit the JFNK method a lot more than it will benefit the traditional method, so the interest in the JFNK method should increase.
 
     \paragraph{}
-    In the light of this work, it seems natural to want to try the Jacobian-Free Newton--Krylov method with other fluid model that also do not have yet an available Jacobian matrix.
-    Such models already exists in CEDRE, and they are restricted to explicit time integration method, as was the model detailed in this thesis before it used the matrix-free method.
+    In light of this work, it seems natural to want to try the Jacobian-Free Newton--Krylov method with other fluid models that also do not have yet an available Jacobian matrix.
+    Such models already exist in CEDRE, and they are restricted to the explicit time integration method, as was the model detailed in this thesis before it used the matrix-free method.
     It is reasonable to assume that the JFNK method will yield similar results, and will unlock implicit methods for those models.
 
     \paragraph{}
@@ -67,60 +67,60 @@
 
     \paragraph{}
     As the Jacobian-Free Newton--Krylov method does not use an actual matrix, it is limited in terms of available preconditioners.
-    More generally, preconditioners available in CEDRE are quite simple and the linear solver would benefit from better preconditioners from the literature that already work well in other computational fluid dynamics solvers.
-    Physics-based preconditioner could improve the linear solver preformances which would improve robustness, convergence and speed of the overall integration method \cite{ParkNourgalievMartineauEtAl2009, LiuZhangZhongEtAl2015}.
-    In particular, for the Multi-TEmperature model one that was used in this thesis, a physics-based preconditioner would help handling the stiff part corresponding to electrons and ionisation.
+    More generally, preconditioners available in CEDRE are quite simple and the linear solver would benefit from better preconditioners from the literature that already works well in other computational fluid dynamics solvers.
+    Physics-based preconditioner could improve the linear solver performances which would improve robustness, convergence and speed of the overall integration method \cite{ParkNourgalievMartineauEtAl2009, LiuZhangZhongEtAl2015}.
+    In particular, for the Multi-TEmperature model one that was used in this thesis, a physics-based preconditioner would help handle the stiff part corresponding to electrons and ionisation.
 
 
   \section*{Exponential integration methods for unsteady time integration with large time steps}
 
     \paragraph{}
-    Another topic of interest during this thesis was exponential time integration methods.
+    Another topic of interest in this thesis was exponential time integration methods.
     Indeed, such methods reuse many parts and algorithms that are classicly used for implicit time integration.
-    Furthermore, methods used for implicit time integration are ofted adapted to solve unsteady problems with large time steps.
-    A preliminary analysis showed that the accuracy of exponential methods was similar to the one of explicit methods, while being able to use relatively large time steps as implicit methods.
-    As exponential methods are quite precise, the require spatial discretisation methods that are at least as accurate.
-    This is why exponential methods were then studied with the JAGUAR solver that use a Spectral Difference method.
+    Furthermore, methods used for implicit time integration are often adapted to solve unsteady problems with large time steps.
+    A preliminary analysis showed that the accuracy of exponential methods was similar to the one of explicit methods while being able to use relatively large time steps as implicit methods.
+    As exponential methods are quite precise, they require spatial discretisation methods that are at least as accurate.
+    This is why exponential methods were then studied with the JAGUAR solver that uses a Spectral Difference method.
 
     \paragraph{}
     A first numerical experiment showed that the newly added exponential methods had the expected order of accuracy in JAGUAR, and prove more stable than explicit methods already available in the solver.
     Then, the same methods were used in another test case.
-    It showed that exponetial methods are able to reduce significantly the CPU time required to fulfill the computation.
-    Furthermore, some methods were able to use time steps 40 times higher than explicit methods and were still quicker to fulfill the computation.
+    It showed that exponential methods can reduce significantly the CPU time required to fulfil the computation.
+    Furthermore, some methods were able to use time steps 40 times higher than explicit methods and were still quicker to fulfil the computation.
     This highlight the quality of exponential methods for unsteady time integration when using large time steps.
-    In a final test case, it was showed that exponential methods still work fine on an actual LES computation, with fine cells in a wall boundary condition.
-    Our first hope was that exponential methods would prove faster, but in the end their performances were similar to the ones of explicit methods.
+    In a final test case, it was shown that exponential methods still work fine on an actual LES computation, with fine cells in a wall boundary condition.
+    Our first hope was that exponential methods would prove faster, but in the end, their performances were similar to the ones of explicit methods.
 
     \paragraph{}
     This preliminary work did demonstrate the feasibility of exponential methods in JAGUAR and their suitability for unsteady time integration.
-    Rewriting the exponential computation routines whithin JAGUAR instead of using the external SLEPc library would improve even more their quickness.
-    Indeed, using a well written library is often a good idea to benefit from its quality as its developpers are experts in their fields, but values are constantly copied back and forth between JAGUAR and SLEPc data types with the current implementation.
-    The solution is either to modify the solver so that it uses SLEPc data types globally, or to rewite SLEPc methods suited for JAGUAR data types.
+    Rewriting the exponential computation routines within JAGUAR instead of using the external SLEPc library would improve their quickness even more.
+    Indeed, using a well-written library is often a good idea to benefit from its quality as its developers are experts in their fields, but values are constantly copied back and forth between JAGUAR and SLEPc data types with the current implementation.
+    The solution is either to modify the solver so that it uses SLEPc data types globally, or to rewrite SLEPc methods suited for JAGUAR data types.
     The latter would also allow for specific optimisations.
-    For instance, we mentionned earlier that exponential methods often compute $\varphi$-functions of the same matrix.
-    One could reuse spectral information between each of those computaions to speed them up and get more accurate results.
+    For instance, we mentioned earlier that exponential methods often compute $\varphi$-functions of the same matrix.
+    One could reuse spectral information between each of those computations to speed them up and get more accurate results.
 
     \paragraph{}
-    As JAGUAR had only explicit integration methods before exponential methods were added, no attention was paid toward preconditioning.
+    As JAGUAR had only explicit integration methods before exponential methods were added, no attention was paid to preconditioning.
     Now that there are algorithms that use Krylov subspace methods, preconditioners could prove beneficial for the time integration \cite{CastilloSaad1997}.
 
     \paragraph{}
-    The last JAGUAR application that was presented here was originally choosen as it was limited in the time step size by the diffusive part of the equations, that is mostly linear.
-    Exponential methods would have then improve the time integration as they deal efficiently with the linear parts.
+    The last JAGUAR application that was presented here was originally chosen as it was limited in the time step size by the diffusive part of the equations, which is mostly linear.
+    Exponential methods would have then improved the time integration as they deal efficiently with the linear parts.
     However, this initial statement was not true, and therefore the gain from using exponential methods did not appear.
-    It would be interesting to see what would happend on a test case for which this statement holds.
+    It would be interesting to see what would happen on a test case for which this statement holds.
 
     \paragraph{}
     Going outside the scope of JAGUAR, exponential methods could prove to be great candidates as time integration methods on other solvers.
     For instance, solvers that simulate plasmas and arc lightning are significantly limited in the time step size by viscous effects.
-    As such effects are mostly linear, exponential integration methods would allow to break free from this limitation.
+    As such effects are mostly linear, exponential integration methods would allow breaking free from this limitation.
     The same idea applies to \PS{problèmes de thermique} for which large physical times need to be simulated.
-    Exponential methods would be compatible with larger time steps, which would reduce the ovreall computational time.
+    Exponential methods would be compatible with larger time steps, which would reduce the overall computational time.
 
     \paragraph{}
-    Exponential methods are becoming more and more active in computaional fluid dynamics.
+    Exponential methods are becoming more and more active in computational fluid dynamics.
     For the same reason we decided to use them along a Spectral Difference method, they are often used with high-order spatial discretisation methods.
     For instance, the Discontinuous-Galerkin method from \cite{Li2013} is used with an exponential Rosenbrock method described in \cite{LiLuoWangEtAl2018, Li2020}.
     In \cite{NarayanamurthiSandu2021}, exponential integrators are used to solve multiphysics problems.
-    Many other recent references from the literature use exponetial methods as time integrators for similar computational fluid dynamics problems.
+    Many other recent references from the literature use exponential methods as time integrators for similar computational fluid dynamics problems.
     This shows that exponential methods are worth investigating.
