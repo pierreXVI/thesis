@@ -2,7 +2,7 @@
 \addcontentsline{toc}{chapter}{Conclusion and perspectives}
 \markboth{}{CONCLUSION AND PERSPECTIVES}
 
-  \section*{Using the Jacobian-Free Newton--Krylov for implicit time integration}
+  \section*{Jacobian-Free Newton--Krylov for implicit time integration}
 
     \paragraph{}
     This thesis was interested in solving efficiently steady problems for multiphysic applications.
@@ -45,7 +45,52 @@
     It was then compared with the explicit Midpoint method.
     In the end, the JFNK method converges better than the explicit method, and is also quicker in terms of CPU time.
     The result is even more in favor of the implicit method when using a simplified version of the reactive model that disregards ionisation.
+
+    \paragraph{}
+    The downfall of the Jacobian-Free Newton--Krylov method is its slowness.
+    Indeed, it require multiple right-hand side evaluations, and such evaluations are quite expensive in our solver.
+    It means that for a user, there are no interest to use the JFNK methods on problems for which the traditional method gives satisfying results and convergence.
+    It is still useful to achieve precise convergence when the traditional method fails to do so.
+    However, improving the efficiency of right-hand side evaluations is an active research topic whithin the team in charge of the solver.
+    Such improvement will benefit the JFNK method a lot more than it will benefit the traditional method, so the interest in the JFNK method should increase.
+
+    \paragraph{}
+    In the light of this work, it seems natural to want to try the Jacobian-Free Newton--Krylov method with other fluid model that also do not have yet an available Jacobian matrix.
+    Such models already exists in CEDRE, and they are restricted to explicit time integration method, as was the model detailed in this thesis before it used the matrix-free method.
+    It is reasonable to assume that the JFNK method will yield similar results, and will unlock implicit methods for those models.
+
+    \paragraph{}
+    Going further, one might want to try the same method but with another solver from the platform that is CEDRE.
+    Indeed, this would amount to very few developments which is why this idea is interesting.
+    Finally, if multiple solvers use the matrix-free method, it means that CEDRE would be able to integrate implicitly those solvers in a coupled fashion.
+    Because of the structural choices made in CEDRE, this is currently impossible unless refactoring a significant amount of code.
+
+    \paragraph{}
+    As the Jacobian-Free Newton--Krylov method does not use an actual matrix, it is limited in terms of available preconditioners.
     
 
-  \paragraph{}
-  In the end,
+
+  \section*{Exponential integration methods for unsteady time integration with large time steps}
+
+    \paragraph{}
+    Another topic of interest during this thesis was exponential time integration methods.
+    Indeed, such methods reuse many parts and algorithms that are classicly used for implicit time integration.
+    Furthermore, methods used for implicit time integration are ofted adapted to solve unsteady problems with large time steps.
+    A preliminary analysis showed that the accuracy of exponential methods was similar to the one of explicit methods, while being able to use relatively large time steps as implicit methods.
+    As exponential methods are quite precise, the require spatial discretisation methods that are at least as accurate.
+    This is why exponential methods were then studied with the JAGUAR solver that use a Spectral Difference method.
+
+    \paragraph{}
+    A first numerical experiment showed that the newly added exponential methods had the expected order of accuracy in JAGUAR, and prove more stable than explicit methods already available in the solver.
+    Then, the same methods were used in another test case.
+    It showed that exponetial methods are able to reduce significantly the CPU time required to fulfill the computation.
+    Furthermore, some methods were able to use time steps 40 times higher than explicit methods and were still quicker to fulfill the computation.
+    This highlight the quality of exponential methods for unsteady time integration when using large time steps.
+    In a final test case, it was showed that exponential methods still work fine on an actual LES computation, with fine cells in a wall boundary condition.
+    Our first hope was that exponential methods would prove faster, but in the end their performances were similar to the ones of explicit methods.
+
+    \paragraph{}
+    \begin{itemize}
+      \item Utilisation exponentiel sur problèmes limités par pas de temps diffusif
+      \item Utilisation sur problèmes type equation de la chaleur
+    \end{itemize}
