@@ -235,19 +235,18 @@
     Just as the Runge--Kutta method has order conditions for its quadrature coefficients, the exponential Rosenbrock method quadrature functions must follow some rules to ensure the expected order.
     To be consistent, it must have:
     \begin{equation}
-      \sum_{i = 1}^k b_i = \varphi_1
+      \sum_{i = 1}^k b_i = \varphi_1 .
     \end{equation}
-    and it must also have
+    It is reasonable to want multiple-stage methods to have a higher order than the single-stage exponential Euler method, and therefore it must also have
     \begin{equation}
        \sum_{j = 1}^{i-1} a_{ij} = z \mapsto c_i \varphi_1\left(c_i z\right), \quad 1 \leq i \leq k
     \end{equation}
     to achieve a second order.
-    It is reasonable to want multiple-stage methods to have a higher order than the single-stage exponential Euler method.
     Using these two conditions, exponential Rosenbrock methods can be written in the form:
     \begin{equation}\label{eq:exprb_defect}
       \left\{\begin{aligned}
-        y_{n+1} &= y_n  + \Delta t \varphi_1\left(\Delta t L\right) f\left(y_n\right) + \Delta t \sum_{i = 1}^k b_i\left(\Delta t L\right) D_{n,i} \\
-        \textrm{with}\quad y_{n,i} &= y_n  + c_i \Delta t \varphi_1\left(c_i \Delta t L\right) f\left(y_n\right) + \Delta t \sum_{j = 1}^{i-1} a_{ij}\left(\Delta t L\right) D_{n,j}
+        y_{n+1} &= y_n  + \Delta t \varphi_1\left(\Delta t L\right) f\left(y_n\right) + \Delta t \sum_{i = 2}^k b_i\left(\Delta t L\right) D_{n,i} \\
+        \textrm{with}\quad y_{n,i} &= y_n  + c_i \Delta t \varphi_1\left(c_i \Delta t L\right) f\left(y_n\right) + \Delta t \sum_{j = 2}^{i-1} a_{ij}\left(\Delta t L\right) D_{n,j}
       \end{aligned}\right.
     \end{equation}
     using $D_{n,i} = N\left(y_{n,i}\right) - N\left(y_n\right)$.
@@ -260,6 +259,7 @@
     They are both 2-stage exponential Rosenbrock methods and achieve respectively a third and fourth order of accuracy.
     This shows the quality of exponential Rosenbrock methods.
     Their Butcher tableaux are in table \ref{tab:exprb_butcher}.
+    For both methods, the most complex coefficient is $b_1$, however equation (\ref{eq:exprb_defect}) tells us that it will not be computed.
     We decided to work with those two methods, along with the Rosenbrock--Euler method, as they are simple among exponential methods and are supposedly well suited for our problems.
     They give us methods with orders of accuracy from 2 to 4.
     But what is interesting to us is that on linear problems those methods are exact, or with an infinite order of accuracy.
