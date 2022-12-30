@@ -67,7 +67,9 @@
 
     \paragraph{}
     As the Jacobian-Free Newton--Krylov method does not use an actual matrix, it is limited in terms of available preconditioners.
-    
+    More generally, preconditioners available in CEDRE are quite simple and the linear solver would benefit from better preconditioners from the literature that already work well in other computational fluid dynamics solvers.
+    Physics-based preconditioner could improve the linear solver preformances which would improve robustness, convergence and speed of the overall integration method \cite{ParkNourgalievMartineauEtAl2009, LiuZhangZhongEtAl2015}.
+    In particular, for the Multi-TEmperature model one that was used in this thesis, a physics-based preconditioner would help handling the stiff part corresponding to electrons and ionisation.
 
 
   \section*{Exponential integration methods for unsteady time integration with large time steps}
@@ -90,7 +92,22 @@
     Our first hope was that exponential methods would prove faster, but in the end their performances were similar to the ones of explicit methods.
 
     \paragraph{}
+    This preliminary work did demonstrate the feasibility of exponential methods in JAGUAR and their suitability for unsteady time integration.
+    Rewriting the exponential computation routines whithin JAGUAR instead of using the external SLEPc library would improve even more their quickness.
+    Indeed, using a well written library is often a good idea to benefit from its quality as its developpers are experts in their fields, but values are constantly copied back and forth between JAGUAR and SLEPc data types with the current implementation.
+    The solution is either to modify the solver so that it uses SLEPc data types globally, or to rewite SLEPc methods suited for JAGUAR data types.
+    The latter would also allow for specific optimisations.
+    For instance, we mentionned earlier that exponential methods often compute $\varphi$-functions of the same matrix.
+    One could reuse spectral information between each of those computaions to speed them up and get more accurate results.
+
+    \paragraph{}
+    As JAGUAR had only explicit integration methods before exponential methods were added, no attention was paid toward preconditioning.
+    
+
+    \paragraph{}
     \begin{itemize}
+      \item préconditionnement dans JAGUAR
       \item Utilisation exponentiel sur problèmes limités par pas de temps diffusif
-      \item Utilisation sur problèmes type equation de la chaleur
+      \item plasma, arc lightning (tout petit pas de temps visqueux)
+      \item Utilisation sur problèmes de thermique type equation de la chaleur, très peu non-lineaires, très grand temps physique de simulation demandé
     \end{itemize}
