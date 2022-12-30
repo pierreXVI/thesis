@@ -47,6 +47,16 @@
     The result is even more in favour of the implicit method when using a simplified version of the reactive model that disregards ionisation.
 
     \paragraph{}
+    \GP{One key argument of the Jacobian-Free Newton--Krylov is the possibility to handle the Jacobian approximation at the same order of accuracy as the spatial discretization. We showed that 
+    accuracy can lead to an improved comvergence, or at least, has a limited impact on convergence. 
+    Rough approximations of the Jacobians should be avoided in the future, or considered only for quick tests. 
+    If the choice of CEDRE developers is finally ro revert to a Jacobian-based formulation, we can assume that 
+    the computation of the Jacobian will be a key ingredient. Doing this by hand is time-consumming and can lead 
+    to implementation issue. An alternative could be considering code differentiation. But in the context of CEDRE, it means revisiting the full structures of the whole set of solvers. 
+    }
+
+
+    \paragraph{}
     The downfall of the Jacobian-Free Newton--Krylov method is its slowness.
     Indeed, it requires multiple right-hand side evaluations, and such evaluations are quite expensive in our solver.
     It means that for a user, there is no interest to use the JFNK methods on problems for which the traditional method gives satisfying results and convergence.
@@ -114,8 +124,8 @@
     Going outside the scope of JAGUAR, exponential methods could prove to be great candidates as time integration methods on other solvers.
     For instance, solvers that simulate plasmas and arc lightning are significantly limited in the time step size by viscous effects.
     As such effects are mostly linear, exponential integration methods would allow breaking free from this limitation.
-    The same idea applies to \PS{problèmes de thermique} for which large physical times need to be simulated.
-    Exponential methods would be compatible with larger time steps, which would reduce the overall computational time.
+    The same idea applies to \GP{thermics} for which large physical times need to be simulated.
+    Exponential methods should be compatible with larger time steps, which would reduce the overall computational time.
 
     \paragraph{}
     Exponential methods are becoming more and more active in computational fluid dynamics.
