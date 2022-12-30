@@ -102,12 +102,25 @@
 
     \paragraph{}
     As JAGUAR had only explicit integration methods before exponential methods were added, no attention was paid toward preconditioning.
-    
+    Now that there are algorithms that use Krylov subspace methods, preconditioners could prove beneficial for the time integration \cite{CastilloSaad1997}.
 
     \paragraph{}
-    \begin{itemize}
-      \item préconditionnement dans JAGUAR
-      \item Utilisation exponentiel sur problèmes limités par pas de temps diffusif
-      \item plasma, arc lightning (tout petit pas de temps visqueux)
-      \item Utilisation sur problèmes de thermique type equation de la chaleur, très peu non-lineaires, très grand temps physique de simulation demandé
-    \end{itemize}
+    The last JAGUAR application that was presented here was originally choosen as it was limited in the time step size by the diffusive part of the equations, that is mostly linear.
+    Exponential methods would have then improve the time integration as they deal efficiently with the linear parts.
+    However, this initial statement was not true, and therefore the gain from using exponential methods did not appear.
+    It would be interesting to see what would happend on a test case for which this statement holds.
+
+    \paragraph{}
+    Going outside the scope of JAGUAR, exponential methods could prove to be great candidates as time integration methods on other solvers.
+    For instance, solvers that simulate plasmas and arc lightning are significantly limited in the time step size by viscous effects.
+    As such effects are mostly linear, exponential integration methods would allow to break free from this limitation.
+    The same idea applies to \PS{problèmes de thermique} for which large physical times need to be simulated.
+    Exponential methods would be compatible with larger time steps, which would reduce the ovreall computational time.
+
+    \paragraph{}
+    Exponential methods are becoming more and more active in computaional fluid dynamics.
+    For the same reason we decided to use them along a Spectral Difference method, they are often used with high-order spatial discretisation methods.
+    For instance, the Discontinuous-Galerkin method from \cite{Li2013} is used with an exponential Rosenbrock method described in \cite{LiLuoWangEtAl2018, Li2020}.
+    In \cite{NarayanamurthiSandu2021}, exponential integrators are used to solve multiphysics problems.
+    Many other recent references from the literature use exponetial methods as time integrators for similar computational fluid dynamics problems.
+    This shows that exponential methods are worth investigating.

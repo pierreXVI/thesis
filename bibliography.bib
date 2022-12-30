@@ -2067,12 +2067,78 @@ Studies were made at the Naval Ordnance Laboratory of the shock detachment dista
   publisher = {arXiv},
   url       = {https://arxiv.org/abs/2112.09636},
 }
+
 @Inproceedings{DeniauPuigt2022,
   author={Deniau, Hugues and Puigt, Guillaume},
-  title = {Entropy stable spectral difference scheme}, 
-  booktitle = {European workshop on high order nonlinear numerical methods for evolutionary PDEs: theory and applications (HONOM2022), April 4-8, Braga, Portugal}, 
+  title = {Entropy stable spectral difference scheme},
+  booktitle = {European workshop on high order nonlinear numerical methods for evolutionary PDEs: theory and applications (HONOM2022), April 4-8, Braga, Portugal},
   year={2022}
 }
+
+@Article{CastilloSaad1997,
+  author  = {Castillo, Paul and Saad, Yousef},
+  title   = {Preconditioning the matrix exponential operator with applications},
+  journal = {Journal of Scientific Computing},
+  year    = {1997},
+  volume  = {13},
+  month   = {12},
+  doi     = {10.1023/A:1023219016301},
+}
+
+@article{Li2020,
+  author = {Li, Shu-Jie},
+  year = {2020},
+  month = {01},
+  pages = {63--76},
+  title = {Time advancement of the {N}avier-{S}tokes equations: p-adaptive exponential methods},
+  volume = {08},
+  journal = {Journal of Flow Control, Measurement & Visualization},
+  doi = {10.4236/jfcmv.2020.82004}
+}
+
+@article{LiLuoWangEtAl2018,
+  title = {An exponential time-integrator scheme for steady and unsteady inviscid flows},
+  journal = {Journal of Computational Physics},
+  volume = {365},
+  pages = {206--225},
+  year = {2018},
+  issn = {0021-9991},
+  doi = {https://doi.org/10.1016/j.jcp.2018.03.020},
+  url = {https://www.sciencedirect.com/science/article/pii/S0021999118301803},
+  author = {Li, Shu-Jie and Luo, Li-Shi and Wang, Z.J. and Ju, Lili},
+  keywords = {Exponential time integration, Predictor–corrector method, Large time step, Discontinuous Galerkin, Unstructured meshes, Compressible flow},
+  abstract = {An exponential time-integrator scheme of second-order accuracy based on the predictor–corrector methodology, denoted PCEXP, is developed to solve multi-dimensional nonlinear partial differential equations pertaining to fluid dynamics. The effective and efficient implementation of PCEXP is realized by means of the Krylov method. The linear stability and truncation error are analyzed through a one-dimensional model equation. The proposed PCEXP scheme is applied to the Euler equations discretized with a discontinuous Galerkin method in both two and three dimensions. The effectiveness and efficiency of the PCEXP scheme are demonstrated for both steady and unsteady inviscid flows. The accuracy and efficiency of the PCEXP scheme are verified and validated through comparisons with the explicit third-order total variation diminishing Runge–Kutta scheme (TVDRK3), the implicit backward Euler (BE) and the implicit second-order backward difference formula (BDF2). For unsteady flows, the PCEXP scheme generates a temporal error much smaller than the BDF2 scheme does, while maintaining the expected acceleration at the same time. Moreover, the PCEXP scheme is also shown to achieve the computational efficiency comparable to the implicit schemes for steady flows.}
+}
+
+@article{Li2013,
+  title = {A parallel discontinuous {G}alerkin method with physical orthogonal basis on curved elements},
+  journal = {Procedia Engineering},
+  volume = {61},
+  pages = {144--151},
+  year = {2013},
+  note = {25th International Conference on Parallel Computational Fluid Dynamics},
+  issn = {1877-7058},
+  doi = {https://doi.org/10.1016/j.proeng.2013.07.107},
+  url = {https://www.sciencedirect.com/science/article/pii/S1877705813011739},
+  author = {Shujie Li},
+  keywords = {Compressible flow, Unstructured grid, Discontinuous Galerkin, Orthogonal basis, Curved elements ;},
+  abstract = {This paper describes a parallel high-order Discontinuous Galerkin method based on orthogonal basis functions in physical space for arbitrary three-dimensional curved boundary geometry. The physical orthogonal basis are obtained by solving multi-stage linear systems which satisfy the orthogonal properties on arbitrary grids. On curved-boundary surfaces, the high-order Finite Element type of grids are used to represent real local curvature. An efficient parallel strategy is devised for the resulting solver, which based on OPENMP (Open Multi-Processing) automatic parallelization of independent elemental and face-based operations. The convergence accuracy of the method is tested for subsonic flow over a sphere. To further demonstrate the robustness of the method for complex curved geometry, external flow over a whole airplane configure is tested. The validation cases demonstrate the accuracy and robustness of the method.}
+}
+
+@article{NarayanamurthiSandu2021,
+  title = {Partitioned exponential methods for coupled multiphysics systems},
+  journal = {Applied Numerical Mathematics},
+  volume = {161},
+  pages = {178--207},
+  year = {2021},
+  issn = {0168-9274},
+  doi = {https://doi.org/10.1016/j.apnum.2020.10.020},
+  url = {https://www.sciencedirect.com/science/article/pii/S0168927420303275},
+  author = {Narayanamurthi, Mahesh and Sandu, Adrian},
+  keywords = {Multiphysics systems, Exponential time integration, Butcher series, Partitioned methods},
+  abstract = {Multiphysics problems involving two or more coupled physical phenomena are ubiquitous in science and engineering. This work develops a new partitioned exponential approach for the time integration of multiphysics problems. After a possible semi-discretization in space, the class of problems under consideration is modeled by a system of ordinary differential equations where the right-hand side is a summation of two component functions, each corresponding to a given set of physical processes. The partitioned-exponential methods proposed herein evolve each component of the system via an exponential integrator, and information between partitions is exchanged via coupling terms. The traditional approach to constructing exponential methods, based on the variation-of-constants formula, is not directly applicable to partitioned systems. Rather, our approach to developing new partitioned-exponential families is based on a general-structure additive formulation of the schemes. Two method formulations are considered, one based on a linear-nonlinear splitting of the right hand component functions, and another based on approximate Jacobians. The paper develops classical (non-stiff) order conditions theory for partitioned exponential schemes based on particular families of T-trees and B-series theory. Several practical methods of third order are constructed that extend the Rosenbrock-type and EPIRK families of exponential integrators. Several implementation optimizations specific to the application of these methods to reaction-diffusion systems are also discussed. Numerical experiments reveal that the new partitioned-exponential methods can perform better than traditional unpartitioned exponential methods on some problems.}
+}
+
 @Comment{jabref-meta: databaseType:bibtex;}
 
 @Comment{jabref-meta: fileDirectoryLatex-pierre-ubuntu-XVI:/home/pierre/latex;}
