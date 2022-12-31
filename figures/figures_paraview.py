@@ -1,7 +1,8 @@
 import os.path
 
+import matplotlib.font_manager
 import paraview.simple as pvs
-from postprocess import pvlib
+from postprocess import pvlib, utils
 
 
 def rae_mesh():
@@ -357,7 +358,7 @@ def covo_cedre_fields():
         if 'TextSourceRepresentation' in k[0]:
             s.FontSize = 24
 
-    # plotter.draw(0, block=False)
+    plotter.draw(0, block=False)
     pvs.GetAnimationScene().GoToLast()
     pvs.SaveScreenshot("covo_cedre_fields.png", layout)
 
@@ -420,6 +421,48 @@ def tgv_fields():
     pvs.SaveScreenshot("tgv_fields.png", layout)
 
 
+def ls89_fields():
+    view = pvs.CreateRenderView(InteractionMode='2D')
+    reader = pvs.OpenDataFile(utils.fetch_file('/scratchm/pseize/LS89/EXP/RUN_2/sol_2d.pvd'))
+    display = pvs.Show(reader, view, Representation='Surface')
+    pvs.ColorBy(display, ('POINTS', 'mach'))
+    display.SetScalarBarVisibility(view, True)
+    display.RescaleTransferFunctionToDataRange(False, True)
+
+    for i in range(3):
+        transform = pvs.Transform(reader)
+        transform.Transform.Translate = [0, 0.0575 * (i + 1), 0]
+        pvs.Show(transform, view, Representation='Surface')
+
+    color_bar = pvs.GetScalarBar(pvs.GetColorTransferFunction('mach'), view)
+    color_bar.WindowLocation = 'Any Location'
+    color_bar.Position = [0.91, 0.3]
+    color_bar.Title = 'Mach number'
+    color_bar.ComponentTitle = ''
+    color_bar.HorizontalTitle = 1
+    color_bar.Orientation = 'Vertical'
+    color_bar.ScalarBarLength = 0.4
+    color_bar.RangeLabelFormat = '%.1f'
+
+    color_bar.TitleFontFamily = 'File'
+    color_bar.TitleFontFile = matplotlib.font_manager.findfont('STIXGeneral')
+    color_bar.TitleFontSize = 20
+    color_bar.LabelFontFamily = 'File'
+    color_bar.LabelFontSize = 18
+    color_bar.LabelFontFile = matplotlib.font_manager.findfont('STIXGeneral')
+
+    layout = pvs.CreateLayout()
+    layout.AssignView(0, view)
+    layout.SetSize((1157, 600))
+    view.CameraPosition = [0.02, 0.05, 1]
+    view.CameraFocalPoint = [0.02, 0.05, 0]
+    view.CameraViewUp = [0, 1, 0]
+    view.CameraParallelScale = 0.056
+
+    pvs.GetAnimationScene().GoToLast()
+    pvs.SaveScreenshot("ls89_fields.png", layout)
+
+
 if __name__ == '__main__':
     # rae_mesh()
     # rae_field()
@@ -430,4 +473,5 @@ if __name__ == '__main__':
     # covo_cedre_mesh()
     # covo_cedre_fields()
     # tgv_fields()
+    # ls89_fields()
     pass
