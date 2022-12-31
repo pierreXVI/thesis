@@ -114,7 +114,7 @@
         The problem is to find the interface flux at the discontinuity of a piecewise solution.
         In other words, this is a Riemann problem.
         Once again, this is solved with a Riemann solver, exact or approximate, to get in the end a single value for the left and right parts of the discontinuity.
-        \item An interpolation from the value of the flux density at the $p+2$ flux points using Lagrange polynomials enables to get a $p+1$ order $F$ as expected in the fourth step, represented with a blue line in the figure.
+        \item An interpolation from the value of the flux density at the $p + 2$ flux points using Lagrange polynomials enables to get a $p\!+\!1$-order $F$ as expected in the fourth step, represented with a blue line in the figure.
         Therefore, one can end up with a continuous representation of $F$, differentiable everywhere except at cell interfaces.
         \item In the last step, the representation of $F$ is differentiated to get the flux divergence, represented by a green line in the figure.
         Finally, a time integration method can use a $p$-order representation of $\nabla \cdot F$ to compute the solution at the next time step.
@@ -148,9 +148,9 @@
       Indeed, the solution is assumed constant in the cell, represented by the value at its barycenter.
       The flux balance is made at the cell interfaces with a Riemann solver.
       This corresponds to the placement of the solution and flux points in figure \ref{fig:sd_points} when $p = 0$.
-      For \GP{any polynomial degree $p-1$ of the solution}, the proposed Spectral Difference method is naturally of order $p$.
-      Indeed, the method can represent exactly any polynomial of degree $p\!-\!1$ and, as a consequence, the error term is of order $p$.
-      In JAGUAR, the \GP{polynomial} order $p$ ranges from 2 to 10, but $2 \le p \le 6$ for practical applications.
+      For any polynomial degree $p$ of the solution, the proposed Spectral Difference method is naturally of order $p + 1$.
+      Indeed, the method can represent exactly any polynomial of degree $p$ and, as a consequence, the error term is of order $p + 1$.
+      In JAGUAR, the polynomial order $p$ ranges from 2 to 10, but $2 \le p \le 6$ for practical applications.
 
       \paragraph{}
       The demonstration of the accuracy of the Spectral Difference method is proposed in a reference paper published recently \cite{VanharenPuigtVasseurEtAl2017}.
