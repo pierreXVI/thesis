@@ -445,7 +445,7 @@ def tgv_fields():
     pvs.SaveScreenshot("tgv_fields.png", layout)
 
 
-def ls89_fields():
+def ls89_field():
     view = pvs.CreateRenderView(InteractionMode='2D')
     reader = pvs.OpenDataFile(utils.fetch_file('/scratchm/pseize/LS89/EXP/RUN_2/sol_2d.pvd'))
     display = pvs.Show(reader, view, Representation='Surface')
@@ -484,7 +484,7 @@ def ls89_fields():
     view.CameraParallelScale = 0.056
 
     pvs.GetAnimationScene().GoToLast()
-    pvs.SaveScreenshot("ls89_fields.png", layout)
+    pvs.SaveScreenshot("ls89_field.png", layout)
 
 
 if __name__ == '__main__':
@@ -496,5 +496,5 @@ if __name__ == '__main__':
     # sphere_carbuncle()
     # covo_cedre_fields()
     # tgv_fields()
-    # ls89_fields()
+    # ls89_field()
     pass
