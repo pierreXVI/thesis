@@ -48,10 +48,10 @@
 
     \paragraph{}
     One key argument of the Jacobian-Free Newton--Krylov method is the possibility to handle the Jacobian matrix approximation at the same order of accuracy as the spatial discretization.
-    We showed that accuracy can lead to an improved comvergence, or at least, \PS{has a limited impact on convergence}.
+    We showed that accuracy can lead to an improved convergence, or at least, \PS{has a limited impact on convergence}.
     Rough approximations of the Jacobian matrices should be avoided in the future, or considered only for tests or as preconditioners.
     If the choice of CEDRE developers is finally to revert to a Jacobian matrix-based formulation, we can assume that the computation of the Jacobian matrix will be a key ingredient.
-    Doing this by hand is time-consumming and can lead to implementation issues.
+    Doing this by hand is time-consuming and can lead to implementation issues.
     An alternative could be considering code differentiation.
     \PS{But in the context of CEDRE, it means revisiting the full structures of the whole set of solvers.}
 
@@ -123,7 +123,7 @@
     Going outside the scope of JAGUAR, exponential methods could prove to be great candidates as time integration methods on other solvers.
     For instance, solvers that simulate plasmas and arc lightning are significantly limited in the time step size by viscous effects.
     As such effects are mostly linear, exponential integration methods would allow breaking free from this limitation.
-    The same idea applies to thermics for which large physical times need to be simulated.
+    The same idea applies to the field of thermic for which large physical times need to be simulated.
     Exponential methods should be compatible with larger time steps, which would reduce the overall computational time.
 
     \paragraph{}
