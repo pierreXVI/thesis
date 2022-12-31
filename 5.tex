@@ -191,7 +191,7 @@
       More precisely, it is PETSc that handles this approximation.
       To sum up, to compute $\varphi_k\left(L\right)b$ that is required for the exponential methods with $L = f'\left(y\right)$, $L$ is created with the appropriate PETSc data type.
       As it is a Jacobian matrix of a function, PETSc only needs to know the function to compute matrix-vector products.
-      Then, after setting the MFN object of SLEPc, the library can compute the desired result
+      Then, after setting the MFN object of SLEPc, the library can compute the desired result.
       The Arnoldi iteration, the Scaling and Squaring algorithm and the exponential evaluation are all handled internally by the library.
       Overall, this procedure is extremely simple from our perspective and requires only a few lines of code to implement.
       This highlights the relevance of using the SLEPc library to easily test procedures and acquire the associated knowledge.
