@@ -290,20 +290,6 @@ def sphere_carbuncle():
     # pvs.SaveScreenshot("sphere_carbuncle.png", layout)
 
 
-def covo_cedre_mesh():
-    filename = "/visu/pseize/COVO/EXP/RUN_1/_ENSIGHT_/archive_CHARME.volu.ins.case"
-    plotter = pvlib.Plotter()
-    reader, _, _ = plotter.load_data(filename, [])
-
-    view = pvs.CreateRenderView(InteractionMode='2D', ViewSize=(1000, 900))
-    pvs.Show(reader, view, Representation='Wireframe')
-    view.CameraParallelScale = 14
-    view.CameraPosition = [0, 0, 1]
-    view.CameraFocalPoint = [0, 0, 0]
-    # plotter.draw(0, True)
-    pvs.SaveScreenshot("covo_cedre_mesh.png", view)
-
-
 def covo_cedre_fields():
     plotter = pvlib.COVOPlotter()
     plotter.register_plot("/visu/pseize/COVO/BASE/RUN_1/_ENSIGHT_/archive_CHARME.volu.ins.case", 'P', contour=50,

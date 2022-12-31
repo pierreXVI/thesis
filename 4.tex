@@ -441,6 +441,7 @@
   Because we use the formulation (\ref{eq:exprb_defect}) and the fact that the defects are small, adding more stages to the exponential method will be less expensive than adding stages to the implicit method.
 
 
+  \pagebreak
   \section{First developments in CEDRE}
 
     \paragraph{}
@@ -453,19 +454,11 @@
     Because it only required this development we decided to deviate from the original framework of this thesis and try this new type of time integration method.
     Now that everything was accessible, we started with the exponential Rosenbrock--Euler method, as it is the basic one.
 
-    \begin{figure}
-      \centering
-      \includegraphics[width=0.6\textwidth]{figures/covo_cedre_mesh.png}
-      \caption{Mesh for the isentropic vortex test case with CEDRE.}
-      \label{fig:covo_cedre_mesh}
-    \end{figure}
-
     \paragraph{}
     To test the method, we decided to use a simple academic test case, adapted from the one proposed at the International Workshop on High Order CFD Methods (HiOCFD).
     It is a two-dimensional inviscid isentropic vortex that is convected in a periodic box.
     This vortex is a known exact solution of the unsteady Euler equations and is generally considered a good test case to analyse the accuracy of both spatial discretisation and time integration methods.
     It is a non-dimensionalised computation, and the mesh is regular over a square of length $L = 20$, with $100^2$ cells.
-    It is shown in figure \ref{fig:covo_cedre_mesh}.
     The vortex is convected in a flow at a Mach number of $\operatorname{Ma} = 0.5$, with the dimensioning parameters $P_\infty = 1$ and $T_\infty = 1$.
     The undisturbed velocity is then $U_\infty \vec{e}_x$ with $U_\infty = \operatorname{Ma} \sqrt{\gamma r_\textrm{gas} T_\infty}$ and the vortex is defined using the polar coordinates system $\left(\vec{e}_r, \vec{e}_\theta\right)$:
     \begin{equation}\label{eq:covo}
