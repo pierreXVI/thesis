@@ -533,15 +533,14 @@
       Contrary to the previous two, we stepped out of the academic context with an industrial application.
       It is a simulation of the flow inside the LS89 turbine blade cascade that was studied experimentally by the von Karman Institute \cite{ArtsLambertdeRouvroit1992}.
       We choose this test case as it has already been done with several solvers, including JAGUAR recently \cite{BrunetCronerMinotEtAl2018}.
-      We use a two-dimensional unstructured mesh, made of \num{2374} cells, that was extruded over 20 cells for a length of $0.15 c$ with $c$ the chord of the turbine blade.
+      The computation uses a two-dimensional unstructured mesh, made of \num{2374} cells, that was extruded over 20 cells for a length of $0.15 c$ with $c$ the chord of the turbine blade.
       The final three-dimensional mesh made of \num{47480} cells is shown in figure \ref{fig:ls89_mesh}.
       The mesh is periodic in the extruded direction and the vertical direction.
       The boundary condition at the wall is isothermal, with $T_\textrm{wall} = 297.75 \si{\kelvin}$.
       At inlet, the stagnation conditions are $P_0 = \num{184900}\si{\pascal}$ and $T_0 = 409.2\si{\kelvin}$.
-      We set the pressure at outlet at $P = \num{116487}\si{\pascal}$.
-
+      The outlet pressure s=is set to $\num{116487}\si{\pascal}$.
       The Spectral difference method uses the HLLC approximate Riemann solver.
-
+      This is an unsteady LES simulation: the interest is in the values temporal averages after a long simulation time.
 
       \begin{figure}
         \centering
@@ -550,9 +549,17 @@
         \label{fig:ls89_mesh}
       \end{figure}
 
+      \paragraph{}
+      The reason why we decided to use exponential methods for this numerical application is that is previous works, the explicit time step was limited by the viscous effect that prevail in the small cells of the boundary layer.
+      Indeed, this test case was used to compare several solvers, but as JAGUAR only had explicit methods it took longer to find a solution \cite{BrunetCronerMinotEtAl2018}.
+      Because exponential methods handle well the linear part of equations, and viscous effects are mostly linear, we thought that exponential methods would allow JAGUAR to break free from the constraint on the time step, and improve the overall speed of the solver.
+      In figure \ref{fig:ls89_field}, the Mach number is shown at the end of the computation.
+      It is in line with what is expected, and this proves the capacity of exponential methods to work as time integration schemes for such applciations.
+      \PS{Flux de chaleur}
+
       \begin{figure}
         \centering
-        \includegraphics{figures/ls89_field.png}
+        \includegraphics[width=\textwidth]{figures/ls89_field.png}
         \caption{Mach number in the LS89 turbine blade cascade.}
         \label{fig:ls89_field}
       \end{figure}
