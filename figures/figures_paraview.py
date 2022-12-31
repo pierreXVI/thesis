@@ -55,10 +55,14 @@ def rae_field():
     color_bar.Title = '$P$ (Pa)'
     color_bar.ComponentTitle = ''
     color_bar.Orientation = 'Horizontal'
-    color_bar.TitleFontSize = 20
-    color_bar.LabelFontSize = 15
     color_bar.ScalarBarLength = 0.6
     color_bar.RangeLabelFormat = '%.0f'
+    color_bar.TitleFontFamily = 'File'
+    color_bar.TitleFontFile = matplotlib.font_manager.findfont('STIXGeneral')
+    color_bar.TitleFontSize = 24
+    color_bar.LabelFontFamily = 'File'
+    color_bar.LabelFontSize = 20
+    color_bar.LabelFontFile = matplotlib.font_manager.findfont('STIXGeneral')
     view.CameraPosition = [0.5, 0, 1]
     view.CameraFocalPoint = [0.5, 0, 0]
     view.CameraParallelScale = 1
@@ -160,9 +164,13 @@ def rae_field_fine():
     color_bar.Title = r'$\tilde{\nu} \quad \left( \operatorname{m}^2 / \operatorname{s} \right)$'
     color_bar.ComponentTitle = ''
     color_bar.Orientation = 'Horizontal'
-    color_bar.TitleFontSize = 24
-    color_bar.LabelFontSize = 18
     color_bar.ScalarBarLength = 0.5
+    color_bar.TitleFontFamily = 'File'
+    color_bar.TitleFontFile = matplotlib.font_manager.findfont('STIXGeneral')
+    color_bar.TitleFontSize = 24
+    color_bar.LabelFontFamily = 'File'
+    color_bar.LabelFontSize = 20
+    color_bar.LabelFontFile = matplotlib.font_manager.findfont('STIXGeneral')
 
     layout = pvs.CreateLayout()
     id_1 = layout.SplitVertical(0, 0.8)
@@ -212,10 +220,14 @@ def sphere_fields():
         color_bar.WindowLocation = 'Lower Center'
         color_bar.Title = label
         color_bar.Orientation = 'Horizontal'
-        color_bar.TitleFontSize = 24
-        color_bar.LabelFontSize = 20
-        color_bar.ScalarBarLength = 0.5
+        color_bar.ScalarBarLength = 0.45
         color_bar.RangeLabelFormat = fmt
+        color_bar.TitleFontFamily = 'File'
+        color_bar.TitleFontFile = matplotlib.font_manager.findfont('STIXGeneral')
+        color_bar.TitleFontSize = 24
+        color_bar.LabelFontFamily = 'File'
+        color_bar.LabelFontSize = 20
+        color_bar.LabelFontFile = matplotlib.font_manager.findfont('STIXGeneral')
         views.append(view)
 
     layout = pvs.CreateLayout()
@@ -241,7 +253,6 @@ def sphere_fields():
     print("Please set the OrientationAxis manually in the mesh view")
     views[0].OrientationAxesInteractivity = 1
     plotter.draw(0, True)
-
     # pvs.SaveScreenshot("sphere_fields.png", layout)
 
 
@@ -267,12 +278,16 @@ def sphere_carbuncle():
     color_bar.Title = '$P$ (Pa)'
     color_bar.ComponentTitle = ''
     color_bar.Orientation = 'Horizontal'
-    color_bar.TitleFontSize = 24
-    color_bar.LabelFontSize = 20
     color_bar.ScalarBarLength = 0.7
     color_bar.RangeLabelFormat = '%.0f'
     color_bar.AutomaticLabelFormat = 0
     color_bar.LabelFormat = '%.1E'
+    color_bar.TitleFontFamily = 'File'
+    color_bar.TitleFontFile = matplotlib.font_manager.findfont('STIXGeneral')
+    color_bar.TitleFontSize = 24
+    color_bar.LabelFontFamily = 'File'
+    color_bar.LabelFontSize = 20
+    color_bar.LabelFontFile = matplotlib.font_manager.findfont('STIXGeneral')
 
     layout = pvs.CreateLayout()
     id_1 = layout.SplitVertical(0, 0.8)
@@ -285,16 +300,15 @@ def sphere_carbuncle():
     print("Please set the OrientationAxis manually in both top views")
     view1.OrientationAxesInteractivity = 1
     view2.OrientationAxesInteractivity = 1
-    plotter.draw(0, True)
-
     pvs.GetAnimationScene().GoToLast()
+    plotter.draw(0, True)
     # pvs.SaveScreenshot("sphere_carbuncle.png", layout)
 
 
 def covo_cedre_fields():
     plotter = pvlib.COVOPlotter()
     plotter.register_plot("/visu/pseize/COVO/BASE/RUN_1/_ENSIGHT_/archive_CHARME.volu.ins.case", 'P', contour=50,
-                          r_gas=1, label='Base')
+                          r_gas=1, label='Implicit Euler')
 
     view1 = pvs.CreateRenderView(InteractionMode='2D')
     for k, s in pvs.GetSources().items():
@@ -310,7 +324,7 @@ def covo_cedre_fields():
             pvs.Show(s, view1)
 
     plotter.register_plot("/visu/pseize/COVO/BASE/RUN_2/_ENSIGHT_/archive_CHARME.volu.ins.case", 'P', contour=50,
-                          r_gas=1, label='Base')
+                          r_gas=1, label='Implicit Euler')
     plotter.register_plot("/visu/pseize/COVO/EXP/RUN_1/_ENSIGHT_/archive_CHARME.volu.ins.case", 'P', contour=50,
                           r_gas=1, label='Exponential Rosenbrock-Euler')
     plotter.register_plot("/visu/pseize/COVO/BASE/RUN_RK4/_ENSIGHT_/archive_CHARME.volu.ins.case", 'P', contour=50,
@@ -342,25 +356,35 @@ def covo_cedre_fields():
         view.CameraPosition = [0.5, 0, 1]
         view.CameraFocalPoint = [0.5, 0, 0]
         view.CameraParallelScale = 12
+        view.OrientationAxesVisibility = 0
 
-    view_bar.OrientationAxesVisibility = 0
+    view_bar.OrientationAxesVisibility = 1
     color_bar = pvs.GetScalarBar(pvs.GetColorTransferFunction('P'), view_bar)
     color_bar.WindowLocation = 'Lower Center'
     color_bar.Title = r'$P$'
     color_bar.ComponentTitle = ''
     color_bar.Orientation = 'Horizontal'
-    color_bar.TitleFontSize = 24
-    color_bar.LabelFontSize = 20
     color_bar.ScalarBarLength = 0.5
     color_bar.RangeLabelFormat = '%.4g'
+    color_bar.TitleFontFamily = 'File'
+    color_bar.TitleFontFile = matplotlib.font_manager.findfont('STIXGeneral')
+    color_bar.TitleFontSize = 24
+    color_bar.LabelFontFamily = 'File'
+    color_bar.LabelFontSize = 20
+    color_bar.LabelFontFile = matplotlib.font_manager.findfont('STIXGeneral')
 
     for k, s in pvs.GetRepresentations().items():
         if 'TextSourceRepresentation' in k[0]:
+            s.FontFamily = 'File'
+            s.FontFile = matplotlib.font_manager.findfont('STIXGeneral')
             s.FontSize = 24
 
-    plotter.draw(0, block=False)
     pvs.GetAnimationScene().GoToLast()
-    pvs.SaveScreenshot("covo_cedre_fields.png", layout)
+    print("Please set the OrientationAxis manually in the bar view")
+    view_bar.OrientationAxesInteractivity = 1
+    pvs.GetAnimationScene().GoToLast()
+    plotter.draw(0, True)
+    # pvs.SaveScreenshot("covo_cedre_fields.png", layout)
 
 
 def tgv_fields():
@@ -470,7 +494,6 @@ if __name__ == '__main__':
     # rae_field_fine()
     # sphere_fields()
     # sphere_carbuncle()
-    # covo_cedre_mesh()
     # covo_cedre_fields()
     # tgv_fields()
     # ls89_fields()
