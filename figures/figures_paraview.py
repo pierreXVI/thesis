@@ -445,8 +445,48 @@ def tgv_fields():
     pvs.SaveScreenshot("tgv_fields.png", layout)
 
 
+def ls89_mesh():
+    utils.fetch_file('/scratchm/pseize/LS89/MESHES/geom')
+    reader = pvs.OpenDataFile(utils.fetch_file('/scratchm/pseize/LS89/MESHES/geom/sol_00000000.pvtu'))
+
+    view1 = pvs.CreateRenderView(InteractionMode='2D')
+    pvs.Show(reader, view1, Representation='Wireframe')
+    view1.CameraPosition = [0.0225, -0.025, 1]
+    view1.CameraFocalPoint = [0.0225, -0.025, 0]
+    view1.CameraViewUp = [0, 1, 0]
+    view1.CameraParallelScale = 0.08673245022279404
+
+    view2 = pvs.CreateRenderView(InteractionMode='2D')
+    pvs.Show(reader, view2, Representation='Wireframe')
+    view2.OrientationAxesVisibility = 0
+    view2.CameraPosition = [0.007771125931637301, 0.003795066915813429, 1]
+    view2.CameraFocalPoint = [0.007771125931637301, 0.003795066915813429, 0]
+    view2.CameraViewUp = [0, 1, 0]
+    view2.CameraParallelScale = 0.012440998156140649
+
+    view3 = pvs.CreateRenderView(InteractionMode='2D')
+    pvs.Show(reader, view3, Representation='Wireframe')
+    view3.OrientationAxesVisibility = 0
+    view3.CameraPosition = [0.03797903449805232, -0.04613536046669085, 1]
+    view3.CameraFocalPoint = [0.03797903449805232, -0.04613536046669085, 0]
+    view3.CameraViewUp = [0, 1, 0]
+    view3.CameraParallelScale = 0.012440998156140649
+
+    layout = pvs.CreateLayout()
+    id_1 = layout.SplitHorizontal(0, 0.5)
+    id_2 = layout.SplitVertical(id_1 + 1, 0.5)
+    layout.AssignView(id_1, view1)
+    layout.AssignView(id_2, view2)
+    layout.AssignView(id_2 + 1, view3)
+    layout.SetSize((1157, 600))
+
+    pvs.GetAnimationScene().GoToLast()
+    pvs.SaveScreenshot("ls89_mesh.png", layout)
+
+
 def ls89_field():
     view = pvs.CreateRenderView(InteractionMode='2D')
+    utils.fetch_file('/scratchm/pseize/LS89/EXP/RUN_2/sol_2d')
     reader = pvs.OpenDataFile(utils.fetch_file('/scratchm/pseize/LS89/EXP/RUN_2/sol_2d.pvd'))
     display = pvs.Show(reader, view, Representation='Surface')
     pvs.ColorBy(display, ('POINTS', 'mach'))
@@ -484,7 +524,7 @@ def ls89_field():
     view.CameraParallelScale = 0.056
 
     pvs.GetAnimationScene().GoToLast()
-    pvs.SaveScreenshot("ls89_field.png", layout)
+    # pvs.SaveScreenshot("ls89_field.png", layout)
 
 
 if __name__ == '__main__':
@@ -496,5 +536,6 @@ if __name__ == '__main__':
     # sphere_carbuncle()
     # covo_cedre_fields()
     # tgv_fields()
+    # ls89_mesh()
     # ls89_field()
     pass
