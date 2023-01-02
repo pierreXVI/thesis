@@ -554,7 +554,6 @@
       Because exponential methods handle well the linear part of equations, and viscous effects are mostly linear, we thought that exponential methods would allow JAGUAR to break free from the constraint on the time step, and improve the overall speed of the solver.
       In figure \ref{fig:ls89_field}, the Mach number is shown at the end of the computation.
       It is in line with what is expected, and this proves the capacity of exponential methods to work as time integration schemes for such applications.
-      \PS{Flux de chaleur}
 
       \begin{figure}
         \centering
@@ -566,7 +565,7 @@
       \PS{Flux de chaleur}
 
       \paragraph{}
-      Our logic is that if the time step for this application is limited by viscous effects, and viscous effects are mainly linear, exponential methods would accept higher time steps, and in the end the computation would be faster.
+      Our logic was that if the time step for this application is limited by viscous effects, and viscous effects are mainly linear, exponential methods would accept higher time steps, and in the end the computation would be faster.
       However, our intial hypothesis was wrong: the time step is limited by advection and not diffusion.
       It was originally true at the time of some previous investigations \cite{BrunetCronerMinotEtAl2018}, but as the diffusive scheme was greatly improved \PS{REF des travaux de Hugues ?}, it is not true anymore.
       This is why in the end, there are no significant improvements in terms of computational speed when using exponential integration methods.
