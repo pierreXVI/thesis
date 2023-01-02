@@ -526,8 +526,6 @@
 
     \subsection{Industrial application: LS89}
 
-      \PS{TODO}
-
       \paragraph{}
       We decided to try exponential methods on a last test case.
       Contrary to the previous two, we stepped out of the academic context with an industrial application.
@@ -539,8 +537,9 @@
       The boundary condition at the wall is isothermal, with $T_\textrm{wall} = 297.75 \si{\kelvin}$.
       At inlet, the stagnation conditions are $P_0 = \num{184900}\si{\pascal}$ and $T_0 = 409.2\si{\kelvin}$.
       The outlet pressure s=is set to $\num{116487}\si{\pascal}$.
+      The upper and lower boundaries, as well as the front and rear planes, correspond to periodic boundary conditions.
       The Spectral difference method uses the HLLC approximate Riemann solver.
-      This is an unsteady LES simulation: the interest is in the values temporal averages after a long simulation time.
+      This is an unsteady LES simulation: the interest lies in the time average values after a long simulation time.
 
       \begin{figure}
         \centering
@@ -550,7 +549,7 @@
       \end{figure}
 
       \paragraph{}
-      The reason why we decided to use exponential methods for this numerical application is that is previous works, the explicit time step was limited by the viscous effect that prevail in the small cells of the boundary layer.
+      The reason why we decided to use exponential methods for this numerical application is that in previous works, the explicit time step was limited by the viscous effect that prevail in the small cells of the boundary layer.
       Indeed, this test case was used to compare several solvers, but as JAGUAR only had explicit methods it took longer to find a solution \cite{BrunetCronerMinotEtAl2018}.
       Because exponential methods handle well the linear part of equations, and viscous effects are mostly linear, we thought that exponential methods would allow JAGUAR to break free from the constraint on the time step, and improve the overall speed of the solver.
       In figure \ref{fig:ls89_field}, the Mach number is shown at the end of the computation.
