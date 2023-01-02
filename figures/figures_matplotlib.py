@@ -460,6 +460,10 @@ def fig_eps():
 
 
 def rae_cp():
+    def sort_on_foil(coordinates_array, b_x=0.6, b_y=0.04):
+        sorting_indices = np.argsort(np.angle(coordinates_array[:, 0] - b_x + 1j * (coordinates_array[:, 1] - b_y)))
+        return np.roll(sorting_indices, -list(sorting_indices).index(np.argmax(coordinates_array[:, 0])))
+
     fig = plt.figure(figsize=[4.6, 3.5])
     ax = fig.add_subplot(111)
     ax.grid(True)
@@ -473,11 +477,15 @@ def rae_cp():
 
     reader, _, _ = plotter.load_data("/scratchm/pseize/RAE_2822/BASE/INIT/ENSIGHT/archive_CHARME.surf.ins.case", ['P'])
     coord, p = pvlib.get_point_data(reader, 'P', plotter.find_blocks(reader, ['Intrados', 'Extrados']))
-    ax.plot(coord[:, 0], cp(p), 'x', label='Traditional method')
+    indices = sort_on_foil(coord)
+    coord = np.take_along_axis(coord, indices[:, None], axis=0)
+    ax.plot(coord[:, 0], cp(np.take_along_axis(p, indices, axis=0)), label='Traditional method')
 
     reader, _, _ = plotter.load_data("/scratchm/pseize/RAE_2822/MF/RUN_1/ENSIGHT/archive_CHARME.surf.ins.case", ['P'])
     coord, p = pvlib.get_point_data(reader, 'P', plotter.find_blocks(reader, ['Intrados', 'Extrados']))
-    ax.plot(coord[:, 0], cp(p), '+', label='JFNK method')
+    indices = sort_on_foil(coord)
+    coord = np.take_along_axis(coord, indices[:, None], axis=0)
+    ax.plot(coord[:, 0], cp(np.take_along_axis(p, indices, axis=0)), '--', label='JFNK method')
     ax.invert_yaxis()
     ax.legend()
 
