@@ -416,7 +416,7 @@
       \begin{figure}
         \centering
         \includegraphics[width=\textwidth]{figures/tgv_fields.png}
-        \caption{\PS{0.1 contours of the Q-criterion colored by velocity norm of the Taylor--Green vortex at various times.}}
+        \caption{\PS{0.1 contours of the Q-criterion coloured by velocity norm of the Taylor--Green vortex at various times.}}
         \label{fig:tgv_fields}
       \end{figure}
 
@@ -490,7 +490,7 @@
         \end{tabular}
         \caption{
           Statistics for various time integration methods.
-          Time corresponds to elapsed real time, or wall-clock time.
+          The time corresponds to elapsed real time, or wall-clock time.
           A computation corresponds to the simulation of the Taylor--Green vortex from equation (\ref{eq:tgv}) on time interval $\left[0, 20 t_c\right]$.}\label{tab:tgv}
       \end{table}
 
@@ -512,7 +512,7 @@
       Accurate explicit methods would not work with such high CFL numbers, and even if implicit methods could they would not be accurate enough to capture and preserve the small scales of the flow.
       To reach high CFL numbers, we have to use larger Krylov subspaces, which makes the method a lot slower.
       The method used here should not be used for actual applications: the goal was just to show feasibility.
-      It seems that with exponential methods, the robustness can be increased by paying the price in terms of Krylov subspace dimension.
+      It seems that with exponential methods, the robustness can be increased by paying the price in terms of the Krylov subspace dimension.
       We can think of ways to compute more accurately the $\varphi$-functions less expensively: by using restarted methods, for instance, we can control the maximal dimension of the Krylov subspace.
       However, this was not tried during this thesis.
 
@@ -565,15 +565,15 @@
       \PS{Flux de chaleur}
 
       \paragraph{}
-      Our logic was that if the time step for this application is limited by viscous effects, and viscous effects are mainly linear, exponential methods would accept higher time steps, and in the end the computation would be faster.
-      However, our intial hypothesis was wrong: the time step is limited by advection and not diffusion.
+      Our logic was that if the time step for this application is limited by viscous effects, and viscous effects are mainly linear, exponential methods would accept higher time steps, and in the end, the computation would be faster.
+      However, our initial hypothesis was wrong: the time step is limited by advection and not diffusion.
       It was originally true at the time of some previous investigations \cite{BrunetCronerMinotEtAl2018}, but as the diffusive scheme was greatly improved \PS{REF des travaux de Hugues ?}, it is not true anymore.
       This is why in the end, there are no significant improvements in terms of computational speed when using exponential integration methods.
       Even if we did not find the improvements we were originally looking for, this numerical experiment did show that exponential time integration methods can be used in actual computational fluid applications.
 
 
   \paragraph{}
-  The work made towards exponential methods during this thesis shows their interest for the time integration of computational fluid dynamics problems.
+  The work made towards exponential methods during this thesis shows their interest in the time integration of computational fluid dynamics problems.
   A preliminary test did show that they are precise methods, and using them makes a lot of sense when the spatial discretisation method is accurate as well, with high-order methods for instance.
   Then, some numerical experiments with the JAGUAR solver showed their quality.
   For one application, they were particularly quicker and more stable than classical explicit integration methods.

@@ -222,7 +222,7 @@
         This is to reach a state close enough to the steady solution more quickly before analysing the convergence of our methods.
         After that, the computations are restarted, with the traditional method on one side and the matrix-free method on the other.
         The residuals are given in figures \ref{fig:rae_residuals_fine_l1} and \ref{fig:rae_residuals_fine_linf}.
-        Overall, it takes much more iterations to decrease residual norms on this test case compared to the previous one.
+        Overall, it takes much more iterations to decrease residual norms for this test case compared to the previous one.
         It is due to the larger number of cells, and the presence of small flattened cells in the boundary layer.
 
         \paragraph{}
@@ -263,7 +263,7 @@
         In particular, there are cells for which $\tilde{\nu}$ is null in the computational domain, which should not happen with the standard Spalart--Allmaras model.
         Figure \ref{fig:rae_residuals_fine_linf} shows that the $\infty$-norm of the residual on the conservative variable $\rho \tilde{\nu}$ normalised by the initial residual is near $10^0$, so figure \ref{fig:rae_field_fine} highlights cells for which the residual is higher than $10^{-0.1}$.
         Those cells correspond to the ones for which $\tilde{\nu} = 0$.
-        It shows a flaw of the standard time integration method, as it has non-physical features in the solution that prevent the residual convergence.
+        It shows a flaw in the standard time integration method, as it has non-physical features in the solution that prevent residual convergence.
         In contrast, it shows the quality of the JFNK method on this application.
 
         \begin{figure}
@@ -298,7 +298,7 @@
 
         \paragraph{}
         The two-dimensional mesh is shown in figure \ref{fig:sphere_fields}.
-        It is a regular mesh made of quadrangles, with refinement in the radial direction at the wall boundary and at the expected shock location.
+        It is a regular mesh made of quadrangles, with refinement in the radial direction at the wall boundary and the expected shock location.
         The refinement at the wall boundary helps to compute more precisely the physical phenomena that happen at said boundary.
         The refinement at the shock is a requirement of the spatial discretisation methods.
         In order to get a clean and slim shock, the cells near the shock must have a high aspect ratio.

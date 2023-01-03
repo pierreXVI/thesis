@@ -49,7 +49,7 @@
     Those conservative equations are the ones we will focus on in this study, as they describe the physical systems we are interested in.
 
     \paragraph{}
-    In this work, attention is paid on computational fluid dynamics and in particular to solution of the Navier--Stokes equation and its variants: the reactive Navier--Stokes equation, the Reynold-averaged Navier--Stokes equation, etc.
+    In this work, attention is paid to computational fluid dynamics and in particular to solving the Navier--Stokes equation and its variants: the reactive Navier--Stokes equation, the Reynold-averaged Navier--Stokes equation, etc.
     A simple form of this equation can be:
     \begin{equation}\label{eq:ns}
       \left\{\begin{aligned}
@@ -973,7 +973,7 @@
       \paragraph{}
       Others preconditioners exist in our solver.
       One consists in using the invert of the cell volumes as a diagonal matrix: the preconditioning matrix is a diagonal matrix, where each diagonal element is the inverse of the corresponding mesh cell volume.
-      This was originally conceived to preserve the conservative properties through the GMRES solve.
+      This was originally conceived to preserve the conservative properties through the GMRES solver.
       Indeed, as GMRES produces an approximation of the linear problem solution, the overall scheme may not be conservative.
       This preconditioner makes sure it is.
       More explanations on this statement can be found in appendix \ref{appendix:conservative_preconditioning}.
