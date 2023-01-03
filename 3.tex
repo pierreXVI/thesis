@@ -632,19 +632,19 @@
 
         \paragraph{}
         We decided to do the same comparison as before but this time with the simplified reactive model.
-        The computation starts once again with a few iterations of the Midpoint method and use that as a common initialisation.
+        The computation starts once again with a few iterations of the Midpoint method.
         Then, we compare the explicit method with the Jacobian-Free Newton--Krylov method.
         We show the corresponding residual norms in figure \ref{fig:sphere_tv_residuals}, while still using the elapsed real time as the $x$-axis.
         The result is similar to the previous one, except it is even more in favour of the JFNK method.
         The implicit method reaches much lower residual norms than the explicit one.
         With the full reactive model, the limiting factor for the implicit method came from the stiffness due to the electrons.
-        \PS{Here, the term stifness corresponds to both stifness from the equation and difficulties arising from the implementation, that uses tools such as \emph{min/max} functions that adds non-differentiability.}
+        \PS{Here, the term stiffness corresponds to both stiffness from the equation and difficulties arising from the implementation, that uses tools such as \emph{min/max} functions that add non-differentiability.}
         \footnote{
         \LM{On est sûr que c'est la raideur, ou c'est le fait que l'on patche, lorsqu'il n'y a plus d'électrons, par un raccord non C1?}
         \GP{Lionel, je comprends pas ce que tu sous entend... Il faudra qu'on clarifie après les vacances...}
         }
         Without them, the convergence is significantly faster.
-        The time step for the explicit method however is under the same limitations with both reactive models.
+        However, the time step for the explicit method is under the same limitations with both reactive models.
         The gain in CPU time is then huge, in favour of the JFNK method.
 
         \begin{figure}
@@ -659,8 +659,8 @@
   \paragraph{}
   This chapter compared the performances of the Jacobian-Free Newton--Krylov method with already existing methods of CEDRE on typical applications.
   When compared to the traditional implicit method on turbulent RANS computations, it showed that the JFNK achieves better convergence in the residual norms, when the convergence of the traditional method is unsatisfactory.
-  The conclusion is similar with typical reentry applications.
-  When the traditional method is able to converge well, however, the result is no longer in favour of the JFNK method, although the difference between the two methods is not significant.
+  The conclusion is similar when working with typical reentry applications.
+  When the traditional method can converge well, however, the result is no longer in favour of the JFNK method, although the difference between the two methods is not significant.
   Finally, the matrix-free method was used with a newly implemented fluid model that does not give access to a Jacobian matrix yet.
   For this reason, using the JFNK method is the only way of using an implicit method.
   It was compared to the explicit Midpoint method that is currently used for computations with this fluid model.
