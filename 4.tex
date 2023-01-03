@@ -217,9 +217,9 @@
     From the literature, exponential Runge--Kutta methods are defined just as we did above, except they use a fixed linearisation: $L = f'\left(y_0\right)$ \cite{HochbruckOstermann2005}.
     It is because they were developed for semilinear parabolic problems:
     \begin{equation}
-      \frac{\mathrm{d} y}{\mathrm{d} t} + Ay = g\left(y\right) .
+      \frac{\mathrm{d} y}{\mathrm{d} t} + Ay = r\left(y\right) .
     \end{equation}
-    They are used when the remainder $g$ is small or at least bounded in terms of $A$.
+    They are used when the remainder $r$ is small or at least bounded in terms of $A$.
     This is not the case in our applications, and in many others so that is why another type of exponential method was introduced: exponential Rosenbrock methods \cite{HochbruckOstermannSchweitzer2006}.
     They can be seen as a variation of the exponential Runge--Kutta methods where the linearisation is done at each time step.
     The issue is that a new Jacobian matrix is needed at each iteration, but once again we are used to this with implicit methods.
@@ -314,9 +314,10 @@
       Instead of looking for the matrix exponential as an infinite series, we can look for an $N$-order polynomial.
       Moreover, exponential methods do not need to evaluate the exponential or the $\varphi$-functions of the matrix, but their effect when applied to a vector.
       For instance, the exponential Rosenbrock--Euler method from equation (\ref{eq:expeuler}) does not need to compute $\varphi_1\left(\Delta t L\right)$ but $\varphi_1\left(\Delta t L\right)f\left(y_n\right)$.
-      It means we do not need to evaluate the function $g$ on the matrix $A$, but to compute the effect of $g\left(A\right)$ on the vector $b$.
-      The idea, originally developed to approximate eigenvalues of a large sparse matrix, is to use a Krylov subspace method to approximate $g\left(A\right)b$ \cite{Saad1992, Sidje1998}.
-      In fact, it is similar to using a Krylov subspace method to solve the linear system $Ax = b$: it means taking $g = z \mapsto z^{-1}$.
+      It means we do not need to evaluate a given function $h$ on the matrix $A$, but to compute the effect of $h\left(A\right)$ on the vector $b$.
+      \PS{For exponential methods, $h$ is a linear combination of $\varphi$-functions, and is therefore analytic.}
+      The idea, originally developed to approximate eigenvalues of a large sparse matrix, is to use a Krylov subspace method to approximate $h\left(A\right)b$ \cite{Saad1992, Sidje1998}.
+      In fact, it is similar to using a Krylov subspace method to solve the linear system $Ax = b$: it means taking $h = z \mapsto z^{-1}$.
       The Krylov subspace method produces with the Arnoldi iteration the relation, at the $m$-th iteration:
       \begin{equation}\label{eq:arnoldi}
         AV_m = V_{m+1} \tilde{H}_m = V_m H_m + h_{m+1, m} v_{m+1} e_m^T .
@@ -344,11 +345,11 @@
       The vector $v_{m+1}$ is the last column vector of $V_{m+1}$, added to the column vectors of $V_m$ to get an orthonormal basis of $\krylov[A, b]{m+1}$, and $e_m$ is the $m$-th canonical vector $\left(0, \dots, 0, 1\right)^T$.
       Since $H_m$ represent the compression of $A$ on $\krylov[A, b]{m}$ with respect to basis $V_m$ and $b = \norm[2]{b} V_m e_1$ with $e_1 = \left(1, 0, \dots, 0\right)$, we make the approximation \cite{EiermannErnst2006}:
       \begin{equation}
-        g\left(A\right)b \approx \norm[2]{b} V_m g\left(H_m\right) e_1 .
+        h\left(A\right)b \approx \norm[2]{b} V_m h\left(H_m\right) e_1 .
       \end{equation}
 
       \paragraph{}
-      With this approximation, we can evaluate the function $g$ by applying it to a smaller matrix.
+      With this approximation, we can evaluate the function $h$ by applying it to a smaller matrix.
       We reduced the original function evaluation to the much smaller Krylov subspace.
       Since the method does not need to know the matrix but only to be able to apply it as a linear operator, we can use the matrix-free approximation (\ref{eq:matrix_free}) to approximate the Jacobian matrix $L = f'\left(y_n\right)$.
       This way, having to compute a new Jacobian matrix at each iteration of the exponential Rosenbrock method is not an issue.

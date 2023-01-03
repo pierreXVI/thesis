@@ -438,14 +438,15 @@
     This first-order matrix is easily computed for the usual Navier--Stokes equations.
     But as CEDRE is under constant development, new models are added in order to handle more finely various multiphysics phenomena.
     For example, a new model was recently added to better handle multiphasic flows \cite{Cordesse2020}.
+    \PS{Another model that we did investigate was added to better account for thermodynamic disequilibriums.}
+    \footnote{
     \LM{mais du coup tu ne l'utilises pas du tout ce nouveau modèle dans la suite, non?}
     \PS{Nope c'est juste pour montrer que c'est quelque chose qui se fait, et donc que le Matrix free peut intéresser d'autres personnes.}
+    }
     Adding a new model amount to writing the function $\operatorname{F}$ from equation (\ref{eq:pde}), or equivalently $\operatorname{G}$ from equation (\ref{eq:ode}).
     Usually, the development of this function is straightforward as it is given explicitly from the equations.
     However, the development of the Jacobian matrix is much more difficult.
     This is why the new models can not yet compute Jacobian matrices, and therefore can not use implicit methods as of today.
-    \LM{Je dirais plutôt qu'on ne se précipite pas sur l'effort d'évaluation du jacobien, pas qu'on ne peut pas l'évaluer, non?}
-    \PS{Concretement, on ne peux pas évaluer la jacobienne de MF5 et MTE, donc les deux ?}
     The Jacobian-Free Newton--Krylov method is then a nice way to use implicit methods as it does not require the Jacobian matrix.
     Because the matrix-free approximation is written in a generic fashion, it can be used on any fluid model.
     In the following, we will use the JFNK method on a new fluid model that does not have an available Jacobian matrix and therefore can not use traditional implicit methods.
@@ -637,8 +638,11 @@
         The result is similar to the previous one, except it is even more in favour of the JFNK method.
         The implicit method reaches much lower residual norms than the explicit one.
         With the full reactive model, the limiting factor for the implicit method came from the stiffness due to the electrons.
+        \PS{Here, the term stifness corresponds to both stifness from the equation and difficulties arising from the implementation, that uses tools such as \emph{min/max} functions that adds non-differentiability.}
+        \footnote{
         \LM{On est sûr que c'est la raideur, ou c'est le fait que l'on patche, lorsqu'il n'y a plus d'électrons, par un raccord non C1?}
         \GP{Lionel, je comprends pas ce que tu sous entend... Il faudra qu'on clarifie après les vacances...}
+        }
         Without them, the convergence is significantly faster.
         The time step for the explicit method however is under the same limitations with both reactive models.
         The gain in CPU time is then huge, in favour of the JFNK method.
