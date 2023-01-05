@@ -65,6 +65,10 @@
     By implementing their method on two simple coupling problems, they finally showed the value of their method compared to the more standard method.
     If this method is well fitted for their calculations, it is however only implemented for simple problems, less complex than the multiphysics problems that CEDRE wishes to solve.
     Moreover, the tests carried out are on problems on an academic scale, and not on an industrial scale.
+    The same issue concerns \cite{CouletteFranckHelluyEtAl2019}, in which authors used relaxation techniques to transform the original equation into a simpler one.
+    Furthermore, this seems to be specific to a fluid model, and would not scale well in CEDRE where many different models coexist.
+    A similar idea uses splitting of the multiphysics parts to use IMplicit-Explicit methods \cite{HuangPaznerPerssonEtAl2020}.
+    It seems well fitted for out multiphysics applications, however we assumed that having a better implicit solver was a priority.
 
     \paragraph{}
     At the same time, tools used in aerodynamic simulation could prove interesting for multiphysics problems.

@@ -58,6 +58,7 @@
     Let us focus on methods known as exponential methods.
     Despite being known for a long time \cite{Pope1963}, they were not widely used in computational fluid dynamics, because of some difficulties that are explained later, but still interested some scientists \cite{EdwardsTuckermanFriesnerEtAl1994}.
     They started to come back in the literature \cite{HochbruckOstermann2005, HochbruckOstermann2010} and are now being used on applications similar to ours \cite{NieZhangZhao2006, BhattKhaliqWade2018}.
+    They are still actively studied \cite{NarayanamurthiSandu2020, CaliariCassiniZivcovich2023}
 
     \paragraph{}
     The ordinary differential equation
@@ -81,6 +82,8 @@
     \end{equation}
     The exponential integration methods then approximate the integral to compute the next value $y_{n+1}$.
     What defines the method is how it approximates this integral.
+    For instances, methods that use the Taylor expansion of the nonlinear term are called exponential Taylor methods \cite{KoskelaOstermann2013}.
+    Here we focus on methods that use Runge-Kutta like quadratures.
     As we can see in equation (\ref{eq:ode_int}), the linear part is treated exactly and the nonlinear one is approximated.
     If there is no nonlinear part, with $N = 0$, then the solution $y_{n+1}$ is exact.
     If there is no linear part, with $L = 0$, then equation (\ref{eq:ode_int}) transforms into
