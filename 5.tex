@@ -259,8 +259,8 @@
       The vortex is defined by its characteristic radius $R_0 = 0.005\si{\meter}$ and its intensity $\beta = 0.2$.
       It corresponds in fact to the same vortex as the one used with CEDRE, in size and in intensity, but it has been scaled down into a smaller box and dimensioned to some given pressure and temperature.
       The present choice is in agreement with the prescription of the International Workshop on High Order CFD Methods.
-      \PS{For this application, the Spectral difference method uses the approximate Riemann solver of Roe.}
-      \footnote{\GP{Quel solveur de Riemann ???? Tu ne l'as pas dit...}}
+      For this application, the Spectral difference method uses the approximated Riemann solver of Roe.
+
 
       \paragraph{}
       The period for those numerical values is $T = L / U_\infty = \num{5.760e-4}\si{\second}$.
@@ -410,13 +410,13 @@
       over the domain $\left(x, y, z\right) \in \left[-\pi L, \pi L\right]^3$, as seen in figure \ref{fig:tgv_fields}.
       Even if $\vec{u}_z = 0$ at the initialisation, it becomes non-null afterwards and the problem is fully three-dimensional.
       The initial flow transitions to turbulence: the initial large scales decay into smaller ones, that end up dissipated.
-      \PS{Figure \ref{fig:tgv_fields} shows contours for which the second invariant of the velocity gradient, also called Q-criterion, is equal to 0.1.
-      This was chosen as it roughly indicates the sizes of turbulences structures.}
+      Figure \ref{fig:tgv_fields} shows contours for which the second invariant of the velocity gradient, also called Q-criterion, is equal to 0.1.
+      This was chosen as it roughly indicates the sizes of turbulent structures.
 
       \begin{figure}
         \centering
         \includegraphics[width=\textwidth]{figures/tgv_fields.png}
-        \caption{\PS{0.1 contours of the Q-criterion coloured by velocity norm of the Taylor--Green vortex at various times.}}
+        \caption{Isocontour (0.1) of the Q-criterion coloured by velocity norm of the Taylor--Green vortex at various times.}
         \label{fig:tgv_fields}
       \end{figure}
 
@@ -427,7 +427,7 @@
       Using the convective time $t_c = L / U_\infty$, it is known that the maximum dissipation happens around $8 t_c$, and after $15 t_c$ the flow is fully turbulent without any trace of the initial structures.
       The definition of the test case is part of the International Workshop on High-Order CFD Methods.
       A reference solution is also provided by the workshop, obtained using a spectral solver on a very refined mesh.
-      \PS{The Spectral difference method uses the approximate Riemann solver of Roe.}
+      The Spectral difference method uses the approximated Riemann solver of Roe.
 
       \paragraph{}
       The values of interest for this test case are the temporal evolution of the mean turbulent kinetic energy over the computational domain $\Omega$:
@@ -458,14 +458,15 @@
 
       \paragraph{}
       The result of all simulations is shown in figure \ref{fig:tgv_curves}.
-      \PS{As a simulation corresponds to the computation with the largest time step for which the results are satisfying, this figure does not give much information.
+      As a simulation corresponds to the computation with the largest time step for which the results are satisfying, this figure does not give much information.
       At first sight, all methods produce results that are close to reference data.
       When looking more closely, there are some differences with the reference, but all JAGUAR computations are almost indistinguishable from one another.
       As a consequence, one can argue that the error from the spatial discretisation method is the origin of the difference between
       the reference and JAGUAR computations.
       It is then reasonable to assume that all curves correspond to valid computations.
-      They all give the same result, which is the exact solution minus the error from the spatial discretisation method.
-      Finally, as we compare methods that give similar physical results, what interests us is their statistics.}
+      They all give the same result, which is \GP{our reference solution for the considered mesh and the set of parameters of the study}.
+      Finally, as those methods give similar physical results, analyzing their statistics could be an efficient way to compare them.
+      %Finally, as we compare methods that give similar physical results, what interests us is their statistics.
 
       \begin{figure}
         \centering
@@ -542,11 +543,11 @@
       This is an unsteady LES simulation: the interest lies in the time average values after a long simulation time.
 
       \paragraph{}
-      \PS{
+      %\PS{
       From the previous results, we decide to use the exponential Rosenbrock--Euler method for the time integration.
       Indeed, it seems to be the quickest method, and we wish here to reduce the computational time.
       The other exponential methods would improve the accuracy of the physical results, so we keep only the Rosenbrock--Euler method to simplify the analysis.
-      }
+      %}
 
       \begin{figure}
         \centering
@@ -570,13 +571,13 @@
       \end{figure}
 
       \paragraph{}
-      \PS{
+      %\PS{
       The physical value investigated in \cite{BrunetCronerMinotEtAl2018} is the heat transfer coefficient.
       The reader is invited to look at this reference for the interpretation of the physical results.
       Here, we assume that JAGUAR produces a satisfying solution with its classical explicit TVD(3, 3) method, and we compare it with the exponential Rosenbrock--Euler method.
       The heat transfer coefficient is shown in figure \ref{fig:ls89_heat_transfer_coefficient}, and we see that the results are indistinguishable between the two methods.
       This result validates the capability of exponential methods to be used as time integration methods in computational fluid dynamics.
-      }
+      %}
 
       \begin{figure}
         \centering
@@ -589,7 +590,7 @@
       \paragraph{}
       Our logic was that if the time step for this application is limited by viscous effects, and viscous effects are mainly linear, exponential methods would accept higher time steps, and in the end, the computation would be faster.
       However, our initial hypothesis was wrong: the time step is limited by advection and not diffusion.
-      It was originally true at the time of some previous investigations \cite{BrunetCronerMinotEtAl2018}, but as the diffusive scheme was greatly improved \PS{REF des travaux de Hugues ?}, it is not true anymore.
+      It was originally true at the time of some previous investigations \cite{BrunetCronerMinotEtAl2018}, but as the diffusive scheme was greatly improved \cite{Marchal2023}, it is not true anymore.
       This is why in the end, there are no significant improvements in terms of computational speed when using exponential integration methods.
       Even if we did not find the improvements we were originally looking for, this numerical experiment did show that exponential time integration methods can be used in actual computational fluid applications.
 
