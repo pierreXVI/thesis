@@ -299,7 +299,7 @@
     In particular, in our context, computing the powers of the matrix is completely out of the question.
     The dimension of our matrices can get large, and the powers of the matrices would lose the sparsity.
     In fact, any approximation working directly with the matrix would not be satisfying.
-    The question of how to evaluate $\varphi$-functions in the context of exponential methods is a subject of active research, as in this extremely recent reference \cite{CaliariCassiniZivcovich2023}. 
+    The question of how to evaluate $\varphi$-functions in the context of exponential methods is a subject of active research, as in this extremely recent reference \cite{CaliariCassiniZivcovich2023}.
     We will however use more standard well-established algorithms.
 
     \paragraph{}
@@ -317,7 +317,7 @@
       Moreover, exponential methods do not need to evaluate the exponential or the $\varphi$-functions of the matrix, but their effect when applied to a vector.
       For instance, the exponential Rosenbrock--Euler method from equation (\ref{eq:expeuler}) does not need to compute $\varphi_1\left(\Delta t L\right)$ but $\varphi_1\left(\Delta t L\right)f\left(y_n\right)$.
       It means we do not need to evaluate a given function $h$ on the matrix $A$, but to compute the effect of $h\left(A\right)$ on the vector $b$.
-      For exponential methods, $h$ is a linear combination of $\varphi$-functions, and is therefore analytic.
+      \PS{For exponential methods, $h$ is a linear combination of $\varphi$-functions, and is therefore analytic.}
       The idea, originally developed to approximate eigenvalues of a large sparse matrix, is to use a Krylov subspace method to approximate $h\left(A\right)b$ \cite{Saad1992, Sidje1998}.
       In fact, it is similar to using a Krylov subspace method to solve the linear system $Ax = b$: it means taking $h = z \mapsto z^{-1}$.
       The Krylov subspace method produces with the Arnoldi iteration the relation, at the $m$-th iteration:

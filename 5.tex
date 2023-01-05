@@ -464,9 +464,8 @@
       As a consequence, one can argue that the error from the spatial discretisation method is the origin of the difference between
       the reference and JAGUAR computations.
       It is then reasonable to assume that all curves correspond to valid computations.
-      They all give the same result, which is \GP{our reference solution for the considered mesh and the set of parameters of the study}.
-      Finally, as those methods give similar physical results, analyzing their statistics could be an efficient way to compare them.
-      %Finally, as we compare methods that give similar physical results, what interests us is their statistics.
+      They all give the same result, which is taken as the reference solution for the considered mesh and the set of parameters of the study.
+      Finally, as those methods give similar physical results, the correct way to compare them is to analse their statistics.
 
       \begin{figure}
         \centering
@@ -543,11 +542,9 @@
       This is an unsteady LES simulation: the interest lies in the time average values after a long simulation time.
 
       \paragraph{}
-      %\PS{
       From the previous results, we decide to use the exponential Rosenbrock--Euler method for the time integration.
       Indeed, it seems to be the quickest method, and we wish here to reduce the computational time.
       The other exponential methods would improve the accuracy of the physical results, so we keep only the Rosenbrock--Euler method to simplify the analysis.
-      %}
 
       \begin{figure}
         \centering
@@ -571,13 +568,11 @@
       \end{figure}
 
       \paragraph{}
-      %\PS{
       The physical value investigated in \cite{BrunetCronerMinotEtAl2018} is the heat transfer coefficient.
       The reader is invited to look at this reference for the interpretation of the physical results.
       Here, we assume that JAGUAR produces a satisfying solution with its classical explicit TVD(3, 3) method, and we compare it with the exponential Rosenbrock--Euler method.
       The heat transfer coefficient is shown in figure \ref{fig:ls89_heat_transfer_coefficient}, and we see that the results are indistinguishable between the two methods.
       This result validates the capability of exponential methods to be used as time integration methods in computational fluid dynamics.
-      %}
 
       \begin{figure}
         \centering
@@ -590,7 +585,7 @@
       \paragraph{}
       Our logic was that if the time step for this application is limited by viscous effects, and viscous effects are mainly linear, exponential methods would accept higher time steps, and in the end, the computation would be faster.
       However, our initial hypothesis was wrong: the time step is limited by advection and not diffusion.
-      It was originally true at the time of some previous investigations \cite{BrunetCronerMinotEtAl2018}, but as the diffusive scheme was greatly improved \cite{Marchal2023}, it is not true anymore.
+      It was originally true at the time of some previous investigations \cite{BrunetCronerMinotEtAl2018}, but as the diffusive scheme was recently greatly improved \cite{MarchalDeniauBoussugeEtAl2023}, it is not true anymore.
       This is why in the end, there are no significant improvements in terms of computational speed when using exponential integration methods.
       Even if we did not find the improvements we were originally looking for, this numerical experiment did show that exponential time integration methods can be used in actual computational fluid applications.
 

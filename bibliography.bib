@@ -1,12 +1,5 @@
 % Encoding: UTF-8
 
-@article{Marchal2023,
-  author={Marchal, Thomas and Deniau, Hugues and Boussuge, J-F. and Cuenot, Bénédicte and Mercier, Renaud},
-  title = {Extension of the Spectral difference method to premixed laminar and turbulent combustion},
-  journal={submitted to Flow, Turbulence and Combustion},
-  year={2022}
-}
-
 @Article{OllivierGoochVanAltena2002,
   author   = {Ollivier-Gooch, Carl and Van Altena, Michael},
   journal  = {Journal of Computational Physics},
@@ -2144,6 +2137,14 @@ Studies were made at the Naval Ordnance Laboratory of the shock detachment dista
   doi      = {10.1016/j.cam.2022.114973},
   keywords = {Backward error analysis, Exponential integrators, Stiff ODEs, Matrix exponential, Linear combinations of -functions},
   url      = {https://www.sciencedirect.com/science/article/pii/S0377042722005714},
+}
+
+@Article{MarchalDeniauBoussugeEtAl2023,
+  author   = {Marchal, Thomas and Deniau, Hugues and Boussuge, J-F. and Cuenot, Bénédicte and Mercier, RenaudMarchal, Thomas and Deniau, Hugues and Boussuge, Jean-François and Cuenot, Bénédicte and Mercier, Renaud},
+  journal  = {Flow, Turbulence and Combustion (under review)},
+  title    = {Extension of the Spectral Difference method to premixed laminar and turbulent combustion},
+  year     = {2023},
+  abstract = {A Spectral Difference (SD) algorithm on tensor-product elements which solves the reacting compressible Navier-Stokes equations is presented. The classical SD algorithm is shown to be unstable when a multi-species gas where thermodynamic properties depend on temperature and species mass fractions is considered. It is demonstrated that computing primitive variables from conservative variables at solution points and extrapolating them at flux points, rather than conservative variables, make the SD method stable for such case. In addition, a new methodology, more stable, for computing the diffusive fluxes at an interface is detailed. To allow the simulation of combustion, characteristic and wall boundary conditions for multi-species flows in the SD framework are introduced and the thickened flame turbulent combustion model is adapted to the SD context. Validation test cases from one-dimensional and two-dimensional laminar flames to a three-dimensional turbulent flame have been performed showing excellent agreement with each of the reference solutions. To the authors' knowledge, this is the first time that a 3D turbulent flame is simulated using the SD method. The interest of employing a high-order method, such as the SD, in combustion is demonstrated: high values of the polynomial degree improve the quality of the results which advocates for the use of p-refinement when simulating reacting flows.},
 }
 
 @Comment{jabref-meta: databaseType:bibtex;}
