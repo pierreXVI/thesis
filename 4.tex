@@ -58,7 +58,7 @@
     Let us focus on methods known as exponential methods.
     Despite being known for a long time \cite{Pope1963}, they were not widely used in computational fluid dynamics, because of some difficulties that are explained later, but still interested some scientists \cite{EdwardsTuckermanFriesnerEtAl1994}.
     They started to come back in the literature \cite{HochbruckOstermann2005, HochbruckOstermann2010} and are now being used on applications similar to ours \cite{NieZhangZhao2006, BhattKhaliqWade2018}.
-    They are still actively studied \cite{NarayanamurthiSandu2020, CaliariCassiniZivcovich2023}
+    \reviewers{They are still actively studied \cite{NarayanamurthiSandu2020, CaliariCassiniZivcovich2023}.}
 
     \paragraph{}
     The ordinary differential equation
@@ -82,8 +82,10 @@
     \end{equation}
     The exponential integration methods then approximate the integral to compute the next value $y_{n+1}$.
     What defines the method is how it approximates this integral.
+    \reviewers{
     For instances, methods that use the Taylor expansion of the nonlinear term are called exponential Taylor methods \cite{KoskelaOstermann2013}.
     Here we focus on methods that use Runge-Kutta like quadratures.
+    }
     As we can see in equation (\ref{eq:ode_int}), the linear part is treated exactly and the nonlinear one is approximated.
     If there is no nonlinear part, with $N = 0$, then the solution $y_{n+1}$ is exact.
     If there is no linear part, with $L = 0$, then equation (\ref{eq:ode_int}) transforms into
@@ -240,7 +242,7 @@
     \begin{equation}
       \sum_{i = 1}^k b_i = \varphi_1 .
     \end{equation}
-    It is reasonable to want multiple-stage methods to have a higher order than the single-stage exponential Euler method, and therefore it must also have
+    \reviewers{It is reasonable to want multiple-stage methods to have a higher order than the single-stage exponential Euler method, and therefore it must also have}
     \begin{equation}
        \sum_{j = 1}^{i-1} a_{ij} = z \mapsto c_i \varphi_1\left(c_i z\right), \quad 1 \leq i \leq k
     \end{equation}
@@ -262,7 +264,7 @@
     They are both 2-stage exponential Rosenbrock methods and achieve respectively a third and fourth order of accuracy.
     This shows the quality of exponential Rosenbrock methods.
     Their Butcher tableaux are in table \ref{tab:exprb_butcher}.
-    For both methods, the most complex coefficient is $b_1$, however equation (\ref{eq:exprb_defect}) tells us that it will not be computed.
+    \reviewers{For both methods, the coefficient that is the hardest to get is $b_1$, however equation (\ref{eq:exprb_defect}) tells us that it will not be computed.}
     We decided to work with those two methods, along with the Rosenbrock--Euler method, as they are simple among exponential methods and are supposedly well suited for our problems.
     They give us methods with orders of accuracy from 2 to 4.
     But what is interesting to us is that on linear problems those methods are exact, or with an infinite order of accuracy.
@@ -302,8 +304,10 @@
     In particular, in our context, computing the powers of the matrix is completely out of the question.
     The dimension of our matrices can get large, and the powers of the matrices would lose the sparsity.
     In fact, any approximation working directly with the matrix would not be satisfying.
+    \reviewers{
     The question of how to evaluate $\varphi$-functions in the context of exponential methods is a subject of active research, as in this extremely recent reference \cite{CaliariCassiniZivcovich2023}.
     We will however use more standard well-established algorithms.
+    }
 
     \paragraph{}
     The other issue with exponential methods is the question of the Jacobian matrix.
@@ -319,11 +323,13 @@
       Instead of looking for the matrix exponential as an infinite series, we can look for an $N$-order polynomial.
       Moreover, exponential methods do not need to evaluate the exponential or the $\varphi$-functions of the matrix, but their effect when applied to a vector.
       For instance, the exponential Rosenbrock--Euler method from equation (\ref{eq:expeuler}) does not need to compute $\varphi_1\left(\Delta t L\right)$ but $\varphi_1\left(\Delta t L\right)f\left(y_n\right)$.
+      \reviewers{
       It means we do not need to evaluate a given function $h$ on the matrix $A$, but to compute the effect of $h\left(A\right)$ on the vector $b$.
       For exponential methods, $h$ is a linear combination of $\varphi$-functions, and is therefore analytic.
       The idea, originally developed to approximate eigenvalues of a large sparse matrix, is to use a Krylov subspace method to approximate $h\left(A\right)b$ \cite{Saad1992, Sidje1998}.
       In fact, it is similar to using a Krylov subspace method to solve the linear system $Ax = b$: it means taking $h = z \mapsto z^{-1}$.
       With the Arnoldi iteration, the Krylov subspace method produces at the $m$-th iteration the relation:
+      }
       \begin{equation}\label{eq:arnoldi}
         AV_m = V_{m+1} \tilde{H}_m = V_m H_m + h_{m+1, m} v_{m+1} e_m^T .
       \end{equation}
@@ -371,7 +377,7 @@
 
       \paragraph{}
       With the Krylov subspace method just described, the next step is the computation of the exponential of the smaller Hessenberg matrix $H_m$.
-      Attention is now paid to how to compute the exponential of relatively small dense matrices.
+      Attention is now paid \reviewers{to} how to compute the exponential of relatively small dense matrices.
       Many methods use special properties of the matrices but our matrices do not share the same properties.
       Instead of using a truncated Taylor series, using the Padé approximant seems to be the best option \cite{HighamAlMohy2010}.
       The exponential function is approximated by the $\left[k/m\right]$ Padé approximant:
@@ -493,7 +499,7 @@
     To reduce the number of variables in this comparison, both will use the traditional Jacobian matrices which is the low-order approximation.
     We then end up with two equivalent methods in terms of computational cost.
     We simulate the vortex advection throughout one period $\Delta T$.
-    The solution for each method is shown in figure \ref{fig:covo_cedre_fields}.
+    \reviewers{The solution for each method is shown} in figure \ref{fig:covo_cedre_fields}.
     We first look at the bottom center and right simulations.
     We see that the explicit Runge--Kutta method preserves well enough the vortex compared to the implicit method.
     It is because the RK4 method is a fourth-order method whereas the implicit method is a first-order method.

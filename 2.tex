@@ -302,7 +302,7 @@
     \subsection{Linear system normalisation}
 
       \paragraph{}
-      An available option in BIBCEDRE for the linear solver is normalisation.
+      An available option in BIBCEDRE for the linear \reviewers{solver} is normalisation.
       It consists in taking an invertible diagonal matrix $\mathcal{N}$ and rewriting the linear system (\ref{eq:linear}) as:
       \begin{equation}
         \tilde{A}\tilde{x} = \tilde{b}
@@ -312,7 +312,7 @@
       \end{equation}
       One can check that it is equivalent to the original linear system.
       The diagonal coefficients of the matrix $\mathcal{N}$ are estimates of the order of magnitude of the corresponding degrees of freedom.
-      This estimation can be computed at each time step depending on the current state, or can simply be constant, equal to some reference values, depending on the choice of the user.
+      This estimation can be computed at each time step depending on the current state, or can simply be constant\reviewers{,} equal to some reference values, depending on the choice of the user.
       When working with Euler equations, for example, the numerical values corresponding to the energy degrees of freedom are usually many orders of magnitudes over other degrees of freedom.
       The goal of this normalisation is to bring back each vector component at the same level in the linear system.
       It can also be seen as a combination of a left preconditioning by $\mathcal{N}^{-1}$ and a right preconditioning by $\mathcal{N}$.
@@ -345,7 +345,7 @@
       \begin{itemize}
         \item The \emph{outer} left preconditioning is applied once before the linear solve.
           It changes the numerical values of the matrix coefficients and the right-hand side.
-          Once it is applied, the resolution can continue as if nothing had happened.
+          Once it is applied, the \reviewers{resolution} can continue as if nothing had happened.
         \item The \emph{inner} right preconditioning is applied before each matrix-vector product, and once more at the end of the solve.
       \end{itemize}
       Handling the inner preconditioning with our matrix-free implementation is easy as those two operations are independent of each other.
