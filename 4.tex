@@ -323,7 +323,7 @@
       \PS{For exponential methods, $h$ is a linear combination of $\varphi$-functions, and is therefore analytic.}
       The idea, originally developed to approximate eigenvalues of a large sparse matrix, is to use a Krylov subspace method to approximate $h\left(A\right)b$ \cite{Saad1992, Sidje1998}.
       In fact, it is similar to using a Krylov subspace method to solve the linear system $Ax = b$: it means taking $h = z \mapsto z^{-1}$.
-      The Krylov subspace method produces with the Arnoldi iteration the relation, at the $m$-th iteration:
+      With the Arnoldi iteration, the Krylov subspace method produces at the $m$-th iteration the relation:
       \begin{equation}\label{eq:arnoldi}
         AV_m = V_{m+1} \tilde{H}_m = V_m H_m + h_{m+1, m} v_{m+1} e_m^T .
       \end{equation}
@@ -395,6 +395,7 @@
       It is what gives its name to the method.
 
 
+    \pagebreak
     \subsection{Evaluating the \texorpdfstring{$\varphi$}{phi}-functions}
 
       \paragraph{}
@@ -447,7 +448,6 @@
   Because we use the formulation (\ref{eq:exprb_defect}) and the fact that the defects are small, adding more stages to the exponential method will be less expensive than adding stages to the implicit method.
 
 
-  \pagebreak
   \section{First developments in CEDRE}
 
     \paragraph{}
