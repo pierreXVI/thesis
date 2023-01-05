@@ -439,10 +439,6 @@
     But as CEDRE is under constant development, new models are added in order to handle more finely various multiphysics phenomena.
     For example, a new model was recently added to better handle multiphasic flows \cite{Cordesse2020}.
     Another model that we will investigate in the following was added to better account for thermodynamic disequilibriums.
-    %\footnote{
-    %\LM{mais du coup tu ne l'utilises pas du tout ce nouveau modèle dans la suite, non?}
-    %\PS{Nope c'est juste pour montrer que c'est quelque chose qui se fait, et donc que le Matrix free peut intéresser d'autres personnes.}
-    %}
     Adding a new model amount to writing the function $\operatorname{F}$ from equation (\ref{eq:pde}), or equivalently $\operatorname{G}$ from equation (\ref{eq:ode}).
     Usually, the development of this function is straightforward as it is given explicitly from the equations.
     However, the development of the Jacobian matrix is much more difficult.
@@ -639,10 +635,6 @@
         The implicit method reaches much lower residual norms than the explicit one.
         With the full reactive model, the limiting factor for the implicit method came from the stiffness due to the electrons.
         Here, the term stiffness corresponds to both stiffness from the equation and difficulties arising from the implementation, that uses tools such as \emph{min/max} functions that add non-differentiability.
-        %\footnote{
-        %\LM{On est sûr que c'est la raideur, ou c'est le fait que l'on patche, lorsqu'il n'y a plus d'électrons, par un raccord non C1?}
-        %\GP{Lionel, je comprends pas ce que tu sous entend... Il faudra qu'on clarifie après les vacances...}
-        %}
         Without them, the convergence is significantly faster.
         However, the time step for the explicit method is under the same limitations with both reactive models.
         The gain in CPU time is then huge, in favour of the JFNK method.
