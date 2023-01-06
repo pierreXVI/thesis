@@ -572,11 +572,12 @@
       The reader is invited to look at this reference for the interpretation of the physical results.
       Here, we assume that JAGUAR produces a satisfying solution with its classical explicit TVD(3, 3) method, and we compare it with the exponential Rosenbrock--Euler method.
       The heat transfer coefficient is shown in figure \ref{fig:ls89_heat_transfer_coefficient}, and we see that the results are indistinguishable between the two methods.
+      In this figure, the origin of the curvilinear abscissa corresponds to the leftmost point on the blade, and positive (respectively negative) abscissa corresponds to the upper (respectively lower) part of the blade.
       This result validates the capability of exponential methods to be used as time integration methods in computational fluid dynamics.
 
       \begin{figure}
         \centering
-        % \includegraphics[width=\textwidth]{figures/ls89_heat_transfer_coefficient.png}
+        \includegraphics[width=\textwidth]{figures/ls89_heat_transfer_coefficient.png}
         \caption{Heat transfer coefficient from the TVDRK(3, 3) and exponetial Rosenbrock--Euler methods.
         Negative abscissa corresponds to the lower part of the blade and positive abscissa to the upper part.}
         \label{fig:ls89_heat_transfer_coefficient}

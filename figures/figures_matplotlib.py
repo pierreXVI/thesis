@@ -1287,6 +1287,70 @@ def tgv_curves():
     # plt.show()
 
 
+def ls89_heat_transfer_coefficient():
+    def sort_on_foil(coordinates_array, b_x=0.0225, b_y=-0.01):
+        return np.argsort(np.angle(coordinates_array[:, 0] - b_x + 1j * (coordinates_array[:, 1] - b_y)))
+
+    def get_foil_edges(coordinates_array, mode=0):
+        if mode == 0:
+            coordinates_array_c = (coordinates_array[:, 0] + 1j * coordinates_array[:, 1]) * np.exp(1j * np.deg2rad(55))
+            i_trail = np.argmax(coordinates_array_c.real)
+            i_lead = np.argmin(coordinates_array_c.real)
+        elif mode == 1:
+            i_trail = np.argmax(coordinates_array[:, 0])
+            i_lead = np.argmin(coordinates_array[:, 0])
+        else:
+            i_trail = np.argmin(coordinates_array[:, 1])
+            i_lead = np.argmin(coordinates_array[:, 0])
+        return i_lead, i_trail
+
+    fig = plt.figure(figsize=[5.78851, 2.894255])
+    ax = fig.add_subplot(111)
+    ax.grid(True)
+    ax.set_xlabel('Curvilinear abscissa (mm)')
+    ax.set_ylabel(r'Heat transfer coefficient ($\operatorname{W}\operatorname{m}^{-2}\operatorname{K}^{-1}$)')
+
+    utils.fetch_file('/tmp_user/sator/pseize/LS89/RK/RUN_1/wall_2d')
+    reader = pvlib.pvs.OpenDataFile(utils.fetch_file('/tmp_user/sator/pseize/LS89/RK/RUN_1/wall_2d.pvd'))
+    coords, heat_flux = pvlib.get_point_data(reader, 'av_wall_heat')
+    new_indices = sort_on_foil(coords)
+    i_leading_edge, i_trailing_edge = get_foil_edges(coords, mode=1)
+    i_trailing_edge = new_indices.tolist().index(i_trailing_edge)
+    i_leading_edge = (new_indices.tolist().index(i_leading_edge) - i_trailing_edge) % coords.shape[0]
+    new_indices = np.roll(new_indices, -i_trailing_edge)
+    coords = np.take_along_axis(coords, new_indices[:, None], axis=0)
+    s = np.zeros(coords.shape[0])
+    for i in range(1, i_leading_edge):
+        s[i] = s[i - 1] - np.sqrt((coords[i, 0] - coords[i - 1, 0]) ** 2 + (coords[i, 1] - coords[i - 1, 1]) ** 2)
+    s[:i_leading_edge] -= s[i_leading_edge - 1]
+    for i in range(i_leading_edge + 1, coords.shape[0]):
+        s[i] = s[i - 1] - np.sqrt((coords[i, 0] - coords[i - 1, 0]) ** 2 + (coords[i, 1] - coords[i - 1, 1]) ** 2)
+    ax.plot(1000 * s, np.take_along_axis(heat_flux, new_indices, axis=0) / (297.75 - 401.96), label='TVDRK(3, 3)', lw=3)
+
+    utils.fetch_file('/tmp_user/sator/pseize/LS89/EXP/RUN_20/wall_2d')
+    reader = pvlib.pvs.OpenDataFile(utils.fetch_file('/tmp_user/sator/pseize/LS89/EXP/RUN_20/wall_2d.pvd'))
+    coords, heat_flux = pvlib.get_point_data(reader, 'av_wall_heat')
+    new_indices = sort_on_foil(coords)
+    i_leading_edge, i_trailing_edge = get_foil_edges(coords, mode=1)
+    i_trailing_edge = new_indices.tolist().index(i_trailing_edge)
+    i_leading_edge = (new_indices.tolist().index(i_leading_edge) - i_trailing_edge) % coords.shape[0]
+    new_indices = np.roll(new_indices, -i_trailing_edge)
+    coords = np.take_along_axis(coords, new_indices[:, None], axis=0)
+    s = np.zeros(coords.shape[0])
+    for i in range(1, i_leading_edge):
+        s[i] = s[i - 1] - np.sqrt((coords[i, 0] - coords[i - 1, 0]) ** 2 + (coords[i, 1] - coords[i - 1, 1]) ** 2)
+    s[:i_leading_edge] -= s[i_leading_edge - 1]
+    for i in range(i_leading_edge + 1, coords.shape[0]):
+        s[i] = s[i - 1] - np.sqrt((coords[i, 0] - coords[i - 1, 0]) ** 2 + (coords[i, 1] - coords[i - 1, 1]) ** 2)
+    ax.plot(1000 * s, np.take_along_axis(heat_flux, new_indices, axis=0) / (297.75 - 401.96),
+            label='exponential Rosenbrock--Euler')
+    ax.legend()
+
+    fig.subplots_adjust(0.12, 0.15, 0.99, 0.99)
+    # fig.savefig('ls89_heat_transfer_coefficient.png')
+    plt.show()
+
+
 if __name__ == '__main__':
     # rk_stab()
     # ab_stab()
@@ -1311,4 +1375,5 @@ if __name__ == '__main__':
     # covo_rk()
     # covo_exp()
     # tgv_curves()
+    # ls89_heat_transfer_coefficient()
     pass
