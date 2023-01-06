@@ -222,7 +222,7 @@
         This is to reach a state close enough to the steady solution more quickly before analysing the convergence of our methods.
         After that, the computations are restarted, with the traditional method on one side and the matrix-free method on the other.
         The residuals are given in figures \ref{fig:rae_residuals_fine_l1} and \ref{fig:rae_residuals_fine_linf}.
-        Overall, it takes much more iterations to decrease residual norms \reviewers{for} this test case compared to the previous one.
+        Overall, it takes much more iterations to decrease residual norms for this test case compared to the previous one.
         It is due to the larger number of cells, and the presence of small flattened cells in the boundary layer.
 
         \paragraph{}
@@ -263,7 +263,7 @@
         In particular, there are cells for which $\tilde{\nu}$ is null in the computational domain, which should not happen with the standard Spalart--Allmaras model.
         Figure \ref{fig:rae_residuals_fine_linf} shows that the $\infty$-norm of the residual on the conservative variable $\rho \tilde{\nu}$ normalised by the initial residual is near $10^0$, so figure \ref{fig:rae_field_fine} highlights cells for which the residual is higher than $10^{-0.1}$.
         Those cells correspond to the ones for which $\tilde{\nu} = 0$.
-        It shows a flaw \reviewers{in} the standard time integration method, as it has non-physical features in the solution that prevent \reviewers{residual convergence}.
+        It shows a flaw in the standard time integration method, as it has non-physical features in the solution that prevent residual convergence.
         In contrast, it shows the quality of the JFNK method on this application.
 
         \begin{figure}
@@ -298,7 +298,7 @@
 
         \paragraph{}
         The two-dimensional mesh is shown in figure \ref{fig:sphere_fields}.
-        It is a regular mesh made of quadrangles, with refinement in the radial direction at the wall boundary \reviewers{and the} expected shock location.
+        It is a regular mesh made of quadrangles, with refinement in the radial direction at the wall boundary and the expected shock location.
         The refinement at the wall boundary helps to compute more precisely the physical phenomena that happen at said boundary.
         The refinement at the shock is a requirement of the spatial discretisation methods.
         In order to get a clean and slim shock, the cells near the shock must have a high aspect ratio.
@@ -438,7 +438,7 @@
     This first-order matrix is easily computed for the usual Navier--Stokes equations.
     But as CEDRE is under constant development, new models are added in order to handle more finely various multiphysics phenomena.
     For example, a new model was recently added to better handle multiphasic flows \cite{Cordesse2020}.
-    \reviewers{Another model that we will investigate in the following was added to better account for thermodynamic disequilibriums.}
+    Another model that we will investigate in the following was added to better account for thermodynamic disequilibriums.
     Adding a new model amount to writing the function $\operatorname{F}$ from equation (\ref{eq:pde}), or equivalently $\operatorname{G}$ from equation (\ref{eq:ode}).
     Usually, the development of this function is straightforward as it is given explicitly from the equations.
     However, the development of the Jacobian matrix is much more difficult.
@@ -628,15 +628,15 @@
 
         \paragraph{}
         We decided to do the same comparison as before but this time with the simplified reactive model.
-        \reviewers{The computation starts once again with a few iterations of the Midpoint method.}
+        The computation starts once again with a few iterations of the Midpoint method.
         Then, we compare the explicit method with the Jacobian-Free Newton--Krylov method.
         We show the corresponding residual norms in figure \ref{fig:sphere_tv_residuals}, while still using the elapsed real time as the $x$-axis.
         The result is similar to the previous one, except it is even more in favour of the JFNK method.
         The implicit method reaches much lower residual norms than the explicit one.
         With the full reactive model, the limiting factor for the implicit method came from the stiffness due to the electrons.
-        \reviewers{Here, the term stiffness corresponds to both stiffness from the equation and difficulties arising from the implementation, that uses tools such as \emph{min/max} functions that add non-differentiability.}
+        Here, the term stiffness corresponds to both stiffness from the equation and difficulties arising from the implementation, that uses tools such as \emph{min/max} functions that add non-differentiability.
         Without them, the convergence is significantly faster.
-        \reviewers{However, the time step for the explicit method} is under the same limitations with both reactive models.
+        However, the time step for the explicit method is under the same limitations with both reactive models.
         The gain in CPU time is then huge, in favour of the JFNK method.
 
         \begin{figure}
@@ -651,8 +651,8 @@
   \paragraph{}
   This chapter compared the performances of the Jacobian-Free Newton--Krylov method with already existing methods of CEDRE on typical applications.
   When compared to the traditional implicit method on turbulent RANS computations, it showed that the JFNK achieves better convergence in the residual norms, when the convergence of the traditional method is unsatisfactory.
-  The conclusion is similar \reviewers{when working} with typical reentry applications.
-  When the traditional method \reviewers{can} converge well, however, the result is no longer in favour of the JFNK method, although the difference between the two methods is not significant.
+  The conclusion is similar when working with typical reentry applications.
+  When the traditional method can converge well, however, the result is no longer in favour of the JFNK method, although the difference between the two methods is not significant.
   Finally, the matrix-free method was used with a newly implemented fluid model that does not give access to a Jacobian matrix yet.
   For this reason, using the JFNK method is the only way of using an implicit method.
   It was compared to the explicit Midpoint method that is currently used for computations with this fluid model.
