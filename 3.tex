@@ -648,13 +648,15 @@
         \end{figure}
 
 
-  \paragraph{}
-  This chapter compared the performances of the Jacobian-Free Newton--Krylov method with already existing methods of CEDRE on typical applications.
-  When compared to the traditional implicit method on turbulent RANS computations, it showed that the JFNK achieves better convergence in the residual norms, when the convergence of the traditional method is unsatisfactory.
-  The conclusion is similar when working with typical reentry applications.
-  When the traditional method can converge well, however, the result is no longer in favour of the JFNK method, although the difference between the two methods is not significant.
-  Finally, the matrix-free method was used with a newly implemented fluid model that does not give access to a Jacobian matrix yet.
-  For this reason, using the JFNK method is the only way of using an implicit method.
-  It was compared to the explicit Midpoint method that is currently used for computations with this fluid model.
-  The results are once again in favour of the JFNK method, both in terms of convergence and speed.
-  The superiority of the matrix-free method depends on the model's complexity level: the required time to reach the same convergence in residual norms is divided by 2 with the full model, and by 4 without ionisation.
+  \section*{Conclusion}
+
+    \paragraph{}
+    This chapter compared the performances of the Jacobian-Free Newton--Krylov method with already existing methods of CEDRE on typical applications.
+    When compared to the traditional implicit method on turbulent RANS computations, it showed that the JFNK achieves better convergence in the residual norms, when the convergence of the traditional method is unsatisfactory.
+    The conclusion is similar when working with typical reentry applications.
+    When the traditional method can converge well, however, the result is no longer in favour of the JFNK method, although the difference between the two methods is not significant.
+    Finally, the matrix-free method was used with a newly implemented fluid model that does not give access to a Jacobian matrix yet.
+    For this reason, using the JFNK method is the only way of using an implicit method.
+    It was compared to the explicit Midpoint method that is currently used for computations with this fluid model.
+    The results are once again in favour of the JFNK method, both in terms of convergence and speed.
+    The superiority of the matrix-free method depends on the model's complexity level: the required time to reach the same convergence in residual norms is divided by 2 with the full model, and by 4 without ionisation.
