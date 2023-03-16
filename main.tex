@@ -2,36 +2,39 @@
 
 \begin{document}
 
-\pagenumbering{Alph}
-\makeflyleaf
-\pagenumbering{arabic}
+\frontmatter
 
-\tableofcontents
-\addcontentsline{toc}{chapter}{Table of contents}
+  \makeflyleaf
 
-\input{introduction.tex}
+  \tableofcontents
+  \addcontentsline{toc}{chapter}{Table of contents}
 
+\mainmatter
 
-\part{Solving efficiently multiphysics steady problems}
+  \input{introduction.tex}
 
-  \input{1.tex}
+  \part{Solving efficiently multiphysics steady problems}
 
-  \input{2.tex}
+    \input{1.tex}
 
-  \input{3.tex}
+    \input{2.tex}
 
-\part{Unsteady time integration using large time steps}
+    \input{3.tex}
 
-    \input{4.tex}
+  \part{Unsteady time integration using large time steps}
 
-    \input{5.tex}
+      \input{4.tex}
 
-\input{conclusion.tex}
+      \input{5.tex}
 
-\input{appendices.tex}
+  \input{conclusion.tex}
 
-\bibliography{bibliography.bib}
-\bibliographystyle{ieeetr}
-\addcontentsline{toc}{chapter}{Bibliography}
+  \input{appendices.tex}
+
+\backmatter
+
+  \bibliography{bibliography.bib}
+  \bibliographystyle{ieeetr}
+  \addcontentsline{toc}{chapter}{Bibliography}
 
 \end{document}
