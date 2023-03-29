@@ -6,10 +6,13 @@
 
   \makeflyleaf
 
+  \csname @openrightfalse\endcsname
   \input{acknowledgements.tex}
 
   \tableofcontents
   \addcontentsline{toc}{chapter}{Table of contents}
+  \csname @openrighttrue\endcsname
+
 
 \mainmatter
 
@@ -19,19 +22,25 @@
 
     \input{1.tex}
 
+    \clearpage\null\thispagestyle{empty}
     \input{2.tex}
 
     \input{3.tex}
 
+  \clearpage\null\thispagestyle{empty}
   \part{Unsteady time integration using large time steps}
 
       \input{4.tex}
 
       \input{5.tex}
 
+  \clearpage\null\thispagestyle{empty}
   \input{conclusion.tex}
 
+  \clearpage\null\thispagestyle{empty}
+  \csname @openrightfalse\endcsname
   \input{appendices.tex}
+  \csname @openrighttrue\endcsname
 
 \backmatter
 
@@ -41,6 +50,8 @@
   \bibliographystyle{ieeetr}
   \addcontentsline{toc}{chapter}{Bibliography}
 
+  \csname @openrightfalse\endcsname
   \input{abstract.tex}
+  \csname @openrighttrue\endcsname
 
 \end{document}
